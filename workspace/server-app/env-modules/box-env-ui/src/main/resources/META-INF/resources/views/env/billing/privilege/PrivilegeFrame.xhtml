@@ -1,0 +1,119 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="privilegeBundle" basename="PrivilegeBundle"/>
+    <p:outputPanel rendered="#{p:ifGranted('Billing_PrivilegeView')}">
+    	<f:event listener="#{privilegeFm.preRender(privilegeSubject)}" type="preRenderComponent"/>
+
+		<o:importConstants type="ru.argustelecom.box.env.billing.privilege.PrivilegeTypeRef" var="privilegeType"/>
+
+    	<div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+        	<div class="m-container-indent">
+            	<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                	<h:form id="privilege_form">
+
+                    	<div class="ui-dashboard-header">
+                        	<i class="icon-money_off"/>
+                        	<h:outputText value="#{privilegeBundle['box.privilege.plural']}" styleClass="card-header"/>
+
+                        	<p:outputPanel id="property_managed_buttons" styleClass="m-fright">
+                            	<p:commandLink id="history" title="#{privilegeBundle['box.privilege.history']}">
+                                	<i class="icon-history icon-btn privilege-icon"/>
+                            	</p:commandLink>
+
+                            	<p:overlayPanel id="privilege_history_panel" for="history" appendToBody="true"
+												showCloseIcon="true" hideEffect="fade" modal="true">
+									<div class="m-pad10 m-shadow-effect width-600">
+										<div class="ui-dashboard-header overlay-panel-header panel-header">
+											<i class="icon-history"/>
+											<h:outputText value="#{privilegeBundle['box.privilege.history']}" styleClass="card-header"/>
+										</div>
+
+										<ui:include src="PrivilegeHistoryFrame.xhtml">
+											<ui:param name="privileges" value="#{privilegeFm.history}"/>
+										</ui:include>
+									</div>
+                            	</p:overlayPanel>
+
+                            	<p:commandLink title="#{privilegeBundle['box.privilege.trust_period.create_dialog']}" action="#{privilegeEditDm.openDialog()}"
+											   styleClass="m-mar-left10" disabled="#{!p:ifGranted('Billing_PrivilegeEdit')}">
+                                	<i class="fa fa-edit icon-btn"/>
+                                	<f:setPropertyActionListener value="#{privilegeFm.subject}" target="#{privilegeEditDm.subject}"/>
+                                	<f:setPropertyActionListener value="#{privilegeFm.callbackAfterCreation}" target="#{privilegeEditDm.callbackAfterCreation}"/>
+                            	</p:commandLink>
+                        	</p:outputPanel>
+                    	</div>
+
+                    	<ui:fragment rendered="#{privilegeFm.hasPrivilege()}">
+
+ 							<p:dataTable id="privilege_table" var="privilege" value="#{privilegeFm.privileges}" styleClass="paginator-top-hidden borderless header-border">
+								<p:column headerText="#{overallBundle['box.overall.type']}">
+									<h:outputText value="#{privilege.type eq privilegeType.DISCOUNT ? privilege.objectName : privilege.type.name}"/>
+								</p:column>
+
+								<p:column headerText="#{overallBundle['box.overall.valid_from']}">
+									<h:outputText value="#{privilege.validFrom}">
+										<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" timeZone="#{TZ.userTimeZone}"/>
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{overallBundle['box.overall.valid_to']}">
+									<h:outputText value="#{privilege.validTo}">
+										<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" timeZone="#{TZ.userTimeZone}"/>
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{privilegeBundle['box.privilege.object']}">
+									<boxenv:linkToCard value="#{privilege.subject.getIdentifiable()}" text="#{privilege.subject.name}"/>
+								</p:column>
+
+								<p:column styleClass="width-20">
+									<p:commandLink title="#{privilege.type.editBtnTitle}" rendered="#{extendPrivilegeDm.canBeExtended(privilege)}"
+												   disabled="#{!p:ifGranted('Billing_PrivilegeEdit')}" process="@this" action="#{extendPrivilegeDm.openDialog()}">
+										<i class="fa fa-forward fs20 m-bold-gray"/>
+										<f:setPropertyActionListener value="#{privilege}" target="#{extendPrivilegeDm.privilege}"/>
+									</p:commandLink>
+
+									<p:commandLink title="#{privilege.type.editBtnTitle}" process="@this" action="#{privilegeEditDm.openDialog()}"
+												   rendered="#{privilege.type eq privilegeType.DISCOUNT}">
+										<i class="fa #{privilege.type eq privilegeType.DISCOUNT ? 'fa-pencil' : 'fa-forward'} fs20 m-bold-gray"/>
+										<f:setPropertyActionListener value="#{privilegeFm.subject}" target="#{privilegeEditDm.subject}"/>
+										<f:setPropertyActionListener value="#{privilege}" target="#{privilegeEditDm.privilege}"/>
+										<f:setPropertyActionListener value="#{privilegeFm.callbackAfterEditing}" target="#{privilegeEditDm.callbackAfterEditing}"/>
+									</p:commandLink>
+								</p:column>
+
+								<p:column styleClass="width-20">
+									<p:commandLink title="#{privilegeFm.getRemoveButtonTitle(privilege)}" process="@this" action="#{privilegeRemoveDm.openDialog()}"
+												   disabled="#{!p:ifGranted('Billing_PrivilegeEdit') || privilegeFm.canRemoveDiscount(privilege)}">
+										<i class="fa #{privilege.type eq privilegeType.DISCOUNT ? 'fa-trash' : 'fa-stop-circle-o'} fs20 m-bold-gray"/>
+
+										<f:setPropertyActionListener value="#{privilegeFm.callbackAfterRemove}" target="#{privilegeRemoveDm.callbackAfterRemove}"/>
+										<f:setPropertyActionListener value="#{privilege}" target="#{privilegeRemoveDm.privilege}"/>
+									</p:commandLink>
+								</p:column>
+
+                        	</p:dataTable>
+
+                    	</ui:fragment>
+
+                    	<ui:fragment rendered="#{not privilegeFm.hasPrivilege()}">
+                        	#{overallBundle['box.overall.empty']}
+                    	</ui:fragment>
+                	</h:form>
+            	</div>
+        	</div>
+    	</div>
+    </p:outputPanel>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="icon-money_off" />
+		<ui:param name="headerText" value="#{privilegeBundle['box.privilege.plural']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('Billing_PrivilegeView')}" />
+	</ui:include>
+
+</ui:composition>

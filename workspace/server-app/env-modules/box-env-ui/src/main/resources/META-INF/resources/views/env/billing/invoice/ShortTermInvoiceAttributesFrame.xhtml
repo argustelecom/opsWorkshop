@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+				<h:form id="shrot_term_invoice_attributes_form">
+
+					<f:event listener="#{shortTermInvoiceAttributesFm.preRender(invoice)}" type="preRenderComponent"/>
+
+					<div class="columns">
+
+						<div class="column m-pad-0 m-responsive100">
+							<p:panelGrid id="contract_id_grid" columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+								<i class="fs50 icon-receipt"/>
+								<h:outputText value="ID #{shortTermInvoiceAttributesFm.invoice.id}" />
+							</p:panelGrid>
+						</div>
+
+						<div class="column m-container100 m-fnone m-responsive100">
+							<div class="columns">
+								<div class="column m-container50 m-responsive100">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel for="number" value="#{overallBundle['box.overall.number']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="number" value="#{shortTermInvoiceAttributesFm.invoice.id}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="state" value="#{shortTermInvoiceAttributesFm.invoice.state.name}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="closing_date" value="#{overallBundle['box.overall.closing_date']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="closing_date" value="#{shortTermInvoiceAttributesFm.invoice.closingDate}">
+												<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+											</h:outputText>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="total_price" value="#{invoiceBundle['box.invoice.amount.total']}:"/>
+										</dt>
+										<dd>
+											<boxenv:money id="total_price" value="#{shortTermInvoiceAttributesFm.invoice.totalPrice}"
+														  size="fs18"/>
+										</dd>
+									</dl>
+								</div>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

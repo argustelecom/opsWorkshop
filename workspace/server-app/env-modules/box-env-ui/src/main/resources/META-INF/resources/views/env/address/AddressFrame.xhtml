@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="provisionAddressBundle" basename="ProvisionAddressBundle"/>
+    <div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                <h:form id="address_info_form" style="height: #{height == null ? 150 : height}px;">
+
+                    <f:event type="preRenderComponent" listener="#{addressFm.preRender(location)}"/>
+
+                    <div class="ui-dashboard-header">
+                        <i class="icon-location_city"/>
+                        <h:outputText value="#{title == null ? provisionAddressBundle['box.provision.address'] : title}"
+                                      styleClass="card-header"/>
+                    </div>
+
+                    <dl class="name-value width-150">
+                        <dt>
+                            <p:outputLabel for="address"
+                                           value="#{provisionAddressBundle['box.provision.address.address']}:"/>
+                        </dt>
+                        <dd>
+                            <h:outputText id="address" value="#{addressFm.address.fullName}"
+                                          title="#{addressFm.addressTitle}" style="color: #{addressFm.addressColor()}"/>
+                        </dd>
+
+                        <ui:fragment rendered="#{addressFm.hasCoverage()}">
+                            <dt>
+
+                            </dt>
+                            <dd>
+                                <h:outputText id="coverage_comment" value="#{addressFm.address.coverageNote}"/>
+                            </dd>
+                        </ui:fragment>
+
+                        <dt>
+                            <p:outputLabel for="address_comment" value="#{overallBundle['box.overall.desc']}:"/>
+                        </dt>
+                        <dd>
+                            <h:outputText id="address_comment" value="#{comment}"/>
+                        </dd>
+                    </dl>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

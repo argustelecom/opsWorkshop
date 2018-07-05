@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="pricelistBundle" basename="PricelistBundle"/>
+	<f:loadBundle var="productBundle" basename="ProductBundle"/>
+	<h:form id="pricelist_product_edit_form">
+		<p:dialog id="pricelist_product_edit_dlg" header="#{pricelistProductEditDM.getHeader()}" widgetVar="pricelistProductEditDlgVar"
+				  width="600" resizable="false" modal="true" closable="false" dynamic="true" styleClass="icon-creation">
+			<dl class="name-value width-220">
+				<dt>
+					<p:outputLabel for="new_product_type" value="#{productBundle['box.product']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_product_type" value="#{pricelistProductEditDM.newProductType}" required="true"
+									 disabled="#{pricelistProductEditDM.isEditMode()}" filter="true" filterMatchMode="startsWith"
+									 label="#{productBundle['box.product']}">
+						<f:selectItems value="#{pricelistProductEditDM.possibleProducts}" var="productType"
+									   itemValue="#{productType}" itemLabel="#{productType.name}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_price"
+								   value="#{pricelistBundle['box.pricelist.offering.amount.include_vat']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_price" value="#{pricelistProductEditDM.newPrice}" required="true"
+								 label="#{pricelistBundle['box.pricelist.offering.amount.include_vat']}">
+						<f:converter converterId="moneyConverter"/>
+						<f:validateDoubleRange minimum="0.01" maximum="9999999.99"/>
+					</p:inputText>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="pricelist_product_edit_dlg"
+								 process="@this" action="#{pricelistProductEditDM.cancel()}" onclick="PF('pricelistProductEditDlgVar').hide()"/>
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.ok']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('pricelistProductEditDlgVar').hide()}"
+								 action="#{pricelistProductEditDM.submit()}" process="pricelist_product_edit_dlg" update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

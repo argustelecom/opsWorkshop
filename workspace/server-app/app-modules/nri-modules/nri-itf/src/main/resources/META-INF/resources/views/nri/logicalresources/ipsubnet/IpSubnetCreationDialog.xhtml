@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="ip_subnet_creation_dlg"
+			  header="#{ipBundle['box.menu.nri.resources.logical.subnets.create_dlg_header']}" width="50%"
+			  widgetVar="ipSubnetCreationDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation">
+		<h:form id="ip_subnet_creation_form">
+			<dl class="name-value width-250">
+				<dt>
+					<p:outputLabel for="new_name"
+								   value="#{ipBundle['box.menu.nri.resources.logical.subnets.new_net_address']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_name" value="#{ipSubnetCreationDM.newSubnet.name}" maxlength="128"
+								 validator="#{ipSubnetCreationDM.validateName}"
+								 required="true" requiredMessage="#{ipBundle['box.menu.nri.resources.logical.subnets.new_net_address_required_msg']}"/>
+					<p:watermark for="new_name" value="xxx.xxx.xxx.xxx/xx" id="new_name_watermark"/>
+				</dd>
+				<dt>
+					<p:outputLabel value="#{ipAddrBundle['box.nri.logicalresource.ip.Ip_addr_type_label']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="ip_address_static" value="#{ipSubnetCreationDM.isStatic}">
+						<f:selectItem itemValue="#{true}" itemLabel="#{ipAddrBundle['box.nri.logicalresource.static_word']}"/>
+						<f:selectItem itemValue="#{false}" itemLabel="#{ipAddrBundle['box.nri.logicalresource.dynamic_word']}"/>
+					</p:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel value="#{ipBundle['box.nri.resources.logical.subnets.comment']}"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="ip_subnet_comment" value="#{ipSubnetCreationDM.newSubnet.comment}"
+									 rows="3" counter="ip_subnet_comment_display" maxlength="255"
+									 counterTemplate="#{ipBundle['box.nri.resources.logical.subnets.count_left']}: {0}"/>
+					<h:outputText id="ip_subnet_comment_display" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 update="ip_subnet_creation_dlg" process="@this"
+								 styleClass="m-blue-text-button" onclick="PF('ipSubnetCreationDlg').hide()"/>
+				<p:commandButton id="create_button"
+								 value="#{overallBundle['box.overall.create']}"
+								 update="ip_subnet_creation_form #{update}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('ipSubnetCreationDlg').hide();
+								 Argus.System.AutoHeight.compute('ip_subnet_tree_form-ip_subnet_tree', 35);};"
+								 action="#{ipSubnetCreationDM.create()}" />
+			</div>
+		</h:form>
+	</p:dialog>
+</ui:composition>

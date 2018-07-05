@@ -1,0 +1,548 @@
+stages:
+  - test
+  - sonar
+  - build
+  - distrib
+  - make-update-db
+  - install-update
+  - int-tests
+  - ui-tests
+  - make-installer
+  - deploy
+
+# Глобальные переменые.
+variables:
+  branch: '$CI_COMMIT_REF_NAME'
+  buildcounter: '$CI_PIPELINE_ID'
+  HostDB: '192.168.102.25'
+  JDBC_DRIVER_PATH: 'driver/postgresql-9.4.1208.jar'
+  DBM_PROPERTIES_FILE: 'dbmaintain.properties'
+  DBM_FILE: 'dbmaintain.sh'
+
+# TASK-87917, v.semchenko:
+# Из-за проблемы прерывания сборки в середине скрипта job`а (fail job`а получаем только, если fail у последней команды
+# в других случаях job получает статус success), пришел к пониманию, что требуется придерживаться схемы вызова скриптов:
+#
+# .gitlab-ci.yml -> linux_build.sh -> make_all.sh
+#
+# Где:
+#        .gitlab-ci.yml - обеспечивает порядок запуска определенного функционала через переменную окружения mode.
+#                         А такаже опеределяет глобальные переменные.
+#        linux_build.sh - подготавливает рабочее окружение
+#        make_all.sh - содержит выполняемые инструкции, которые определяются на основании переданного параметра.
+#
+# Оба скрипта make_all.sh и linux_build.sh должны обеспечивать передачу сигнала об ошибке на уровень выше.
+
+# Вызов скрипта подготовки окружения.
+.call-linux-build: &call-linux-build
+  script:
+    - cd .linuxbuild
+    - chmod +x *.sh
+    - dos2unix ./linux_build.sh && ./linux_build.sh
+
+#Feature routines
+feature-validate-xml:
+  script:
+    - cd workspace
+    - mvn xml:validate -pl parent -amd
+  stage: test
+  only:
+    - /^feature-.*$/
+    - /^sprint-.*$/
+    - /^fix-.*$/
+    - /^hotfix-.*$/
+  tags:
+    - shell
+
+feature-integration-tests:
+  before_script:
+    - cd db
+    - mvn install
+    - cd target/dbm
+    # Create DB name from branch name
+    - DB_NAME=itdb
+    # Set DB name in two strings
+    - sed -i "s/:5432\/.*/:5432\/$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    - sed -i "s/databases.names=.*/databases.names=$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    # Fix windows line endings
+    - sed -i "s/\r//g" $PWD/$DBM_FILE
+    # Set driver path
+    - export DBMAINTAIN_JDBC_DRIVER=$PWD/$JDBC_DRIVER_PATH
+    - cd ../../../it-env
+    - sudo bash ./init-db-for-testing.sh
+    - cd ../db/target/dbm
+    - ./$DBM_FILE updateDatabase
+    - cd ..
+  script:
+    - cd workspace
+    - mvn test
+    - cd ..
+  after_script:
+    - cd it-env
+    - sudo bash ./clean-env.sh
+  stage: int-tests
+  when: manual
+  only:
+    - /^sprint-.*/
+    - dev
+  tags:
+    - shell
+
+  script:
+    - cd .linuxbuild
+    - chmod +x *.sh
+    - dos2unix ./linux_build.sh && ./linux_build.sh
+
+# Шаблоны содержат: переменную mode и настройки артефактов. Стадии настраивается на уровне Job'ов.
+.build-server: &build-server
+  variables:
+    mode: 'build-server'
+  <<: *call-linux-build
+  artifacts:
+    name: "unit-tests-$CI_PIPELINE_ID"
+    expire_in: 3 days
+    paths:
+      - workspace/target/site/surefire-report.html
+    when: always
+
+.build-update-db: &build-update-db
+  variables:
+    mode: 'build-update-db'
+  <<: *call-linux-build
+  artifacts:
+    name: "update-database-$CI_PIPELINE_ID"
+    expire_in: 3 days
+    paths:
+      - db/target/
+
+.make-distrib: &make-distrib
+  variables:
+    mode: 'make-distrib'
+  <<: *call-linux-build
+  artifacts:
+    name: "appserver-$CI_PIPELINE_ID"
+    expire_in: 3 days
+    paths:
+      - workspace/server-conf/box-dist/target/
+
+.install-update-db: &install-update-db
+  variables:
+    mode: 'install-update-db'
+    # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
+    DB_NAME: 'installdb_$CI_JOB_ID'
+  before_script:
+    - cd db/target/dbm
+    # Set DB name in two strings
+    - sed -i "s/:5432\/.*/:5432\/$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    - sed -i "s/databases.names=.*/databases.names=$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    # Fix windows line endings
+    - dos2unix $PWD/$DBM_FILE
+    # Set driver path
+    - export DBMAINTAIN_JDBC_DRIVER=$PWD/$JDBC_DRIVER_PATH
+    - cd ../../../it-env
+    - chmod +x *.sh
+    - bash ./init-db-for-testing.sh $DB_NAME
+    - cd ..
+  <<: *call-linux-build
+  after_script:
+    - cd it-env
+    - bash ./clean-env.sh $DB_NAME
+
+.build-ui-tests: &build-ui-tests
+  variables:
+    mode: 'ui-tests'
+    # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
+    DB_NAME: 'itdb_$CI_JOB_ID'
+  before_script:
+    - cd db/target/dbm
+    # Set DB name in two strings
+    - sed -i "s/:5432\/.*/:5432\/$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    - sed -i "s/databases.names=.*/databases.names=$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    # Fix windows line endings
+    - dos2unix $PWD/$DBM_FILE
+    # Set driver path
+    - export DBMAINTAIN_JDBC_DRIVER=$PWD/$JDBC_DRIVER_PATH
+    - cd ../../../it-env
+    - chmod +x *.sh
+    - bash ./init-db-for-testing.sh $DB_NAME
+    - cd ../db/target/dbm
+    - ./$DBM_FILE updateDatabase
+    - cd ../../..
+  <<: *call-linux-build
+  after_script:
+    - cd it-env
+    - bash ./clean-env.sh $DB_NAME
+  artifacts:
+    name: "ui-tests-$CI_PIPELINE_ID"
+    expire_in: 3 days
+    paths:
+      - workspace/target/site/failsafe-report.html
+      - workspace/server-app/*/*-ui/target/testlogs/tests.log
+      # из-за сложной иерархии проектов приходиться поступать аналогично: https://stackoverflow.com/questions/38009869/how-to-specify-wildcard-artifacts-subdirectories-in-gitlab-ci-yml
+      - workspace/server-app/*/*/*-ui/target/testlogs/tests.log
+      - workspace/server-app/*/*-ui/target/failsafe-reports
+      - workspace/server-app/*/*/*-ui/target/failsafe-reports
+      - workspace/server-app/*/*-ui/target/uitest-fails-photo
+      - workspace/server-app/*/*/*-ui/target/uitest-fails-photo
+      - workspace/target/server-logs.tar.gz
+    when: always
+
+# Перед прогоном тестов ЛК считаем, что СП обыного Box уже установлен, так как его тесты уже выполнены.
+.build-ui-tests: &build-ui-tests-pa
+  variables:
+    mode: 'ui-tests-pa'
+    # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
+    DB_NAME: 'itdb_$CI_JOB_ID'
+  before_script:
+    - cd db/target/dbm
+    # Set DB name in two strings
+    - sed -i "s/:5432\/.*/:5432\/$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    - sed -i "s/databases.names=.*/databases.names=$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
+    # Fix windows line endings
+    - dos2unix $PWD/$DBM_FILE
+    # Set driver path
+    - export DBMAINTAIN_JDBC_DRIVER=$PWD/$JDBC_DRIVER_PATH
+    - cd ../../../it-env
+    - chmod +x *.sh
+    - bash ./init-db-for-testing.sh $DB_NAME
+    - cd ../db/target/dbm
+    - ./$DBM_FILE updateDatabase
+    - cd ../../..
+  <<: *call-linux-build
+  after_script:
+    - cd it-env
+    - bash ./clean-env.sh $DB_NAME
+  artifacts:
+    name: "ui-tests-$CI_PIPELINE_ID"
+    expire_in: 3 days
+    paths:
+      - workspace/target/site/failsafe-report.html
+      - workspace/server-app/*/*-ui/target/testlogs/tests.log
+      # из-за сложной иерархии проектов приходиться поступать аналогично: https://stackoverflow.com/questions/38009869/how-to-specify-wildcard-artifacts-subdirectories-in-gitlab-ci-yml
+      - workspace/server-app/*/*/*-ui/target/testlogs/tests.log
+      - workspace/server-app/*/*-ui/target/failsafe-reports
+      - workspace/server-app/*/*/*-ui/target/failsafe-reports
+      - workspace/server-app/*/*-ui/target/uitest-fails-photo
+      - workspace/server-app/*/*/*-ui/target/uitest-fails-photo
+      - workspace/target/server-logs.tar.gz
+    when: always
+
+.deploy-installer-target: &deploy-installer-target
+  variables:
+    PRODUCT_NAME: Box
+    INSTALLER_CONFIG_NAME: demo-install.conf
+    TMP_DIRECTORY_NAME: build-installer/$CI_PIPELINE_ID
+
+# >> PIPELINE ДЛЯ ВЕТОК DEV и RELEASE-*
+.only-for-dev: &only-for-dev
+  only:
+    - dev
+    - /^release-.*/
+    # TASK-87917, v.semchenko: на время проведения спринта ui-tests для ветки feature-ui-test выполняем все job`ы dev-* по on-commit
+    - /^feature-ui-test.*/
+  except:
+    - schedules
+
+dev-build-server:
+  <<: *build-server
+  <<: *only-for-dev
+  stage: build
+  tags:
+    - shell
+
+dev-make-distrib:
+  <<: *make-distrib
+  <<: *only-for-dev
+  variables:
+    #выставляем тег в git и переопределяем все переменные .make-distrib
+    autotag: 'true'
+    mode: 'make-distrib'
+  stage: distrib
+  tags:
+    - shell
+
+dev-make-update-db:
+  <<: *build-update-db
+  <<: *only-for-dev
+  stage: distrib
+  tags:
+    - shell
+
+dev-install-update-db:
+  <<: *install-update-db
+  <<: *only-for-dev
+  stage: install-update
+  dependencies:
+    - dev-make-update-db
+  tags:
+    - shell
+
+feature-sonarqube-analyze:
+  script:
+    - cd workspace
+    - mvn -P nri-sonar-analyser verify sonar:sonar -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+  stage: sonar
+  dependencies:
+    - feature-validate-xml
+  only:
+    - /^feature-.*-nri$/
+    - /^fix-.*-nri$/
+    - dev-nri
+  tags:
+    - shell
+
+feature_sonarqube_preview:
+  script:
+    - git checkout origin/feature-1416-nri
+    - git merge $CI_COMMIT_SHA --no-commit --no-ff
+    - cd workspace
+    - mvn -P nri-sonar-analyser --batch-mode verify sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+  stage: sonar
+  dependencies:
+    - feature-validate-xml
+  only:
+    - /^BOX-.*-nri$/
+  tags:
+    - shell
+
+dev-build-ui-tests:
+  <<: *build-ui-tests
+  <<: *only-for-dev
+  stage: ui-tests
+  dependencies:
+    - dev-make-distrib
+    - dev-make-update-db
+  tags:
+    - shell
+
+dev-build-ui-tests-pa:
+  <<: *build-ui-tests-pa
+  <<: *only-for-dev
+  stage: ui-tests
+  dependencies:
+    - dev-make-distrib
+    - dev-make-update-db
+  tags:
+    - shell
+
+# <<< TASK-91296, TASK-90327
+dev-build-installer:
+  script:
+    - git clone --depth=1 git@gitlab:DevOps/Ansible.git $TMP_DIRECTORY_NAME/Ansible
+    - rsync -r --progress --remove-source-files $TMP_DIRECTORY_NAME/Ansible/tasks/argus_install/* $TMP_DIRECTORY_NAME
+    - rm -rf $TMP_DIRECTORY_NAME/Ansible
+    - bash $TMP_DIRECTORY_NAME/make.sh "$PRODUCT_NAME"
+    - rsync -r --progress db/src/projects/dbhost_scripts/ $TMP_DIRECTORY_NAME/dist/data/dbctl
+    - rsync -r --progress db/target/dbm/* $TMP_DIRECTORY_NAME/dist/data/updatedb-$CI_COMMIT_REF_NAME
+    - rsync --progress workspace/server-conf/box-dist/target/argusbox-dist-*.jar $TMP_DIRECTORY_NAME/dist/data/argus-$CI_COMMIT_REF_NAME.jar
+    - rm $TMP_DIRECTORY_NAME/dist/install.conf.raw
+    - rsync --progress dmz/$INSTALLER_CONFIG_NAME $TMP_DIRECTORY_NAME/dist/install.conf
+    - sed -i -e "/^version\ *=/ s/= .*/= $CI_COMMIT_REF_NAME/" $TMP_DIRECTORY_NAME/dist/install.conf
+  <<: *deploy-installer-target
+  stage: make-installer
+  when: manual
+  dependencies:
+    - dev-make-distrib
+    - dev-make-update-db
+  only:
+    - /^release-.*/
+    - /^dev$/
+  tags:
+    - shell
+  artifacts:
+    name: "${PRODUCT_NAME,,}-installer-$CI_COMMIT_REF_NAME"
+    expire_in: 3 days
+    paths:
+      - $TMP_DIRECTORY_NAME/dist
+    when: on_success
+
+dev-deploy-installer:
+  script:
+    - bash $TMP_DIRECTORY_NAME/dist/install.sh
+  <<: *deploy-installer-target
+  stage: deploy
+  when: manual
+  dependencies:
+    - dev-build-installer
+  only:
+    - /^release-.*/
+    - /^dev$/
+  tags:
+    - shell
+  artifacts:
+    name: "${PRODUCT_NAME,,}-installer-$CI_COMMIT_REF_NAME-logs"
+    expire_in: 3 days
+    paths:
+      - $TMP_DIRECTORY_NAME/dist/logs
+    when: always
+# >>> TASK-91296, TASK-90327
+
+# << PIPELINE ДЛЯ ВЕТОК DEV и RELEASE-*
+
+# >> PIPELINE ДЛЯ ВЕТОК SPRINT-*, FEATUERE-*, AUTOTEST-*
+.only-for-feature: &only-for-feature
+  only:
+    - /^feature-.*/
+    - /^sprint-.*/
+    - /^autotest-.*/
+  except:
+    - schedules
+    # TASK-87917, v.semchenko: на время проведения спринта ui-tests для ветки feature-ui-test выполняем все job`ы dev-* по on-commit
+    - /^feature-ui-test.*/
+
+feature-build-server:
+  <<: *build-server
+  <<: *only-for-feature
+  stage: build
+  tags:
+    - shell
+
+feature-make-distrib:
+  <<: *make-distrib
+  <<: *only-for-feature
+  variables:
+    autotag: 'false'
+    mode: 'make-distrib'
+  stage: distrib
+  tags:
+    - shell
+  when: manual
+  # TASK-87917, v.semchenko: В этом случае мы блокируем выполнение следующих стадий, если job невыполнен или fail
+  allow_failure: false
+
+feature-make-update-db:
+  <<: *build-update-db
+  <<: *only-for-feature
+  stage: make-update-db
+  tags:
+    - shell
+
+feature-install-update-db:
+  <<: *install-update-db
+  <<: *only-for-feature
+  stage: install-update
+  dependencies:
+    - feature-make-update-db
+  tags:
+    - shell
+
+feature-build-ui-tests:
+  <<: *build-ui-tests
+  <<: *only-for-feature
+  stage: ui-tests
+  dependencies:
+    - feature-make-distrib
+    - feature-make-update-db
+  tags:
+    - shell
+
+feature-build-ui-tests-pa:
+  <<: *build-ui-tests-pa
+  <<: *only-for-feature
+  stage: ui-tests
+  dependencies:
+    - feature-make-distrib
+    - feature-make-update-db
+  tags:
+    - shell
+# << PIPELINE ДЛЯ ВЕТОК SPRINT-*, FEATURE-*, AUTOTEST-*
+
+# >> PIPELINE ДЛЯ ВЕТОК FIX-*, HOTFIX-*
+.only-for-fix: &only-for-fix
+  only:
+    - /^fix-.*/
+    - /^hotfix-*/
+  except:
+    - schedules
+
+fix-build-server:
+  <<: *build-server
+  <<: *only-for-fix
+  stage: build
+  tags:
+    - shell
+
+fix-build-update-db:
+  <<: *build-update-db
+  <<: *only-for-fix
+  stage: make-update-db
+  tags:
+    - shell
+
+fix-install-update-db:
+  <<: *install-update-db
+  <<: *only-for-fix
+  stage: install-update
+  dependencies:
+    - fix-build-update-db
+  tags:
+    - shell
+
+fix-make-distrib:
+  <<: *make-distrib
+  <<: *only-for-fix
+  variables:
+    autotag: 'false'
+    mode: 'make-distrib'
+  stage: distrib
+  tags:
+    - shell
+  when: manual
+  allow_failure: true
+# << PIPELINE ДЛЯ ВЕТОК FIX-*, HOTFIX-*
+
+# >> PIPELINE ДЛЯ SCHEDULES В ЛЮБОЙ ВЕТКЕ
+.only-for-schedules: &only-for-schedules
+  only:
+    - schedules
+
+schedules-build-server:
+  <<: *build-server
+  <<: *only-for-schedules
+  stage: build
+  tags:
+    - shell
+
+schedules-make-distrib:
+  <<: *make-distrib
+  <<: *only-for-schedules
+  stage: distrib
+  tags:
+    - shell
+
+schedules-make-update-db:
+  <<: *build-update-db
+  <<: *only-for-schedules
+  stage: distrib
+  tags:
+    - shell
+
+schedules-install-update-db:
+  <<: *install-update-db
+  <<: *only-for-schedules
+  stage: install-update
+  dependencies:
+    - schedules-make-update-db
+  tags:
+    - shell
+
+schedules-build-ui-tests:
+  <<: *build-ui-tests
+  <<: *only-for-schedules
+  stage: ui-tests
+  dependencies:
+    - schedules-make-distrib
+    - schedules-make-update-db
+  tags:
+    - shell
+
+schedules-build-ui-tests-pa:
+  <<: *build-ui-tests-pa
+  <<: *only-for-schedules
+  stage: ui-tests
+  dependencies:
+    - schedules-make-distrib
+    - schedules-make-update-db
+  tags:
+    - shell
+# << PIPELINE ДЛЯ SCHEDULES В ЛЮБОЙ ВЕТКЕ

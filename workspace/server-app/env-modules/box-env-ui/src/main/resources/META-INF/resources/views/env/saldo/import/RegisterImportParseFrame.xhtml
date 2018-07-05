@@ -1,0 +1,146 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+			  xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+			  xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core"
+			  xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:o="http://omnifaces.org/ui">
+
+	<f:loadBundle var="saldoImportBundle" basename="SaldoImportBundle"/>
+	<div class="m-container100 m-responsive100">
+
+		<div class="m-mar-top5">
+
+			<div class="m-card m-shadow-effect custom-content-card simple-fb">
+
+				<div class="ui-dashboard-header">
+					<i class="fa fa-list"/>
+					<h:outputText styleClass="card-header" value="#{saldoImportBundle['box.saldo.import.step.parse.view']}"/>
+				</div>
+
+				<div class="m-container100 m-responsive100">
+					<div class="margin-16px clearfix">
+						<h3 class="h3-header">#{saldoImportBundle['box.saldo.import.step.parse.info']}</h3>
+						<div class="m-container35 m-responsive100">
+							<ui:fragment rendered="true">
+								<dl class="name-value width-150">
+									<dt>
+										<p:outputLabel for="reestr_number"
+													   value="#{saldoImportBundle['box.saldo.import.number']}:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="reestr_number" value="#{registerImportVM.register.number}"/>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="reestr_sum"
+													   value="#{saldoImportBundle['box.saldo.import.amount']}:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="reestr_sum" value="#{registerImportVM.register.sum}"/>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="reestr_create"
+													   value="#{saldoImportBundle['box.saldo.import.created']}:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="reestr_create" value="#{registerImportVM.register.creationDate}" disabled="true">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+										</p:outputLabel>
+									</dd>
+								</dl>
+							</ui:fragment>
+						</div>
+
+						<div class="m-container60 m-responsive100">
+							<ui:fragment rendered="true">
+								<dl class="name-value width-150">
+									<dt>
+										<p:outputLabel value="#{saldoImportBundle['box.saldo.import.period']}"/>
+									</dt>
+									<dd>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="date_from" value="#{saldoImportBundle['box.saldo.import.from']}"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="date_from" value="#{registerImportVM.register.startDate}"
+													  disabled="true">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+										</p:outputLabel>
+									</dd>
+									<dt>
+										<p:outputLabel for="date_to" value="#{overallBundle['box.overall.valid_to.short']}:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="date_to" value="#{registerImportVM.register.endDate}" disabled="true">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+										</p:outputLabel>
+									</dd>
+								</dl>
+							</ui:fragment>
+						</div>
+					</div>
+				</div>
+
+				<div class="margin-16px">
+					<h3 class="h3-header">#{saldoImportBundle['box.saldo.import.analysis.result']}
+
+						<h:outputText id="parsettp" class="icon-help_outline tooltip-help-3" position="top"
+									  title="#{saldoImportBundle['box.saldo.import.step.parse.result.hint']}"/>
+						<p:tooltip id="parse_help_ttp" for="parsettp"/>
+					</h3>
+
+					<p:dataTable value="#{registerImportVM.containers}" var="container"
+								 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+						<p:column styleClass="width-16">
+							<ui:fragment>
+								<p:commandLink ajax="false" styleClass="m-fleft">
+									<i class="fs16 #{container.type.iconStyleClass}" title="#{registerImportVM[issue.state.title]}"/>
+								</p:commandLink>
+							</ui:fragment>
+						</p:column>
+
+						<p:column headerText="#{box.saldo.import.step.parse.result}">
+							<h:outputText value="#{container.type.name}"/>
+						</p:column>
+
+						<p:column headerText="#{overallBundle['box.overall.desc']}">
+							<h:outputText value="#{container.errorsDescription}"/>
+						</p:column>
+
+						<p:column headerText="#{saldoImportBundle['box.saldo.import.quantity']}">
+							<h:outputText value="#{container.items.size()}"/>
+						</p:column>
+
+						<p:column styleClass="width-24">
+							<o:importConstants type="ru.argustelecom.box.env.saldo.imp.RegisterImportViewModel$Step" var="step"/>
+							<f:facet name="header">
+								<p:commandLink title="#{overallBundle['box.overall.download.all']}" position="left" ajax="false"
+											   icon="fa fa-download">
+									<i class="icon-get_app fs20 m-bold-gray" />
+									<f:setPropertyActionListener value="#{registerImportVM.register}" target="#{registerImportDownloadFM.register}"/>
+									<p:fileDownload value="#{registerImportDownloadFM.downloadAll(step.PARSE.id)}"/>
+								</p:commandLink>
+							</f:facet>
+
+							<p:commandLink title="#{overallBundle['box.overall.download']}" position="left" ajax="false" id="focus"
+											 icon="fa fa-download">
+								<i class="icon-get_app fs20 m-bold-gray fs16" />
+								<f:setPropertyActionListener value="#{registerImportVM.register}" target="#{registerImportDownloadFM.register}"/>
+								<p:fileDownload value="#{registerImportDownloadFM.downloadContainer(container, step.PARSE.id)}"/>
+							</p:commandLink>
+							<p:tooltip id="ttpp" for="focus"/>
+						</p:column>
+					</p:dataTable>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</ui:composition>

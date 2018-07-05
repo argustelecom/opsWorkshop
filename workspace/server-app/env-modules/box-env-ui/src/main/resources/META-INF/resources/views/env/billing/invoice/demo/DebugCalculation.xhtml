@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<div class="m-container100 m-responsive100">
+
+		<div class="m-container50 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect">
+					<h3>Условия предоставления</h3>
+
+					<dl class="name-value width-300">
+						<dt>
+							<p:outputLabel for="period_type" value="Тип периода:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="period_type" value="#{model.periodType}"
+											 required="true">
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{model.periodTypes}" var="periodType"
+											   itemValue="#{periodType}"
+											   itemLabel="#{periodType}"/>
+							</p:selectOneMenu>
+						</dd>
+						<dt>
+							<p:outputLabel for="accounting_duration_amount"
+										   value="Длительность периода расчета:"/>
+						</dt>
+						<dd>
+							<p:inputText id="accounting_duration_amount"
+										 value="#{model.accountingDurationAmount}"
+										 styleClass="width-40-percents" required="true">
+								<f:validateLongRange minimum="0" maximum="9999"/>
+							</p:inputText>
+
+							<p:selectOneMenu styleClass="width-60-percents" id="accounting_duration_unit"
+											 value="#{model.accountingDurationUnit}"
+											 required="true">
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{model.periodUnits}" var="periodUnit"
+											   itemValue="#{periodUnit}"
+											   itemLabel="#{periodUnit}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="charging_duration_amount"
+										   value="Длительность периода списания:"/>
+						</dt>
+						<dd>
+
+							<p:inputText id="charging_duration_amount"
+										 value="#{model.chargingDurationAmount}"
+										 styleClass="width-40-percents" required="true">
+								<f:validateLongRange minimum="0" maximum="9999"/>
+							</p:inputText>
+
+
+							<p:selectOneMenu styleClass="width-60-percents" id="charging_duration_unit"
+											 value="#{model.chargingDurationUnit}"
+											 required="true"
+									>
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{model.periodUnits}" var="periodUnit"
+											   itemValue="#{periodUnit}"
+											   itemLabel="#{periodUnit}"/>
+							</p:selectOneMenu>
+
+
+						</dd>
+
+						<dt>
+							<p:outputLabel for="opening_policy" value="Политика досрочного открытия:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="opening_policy"
+											 value="#{model.openingPolicy}" required="true"
+									>
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{model.prematureActionPolicies}"
+											   var="policy" itemValue="#{policy}"
+											   itemLabel="#{policy}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="closing_policy" value="Политика досрочного закрытия:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="closing_policy"
+											 value="#{model.closingPolicy}" required="false"
+									>
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{model.prematureActionPolicies}"
+											   var="policy" itemValue="#{policy}"
+											   itemLabel="#{policy}"/>
+							</p:selectOneMenu>
+						</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container50 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect">
+					<h3>Подписка и точки интереса</h3>
+
+					<dl class="name-value width-300">
+						<dt>
+							<p:outputLabel for="subscription_start" value="Дата начала подписки:"/>
+						</dt>
+						<dd>
+							<p:calendar id="subscription_start"
+										value="#{model.subscriptionStart}" required="true"
+										locale="ru"
+										pattern="#{dateUtils.DATETIME_FULL_PATTERN}" styleClass="width-250"/>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="subscription_end" value="Дата окончания подписки:"/>
+						</dt>
+						<dd>
+							<p:calendar id="subscription_end"
+										value="#{model.subscriptionEnd}" locale="ru"
+										pattern="#{dateUtils.DATETIME_FULL_PATTERN}" styleClass="width-250"/>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="subscription_cost" value="Стоимость подписки:"/>
+						</dt>
+						<dd>
+							<p:inputText id="subscription_cost"
+										 value="#{model.subscriptionCost}" required="true"
+										 styleClass="width-250" converter="moneyConverter">
+								<f:validateDoubleRange minimum="0.1"/>
+							</p:inputText>
+						</dd>
+					</dl>
+
+					<p:outputPanel styleClass="m-tex-al-right">
+						<p:commandButton value="Расчитать" action="#{model.calculatePeriod()}"
+										 update="#{update}"/>
+					</p:outputPanel>
+				</div>
+			</div>
+		</div>
+	</div>
+</ui:composition>

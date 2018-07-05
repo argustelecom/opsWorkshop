@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:boxenv="http://argustelecom.ru/box/env" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+            <p:tabView id="services_tab_view" orientation="left" styleClass="tabs-wide-area">
+                <f:loadBundle var="typePropertiesBundle" basename="TypePropertiesBundle"/>
+
+                <c:forEach items="#{services}" var="service">
+                    <p:tab title="#{service.name}">
+                        <div class="services-header m-pad-top0">
+                             <h:outputText styleClass="m-disp-inl-block m-pad-right10"
+                                           value="#{typePropertiesBundle['box.type.properties.service']}"/>
+                             <h:outputText styleClass="m-font-roboto-medium" value="#{service.name}"/> <h:outputText value="#{service.id}"/>
+                             <!--<boxenv:linkToCard value="#{service.getIdentifiable()}" text="#{service.id}"/>-->
+                        </div>
+
+                        <div class="services-body">
+                        <ui:include src="/views/env/type/GroupTypePropertyValueFrame.xhtml">
+                            <ui:param name="instance" value="#{service.getIdentifiable()}"/>
+                            <ui:param name="editableSection" value="false"/>
+                        </ui:include>
+                        </div>
+
+                        <ui:fragment rendered="#{not empty service.options}">
+                            <h:panelGroup styleClass="m-disp-block m-mar-bot10 no-group">
+                                <div class="services-header">
+                                    <h:outputText styleClass="services-name" value="#{typePropertiesBundle['box.type.properties.service.options']}"/>
+                                    <p:separator/>
+                                </div>
+                                <div class="services-body">
+                                    <ui:repeat value="#{service.options}" var="option">
+                                        <dl class="name-value width-250">
+                                            <dt>
+                                                <p:outputLabel for="tariff" value="#{option.name}"/>
+                                            </dt>
+                                            <dd>
+                                                <boxenv:linkToCard id="tariff" value="#{option.tariff.getIdentifiable()}" styleClass="ui-link" style="font-weight: normal; text-decoration: underline;"
+                                                                   text="#{typePropertiesBundle['box.type.properties.service.options.tariff']}: #{option.tariff.name}"/>
+                                            </dd>
+                                        </dl>
+                                    </ui:repeat>
+                                </div>
+                            </h:panelGroup>
+                        </ui:fragment>
+                    </p:tab>
+                </c:forEach>
+
+            </p:tabView>
+
+</ui:composition>

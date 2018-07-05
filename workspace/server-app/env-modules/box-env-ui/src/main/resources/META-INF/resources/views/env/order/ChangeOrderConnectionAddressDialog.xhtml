@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+	<h:form>
+		<f:event listener="#{changeOrderConnectionAddressDialogModel.preRender()}" type="preRenderComponent"/>
+
+		<o:importConstants type="ru.argustelecom.box.env.order.lifecycle.OrderLifecycle.Behaviors" var="behavior"/>
+
+	<p:dialog id="change_order_connection_address_dlg" header="#{orderBundle['box.order.address.provision.edit_dialog']}"
+			  width="700" styleClass="icon-creation"
+				  widgetVar="changeOrderConnectionAddressDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<ui:include src="/views/env/address/AddressInputFrame.xhtml">
+				<ui:param name="inputAddressValue" value="#{changeOrderConnectionAddressDialogModel.newBuilding}"/>
+				<ui:param name="inputAddressValueLabel" value="#{orderBundle['box.order.address']}"/>
+				<ui:param name="isInputAddressDisabled" value="#{behaviorUtils.isForbidden(changeOrderConnectionAddressDialogModel.order, behavior.connectionAddress)}"/>
+				<ui:param name="isInputAddressRequired" value="#{true}"/>
+				<ui:param name="logingTypeValue" value="#{changeOrderConnectionAddressDialogModel.newLodgingType}"/>
+				<ui:param name="logingTypeValueLabel" value="#{orderBundle['box.order.address.loging.type']}"/>
+				<ui:param name="isLogingTypeDisabled" value="#{behaviorUtils.isForbidden(changeOrderConnectionAddressDialogModel.order, behavior.connectionAddress)}"/>
+				<ui:param name="isLogingTypeRendered" value="#{true}"/>
+				<ui:param name="logingTypes" value="#{changeOrderConnectionAddressDialogModel.lodgingTypes}"/>
+				<ui:param name="logingValue" value="#{changeOrderConnectionAddressDialogModel.newLodging}"/>
+				<ui:param name="logingValueLabel" value="#{orderBundle['box.order.address.loging.number']}"/>
+				<ui:param name="isLogingValueDisabled" value="#{behaviorUtils.isForbidden(changeOrderConnectionAddressDialogModel.order, behavior.connectionAddress)}"/>
+				<ui:param name="isLogingValueRendered" value="#{true}"/>
+			</ui:include>
+
+			<dl class="name-value width-110">
+				<dt>
+				<p:outputLabel for="new_connection_address_comment" value="#{overallBundle['box.overall.desc']}:"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="new_connection_address_comment" value="#{changeOrderConnectionAddressDialogModel.order.connectionAddressComment}"
+								 maxlength="512" counter="connection_address_comment_counter"
+								 counterTemplate="#{overallBundle['box.overall.chars_left']}."
+									 disabled="#{behaviorUtils.isForbidden(changeOrderConnectionAddressDialogModel.order, behavior.connectionAddress)}"/>
+					<h:outputText id="connection_address_comment_counter" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+			<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="change_order_connection_address_dlg"
+								 process="@this" onclick="PF('changeOrderConnectionAddressDlgVar').hide()" resetValues="true"/>
+			<p:commandButton id="change_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('changeOrderConnectionAddressDlgVar').hide()}"
+								 action="#{changeOrderConnectionAddressDialogModel.changeConnectionAddress()}" process="change_order_connection_address_dlg"
+								 update="connection_address_info_form" resetValues="true"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+</ui:composition>

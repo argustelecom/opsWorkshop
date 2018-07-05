@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="contractBundle" basename="ContractBundle"/>
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+				<h:form id="contract_extension_attributes_form">
+
+					<o:importConstants type="ru.argustelecom.box.env.contract.lifecycle.ContractExtensionLifecycle.Behaviors" var="behavior"/>
+
+					<div class="columns fs14">
+
+						<div class="column m-vertical-al-middle m-pad-0">
+							<p:panelGrid id="contract_extension_id_grid" columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+								<i class="fs50 fa fa-list-alt"/>
+								<h:outputText value="#{overallBundle['box.overall.id']} #{contractExtensionAttributesFrameModel.contractExtension.id}" />
+							</p:panelGrid>
+						</div>
+						<div class="column width-100-percents">
+							<div class="columns">
+
+								<div class="column  width-10-percents">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel for="number" value="#{overallBundle['box.overall.number']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="number" value="#{contractExtensionAttributesFrameModel.contractExtension.documentNumber}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="type" value="#{overallBundle['box.overall.type']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="type" value="#{contractExtensionAttributesFrameModel.contractExtension.type.objectName}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="order" value="#{contractBundle['box.contract.order']}:"/>
+										</dt>
+										<dd>
+											<sysinf:editableSection disabled="#{!p:ifGranted('CRM_ContractExtensionEdit') or behaviorUtils.isForbidden(contractExtensionAttributesFrameModel.contractExtension, behavior.order)}">
+												<p:selectOneMenu id="order" value="#{contractExtensionAttributesFrameModel.contractExtension.order}"
+																 disabled="#{behaviorUtils.isForbidden(contractExtensionAttributesFrameModel.contractExtension, behavior.order)}">
+													<f:selectItem itemValue=""/>
+													<f:selectItems value="#{contractExtensionAttributesFrameModel.possibleOrders}" var="order"
+																   itemValue="#{order}" itemLabel="#{order.objectName}"/>
+												</p:selectOneMenu>
+											</sysinf:editableSection>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="state"
+														  value="#{contractExtensionAttributesFrameModel.contractExtension.state.name}"/>
+										</dd>
+									</dl>
+								</div>
+
+								<div class="column  width-10-percents">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel for="payment_condition" value="#{contractBundle['box.contract.payment_condition']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="payment_condition" value="#{contractExtensionAttributesFrameModel.contractExtension.contract.paymentCondition.name}"/>
+										</dd>
+									</dl>
+
+									<sysinf:editableSection disabled="#{!p:ifGranted('CRM_ContractExtensionEdit') or behaviorUtils.isForbidden(contractExtensionAttributesFrameModel.contractExtension, behavior.documentDate)}"
+                                                            saveLabel="#{overallBundle['box.overall.save']}"
+                                                            cancelLabel="#{overallBundle['box.overall.cancel']}">
+										<dl class="name-value width-150">
+											<dt>
+												<p:outputLabel for="valid_from"
+															   value="#{overallBundle['box.overall.valid_from']}:"/>
+											</dt>
+											<dd>
+												<p:calendar id="valid_from" value="#{contractExtensionAttributesFrameModel.contractExtension.documentDate}"
+															pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+															disabled="#{behaviorUtils.isForbidden(contractExtensionAttributesFrameModel.contractExtension, behavior.documentDate)}"
+															locale="#{languageBean.locale.language}"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+								</div>
+							</div>
+						</div>
+
+						<div class="column m-tex-al-right m-pad-0">
+							<div class="width-180">
+								<ui:include src="/views/env/lifecycle/LifecycleFrame.xhtml">
+									<ui:param name="businessObject" value="#{contractExtensionAttributesFrameModel.contractExtension}"/>
+									<ui:param name="phaseListener" value="#{contractLifecycleExtenderFm}" />
+									<ui:param name="update" value="contract_extension_attributes_form activity_form"/>
+									<ui:param name="styleClass" value="splitbutton-width-142 m-mar-bot10"/>
+									<ui:param name="readonly" value="#{!p:ifGranted('CRM_ContractExtensionStatusEdit')}" />
+								</ui:include>
+
+								<p:commandButton value="#{overallBundle['box.overall.delete']}"
+												 action="#{contractExtensionAttributesFrameModel.remove()}" styleClass="width-100-percents"
+												 rendered="#{!behaviorUtils.isForbidden(contractExtensionAttributesFrameModel.contractExtension, behavior.remove)}"
+												 disabled="#{!p:ifGranted('CRM_ContractExtensionDelete')}"/>
+
+								<ui:include src="/views/env/report/TemplateExportedFrame.xhtml">
+									<ui:param name="templates" value="#{contractExtensionAttributesFrameModel.contractExtension.type.templates}"/>
+									<ui:param name="exportFnc" value="#{contractExtensionAttributesFrameModel.exportFnc}"/>
+								</ui:include>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

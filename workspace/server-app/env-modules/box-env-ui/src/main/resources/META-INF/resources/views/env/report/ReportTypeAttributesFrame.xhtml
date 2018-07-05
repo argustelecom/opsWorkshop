@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:attribute name="updateEvent" value="#{currentType.changedEvent}"/>
+    <f:event listener="#{reportTypeAttributesFm.preRender(reportType, reportTypeGroup)}" type="preRenderComponent"/>
+
+    <div class="columns">
+        <div class="column m-vertical-al-middle m-pad-0">
+            <p:panelGrid id="contract_id_grid" columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+                <i class="fs60 icon-paper"/>
+                <h:outputText styleClass="fs16" value="#{overallBundle['box.overall.id']} #{reportTypeAttributesFm.reportType.id}" rendered="#{reportTypeAttributesFm.reportType ne null}"/>
+                <h:outputText styleClass="fs16" value="#{overallBundle['box.overall.id']} #{reportTypeAttributesFm.reportTypeGroup.id}" rendered="#{reportTypeAttributesFm.reportType eq null}"/>
+            </p:panelGrid>
+        </div>
+
+        <div class="column width-100-percents">
+            <div class="columns">
+                <ui:fragment rendered="#{reportTypeAttributesFm.reportType ne null}">
+                    <div class="column m-container50 m-responsive100">
+                        <sysinf:editableSection disabled="#{reportTypeAttributesFm.reportType.state == 'PUBLISHED'}"
+                                                saveLabel="#{overallBundle['box.overall.save']}"
+                                                cancelLabel="#{overallBundle['box.overall.cancel']}">
+                            <p:ajax event="save" process="@this" listener="#{reportTypeAttributesFm.updateReportType()}" update="#{update}"/>
+                            <dl class="name-value width-100">
+                                <dt>
+                                    <p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+                                </dt>
+                                <dd>
+                                    <p:inputText id="name" styleClass="m-mar-left-8" value="#{reportTypeAttributesFm.reportType.objectName}"/>
+                                </dd>
+
+                                <dt>
+                                    <p:outputLabel for="group" value="#{overallBundle['box.overall.group']}:"/>
+                                </dt>
+                                <dd>
+                                    <p:selectOneMenu id="group" value="#{reportTypeAttributesFm.reportTypeGroupName}" >
+                                        <f:selectItem itemValue="#{reportTypeAttributesFm.reportTypeGroupName}" itemLabel="#{reportTypeAttributesFm.reportTypeGroupName}"/>
+                                        <f:selectItems value="#{reportTypeAttributesFm.groupsNames}" var="group" itemLabel="#{group}" itemValue="#{group}"/>
+                                    </p:selectOneMenu>
+                                </dd>
+                            </dl>
+                        </sysinf:editableSection>
+
+                        <dl class="name-value width-100">
+                            <dt>
+                                <p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+                            </dt>
+                            <dd>
+                                <h:outputText id="state" styleClass="m-mar-left-8" value="#{reportTypeAttributesFm.reportType.state.name}"/>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="column m-container50 m-responsive100">
+                        <div class="m-pos-relative">
+                            <div class="hover-overlay-block">
+                                <sysinf:editableSection disabled="#{reportTypeAttributesFm.reportType.state == 'PUBLISHED'}"
+                                                        saveLabel="#{overallBundle['box.overall.save']}"
+                                                        cancelLabel="#{overallBundle['box.overall.cancel']}">
+                                    <p:ajax event="save" process="@this" listener="#{reportTypeAttributesFm.updateReportType()}" update="#{update}"/>
+                                    <dl class="name-value width-100">
+                                        <dt>
+                                            <p:outputLabel for="description" value="#{overallBundle['box.overall.desc']}:"/>
+                                        </dt>
+                                        <dd class="auto-height">
+                                    <p:inputTextarea id="description" value="#{reportTypeAttributesFm.reportType.description}"
+                                                     rows="3" counter="description_display" maxlength="256" 
+                                                     counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+                                            <h:outputText id="description_display" styleClass="fs12"/>
+                                        </dd>
+                                    </dl>
+                                </sysinf:editableSection>
+                            </div>
+                        </div>
+                    </div>
+                </ui:fragment>
+                <ui:fragment rendered="#{reportTypeAttributesFm.reportType eq null}">
+                    <div class="column m-container100 m-responsive100">
+                        <sysinf:editableSection disabled="#{reportTypeAttributesFm.reportType.state == 'PUBLISHED'}"
+                                                saveLabel="#{overallBundle['box.overall.save']}"
+                                                cancelLabel="#{overallBundle['box.overall.cancel']}">
+                            <p:ajax event="save" process="@this" listener="#{reportTypeAttributesFm.updateReportTypeGroup()}" update="#{update}"/>
+                            <dl class="name-value width-200">
+                                <dt>
+                                    <p:outputLabel for="group_name" value="#{overallBundle['box.overall.name']}:"/>
+                                </dt>
+                                <dd>
+                                    <p:inputText id="group_name" styleClass="m-mar-left-8" value="#{reportTypeAttributesFm.reportTypeGroup.objectName}"/>
+                                </dd>
+
+                                <dt>
+                                    <p:outputLabel for="group_keyword" value="#{overallBundle['box.overall.keyword']}:"/>
+                                </dt>
+                                <dd>
+                                    <p:inputText id="group_keyword" styleClass="m-mar-left-8" value="#{reportTypeAttributesFm.reportTypeGroup.keyword}"/>
+                                </dd>
+                            </dl>
+                        </sysinf:editableSection>
+                    </div>
+                </ui:fragment>
+            </div>
+        </div>
+
+        <ui:fragment>
+            <div class="column m-tex-al-right m-pad-0">
+                <div class="width-180">
+                    <p:commandButton value="#{overallBundle['box.overall.build']}" styleClass="m-mar-bot10 width-100-percents"
+                                     actionListener="#{reportTypeAttributesFm.onOpenBuildReport()}"
+                                     rendered="#{reportTypeAttributesFm.reportType ne null}">
+                        <f:setPropertyActionListener value="#{reportTypeAttributesFm.reportTypeBODto}"
+                                                     target="#{reportTypeExportDm.reportType}"/>
+                        <f:setPropertyActionListener value="#{reportTypeAttributesFm.reportParams}"
+                                                     target="#{reportTypeExportDm.reportParams}"/>
+                    </p:commandButton>
+
+                    <ui:include src="/views/env/lifecycle/LifecycleFrame.xhtml">
+                        <ui:param name="businessObject" value="#{reportTypeAttributesFm.reportTypeBODto.identifiable}"/>
+                        <ui:param name="update" value="#{update}"/>
+                        <ui:param name="styleClass" value="m-mar-bot10 width-100-percents"/>
+                        <ui:param name="readonly" value="#{!p:ifGranted('System_ReportTypesEdit')}"/>
+                    </ui:include>
+                </div>
+            </div>
+        </ui:fragment>
+    </div>
+
+</ui:composition>

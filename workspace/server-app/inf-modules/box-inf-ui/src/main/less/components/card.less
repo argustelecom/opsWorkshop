@@ -1,0 +1,63 @@
+/* card */
+
+
+/* заголовки */
+/* заголовок для Функционального Блока */
+.card-header {
+	display: inline-block;
+	margin: 0 10px 0 0;
+	font-family: 'robotoregular' !important;
+}
+
+/* иконка и заголовок в диалоге и в overlay panel  */
+.panel-header {
+	&.ui-dashboard-header {
+		margin: 0 0 20px;
+		padding: 10px 20px;
+		border-bottom: 1px solid #E0E0E0;
+
+		> i {
+			font-size: 28px;
+			vertical-align: middle;
+		}
+		.card-header {
+			font-size: 20px;
+		}
+	}
+}
+
+.overlay-panel-header {
+	&.ui-dashboard-header {
+		margin: 0 -10px;
+	}
+}
+
+/* background dummy */
+.empty-card {
+	position: relative;
+	background-color: #fff !important;
+
+	&:after {
+		position: absolute;
+		right: 0;
+		left: 0;
+		text-align: center;
+		display: block;
+		top: 50%;
+		margin-top: -32px;
+		content: '\f115';
+		font-size: 110px;
+		color: #e0e0e0;
+		font-family: 'FontAwesome';
+		opacity: 0.4;
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+		z-index: 1;
+	}
+	&.custom-empty-card {
+		&:after {
+			margin-top: -62px;
+		}
+	}
+}
+
+

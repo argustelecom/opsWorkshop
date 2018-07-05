@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+	<p:dialog id="createRequirementDlg"
+			  header="#{serviceBundle['box.nri.logical_resource_requirements.header']}" width="600"
+			  widgetVar="createRequirementDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation">
+		<h:form>
+			<dl class="name-value width-350">
+				<dt>
+					<p:outputLabel for="new_name"
+								   value="Имя:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_name"
+								 value="#{createRequirementDialogModel.newIpAddressBookingRequirement.name}"
+								 styleClass="width-100-percents"
+								 converter="#{stringTrimConverter}"
+								 maxlength="64" required="true" requiredMessage="Не запонено поле 'Название'."/>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен быть частным:"/>
+				</dt>
+				<dd>
+					<h:selectBooleanCheckbox
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldBePrivate}"/>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен быть статическим:"/>
+				</dt>
+				<dd>
+					<h:selectBooleanCheckbox
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldBeStatic}"/>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен иметь бронирования:"/>
+				</dt>
+				<dd>
+					<h:selectBooleanCheckbox
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldHaveBooking}"/>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен иметь статус:"/>
+				</dt>
+				<dd>
+					<h:selectOneMenu
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldHaveState}">
+						<f:selectItems value="#{IPAddressState.values()}" var="state" itemLabel="#{state.name}"/>
+					</h:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен иметь 'Метод передачи данных':"/>
+				</dt>
+				<dd>
+					<h:selectOneMenu
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldHaveTransferType}">
+						<f:selectItems value="#{createRequirementDialogModel.getTransferTypes()}" var="tt"
+									   itemLabel="#{tt.name}"/>
+					</h:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="Должен иметь 'Назначение':"/>
+				</dt>
+				<dd>
+					<h:selectOneMenu
+							value="#{createRequirementDialogModel.newIpAddressBookingRequirement.shouldHavePurpose}">
+						<f:selectItems value="#{createRequirementDialogModel.getPurposes()}" var="p"
+									   itemLabel="#{p.name}"/>
+					</h:selectOneMenu>
+				</dd>
+
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button"
+								 value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button"
+								 update="schema_booking_info_form" process="@this" resetValues="true"
+
+								 onclick="PF('createRequirementDlg').hide()"/>
+				<p:commandButton id="create_button"
+								 action="#{createRequirementDialogModel.create}"
+								 value="#{overallBundle['box.overall.create']}"
+								 update="schema_booking_info_form-schema_booking_info_panel"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('createRequirementDlg').hide()}"/>
+			</div>
+		</h:form>
+	</p:dialog>
+</ui:composition>

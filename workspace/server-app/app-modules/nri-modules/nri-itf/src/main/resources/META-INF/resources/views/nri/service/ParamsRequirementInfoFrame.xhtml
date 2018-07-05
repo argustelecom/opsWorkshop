@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<h:form id="required_item_info_form">
+		<f:event listener="#{paramsRequirementInfoFrameModel.preRender(requiredItem)}"
+				 type="preRenderComponent"/>
+		<p:outputPanel id="required_item_info_panel" styleClass="m-container100"
+					   rendered="#{serviceSpecificationVM.selectedRequiredItemDto ne null}">
+				<div class="m-container-indent">
+					<p:outputPanel id="info_panel" styleClass="m-card m-shadow-effect simple-fb">
+						<div class="ui-dashboard-header">
+							<p:outputLabel
+									styleClass="#{paramsRequirementInfoFrameModel.requiredItem.resourceSpecification.image}"/>
+							<h:outputText id="specification_name" styleClass="card-header"
+										  value="#{serviceSpecificationBundle['box.nri.service_specification.res_req_title']} #{paramsRequirementInfoFrameModel.requiredItem.name}"/>
+							<p:outputPanel id="managed_buttons" styleClass="m-fright">
+
+								<p:commandLink styleClass="m-mar-left10" process="@this"
+											   title="#{serviceSpecificationBundle['box.nri.service_specification.required_item_column_1']}"
+											   rendered="#{p:ifGranted('Nri_ServiceSpecificationEdit')}"
+											   update="required_item_info_form-params_requirement_table param_requirement_creation_dlg"
+											   action="#{paramsRequirementInfoFrameModel.cleanCreationParams}"
+											   oncomplete="PF('paramRequirementCreationDlg').show()">
+									<i class="fa fa-edit icon-btn"/>
+								</p:commandLink>
+
+								<p:commandLink styleClass="m-mar-left10"
+											   action="#{paramsRequirementInfoFrameModel.deleteSelected()}"
+											   title="#{serviceSpecificationBundle['box.nri.service_specification.param_req_val_delete_title']}"
+											   update="params_requirement_table"
+											   disabled="#{!p:ifGranted('Nri_ServiceSpecificationEdit') or paramsRequirementInfoFrameModel.selectedRequiredParameterValueDto == null or empty paramsRequirementInfoFrameModel.selectedRequiredParameterValueDto}">
+									<i class="fa fa-trash icon-btn"/>
+									<p:confirm
+											header="#{serviceSpecificationBundle['box.nri.service_specification.param_req_val_delete_title']}"
+											message="#{serviceSpecificationBundle['box.nri.service_specification.param_req_val_delete_message']}"/>
+								</p:commandLink>
+							</p:outputPanel>
+						</div>
+						<p:dataTable id="params_requirement_table"
+									 value="#{paramsRequirementInfoFrameModel.requiredItem.requiredParameters}"
+									 var="param_requirement" rowKey="#{param_requirement.id}"
+									 selection="#{paramsRequirementInfoFrameModel.selectedRequiredParameterValueDto}"
+									 scrollable="true" scrollHeight="90%"
+									 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+							<p:ajax event="rowSelectCheckbox" update="required_item_info_form-managed_buttons"/>
+							<p:ajax event="rowUnselectCheckbox" update="required_item_info_form-managed_buttons"/>
+							<p:ajax event="rowSelect" update="required_item_info_form-managed_buttons"/>
+							<p:ajax event="rowUnselect" update="required_item_info_form-managed_buttons"/>
+							<p:ajax event="toggleSelect" update="required_item_info_form-managed_buttons"/>
+
+							<p:column selectionMode="multiple" styleClass="width-16 m-tex-al-center"/>
+
+
+							<p:column
+									headerText="#{serviceSpecificationBundle['box.nri.service_specification.required_item_column_1']}">
+								<h:outputText id="param_spec_out"
+											  value="#{param_requirement.parameterSpecification.name}"/>
+							</p:column>
+
+							<p:column
+									headerText="#{serviceSpecificationBundle['box.nri.service_specification.required_item_column_2']}">
+								<h:outputText id="compare_action_out" value="#{param_requirement.compareAction.name}"/>
+							</p:column>
+
+							<p:column
+									headerText="#{serviceSpecificationBundle['box.nri.service_specification.required_item_column_3']}">
+								<ui:param name="dataType" value="#{param_requirement.parameterSpecification.dataType}"/>
+								<h:outputText id="value_out"
+											  value="#{param_requirement.value.equals('true') ? commonBundle['box.nri.common.true'] : param_requirement.value.equals('false') ? commonBundle['box.nri.common.false'] : param_requirement.value}"/>
+							</p:column>
+							<p:column styleClass="width-20">
+								<p:commandLink update="param_requirement_creation_dlg"
+											   oncomplete="PF('paramRequirementCreationDlg').show()"
+											   rendered="#{p:ifGranted('Nri_ServiceSpecificationEdit')}"
+											   title="">
+									<i class="icon-create fs20 m-bold-gray"/>
+									<f:setPropertyActionListener value="#{param_requirement}"
+																 target="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto}"/>
+								</p:commandLink>
+							</p:column>
+
+						</p:dataTable>
+
+					</p:outputPanel>
+			</div>
+			<script>
+                $(document).ready(function () {
+                    Argus.System.AutoHeight.compute('required_item_info_form-info_panel', 40);
+
+                });
+			</script>
+		</p:outputPanel>
+	</h:form>
+</ui:composition>

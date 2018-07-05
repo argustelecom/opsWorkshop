@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="transactionBundle" basename="TransactionBundle"/>
+	<h:form id="transaction_creation_form">
+		<p:dialog id="transaction_creation_dlg"
+				  header="#{transactionBundle['box.transaction.create_dialog']}"
+				  width="500" styleClass="icon-creation"
+				  widgetVar="transactionCreationVar" resizable="false" modal="true" closable="false">
+			<dl class="name-value width-110">
+				<dt>
+					<p:outputLabel for="personal_account"
+								   value="#{transactionBundle['box.transaction.personal_account']}:"/>
+				</dt>
+				<dd>
+					<h:outputText id="personal_account" value="#{transactionCreationDialogModel.personalAccount.number}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="amount" value="#{transactionBundle['box.transaction.amount']}:"/>
+				</dt>
+				<dd class="width-50-percents m-mar-right20">
+					<p:inputText id="amount" value="#{transactionCreationDialogModel.amount}" required="true"
+								 label="#{transactionBundle['box.transaction.amount']}">
+						<f:converter converterId="moneyConverter"/>
+						<f:validator validatorId="moneyValidator"/>
+					</p:inputText>
+				</dd>
+
+				<boxenv:money value="#{transactionCreationDialogModel.amount}" iconOnly="true" size="fs18" unicolour="true"/>
+			</dl>
+
+			<dl class="name-value width-110">
+				<dt>
+					<p:outputLabel for="reason_type"
+								   value="#{transactionBundle['box.transaction.reason.type']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="reason_type" value="#{transactionCreationDialogModel.reasonType}"
+									 required="true"
+									 label="#{transactionBundle['box.transaction.reason.type']}">
+						<f:selectItems value="#{transactionCreationDialogModel.reasonTypes}" var="reasonType" itemLabel="#{reasonType.name}"
+										itemValue="#{reasonType}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="reason_number" value="#{overallBundle['box.overall.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="reason_number" value="#{transactionCreationDialogModel.reasonNumber}" maxlength="32" 
+						required="true" label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="transaction_creation_dlg"
+								 process="@this" action="#{transactionCreationDialogModel.cancel()}"
+								 onclick="PF('transactionCreationVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('transactionCreationVar').hide()}"
+								 action="#{transactionCreationDialogModel.confirm()}" update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

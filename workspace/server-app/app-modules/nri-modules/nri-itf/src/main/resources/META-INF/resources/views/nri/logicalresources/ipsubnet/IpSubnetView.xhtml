@@ -1,0 +1,129 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{ipSubnetVM}"/>
+	<ui:param name="pageTitle" value="#{ipBundle['box.menu.nri.resources.logical.subnets.ipsubnets']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="subnet" value="#{ipSubnetViewState.ipSubnet}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="LogicalResourceBundle" var="ipBundle"/>
+		<f:loadBundle basename="NriIPBundle" var="ipAddrBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem value="#{ipBundle['box.menu.nri.resources.logical.subnets.ipsubnets']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+
+						<h:form id="ip_subnet_tree_form">
+							<div class="ui-dashboard-header">
+								<h:outputText value="#{ipBundle['box.nri.logicalresource.ipsubnet.tree_name']}"/>
+								<p:outputPanel id="tree_buttons_panel" styleClass="m-fright">
+									<p:commandLink id="create_ip_subnet_button" styleClass="m-mar-left10"
+												   update="ip_subnet_creation_dlg"
+												   oncomplete="PF('ipSubnetCreationDlg').show()"
+												   rendered="#{p:ifGranted('Nri_IpSubnetEdit')}"
+												   action="#{ipSubnetCreationDM.onCreationDialogOpen}">
+										<i class="fa fa-plus icon-btn"/>
+										<f:setPropertyActionListener
+												value="#{ipSubnetVM.createSubnet}"
+												target="#{ipSubnetCreationDM.onCreateButtonPressed}"/>
+									</p:commandLink>
+									<p:commandLink id="remove_button" styleClass="m-mar-left10"
+												   update="@form ip_subnet_info_form"
+
+												   action="#{ipSubnetVM.onDelete()}"
+												   rendered="#{ipSubnetVM.selectedNode ne null and p:ifGranted('Nri_IpSubnetEdit')}">
+										<i class="fa fa-trash icon-btn"/>
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<p:outputPanel id="ip_subnet_tree_panel" styleClass="fs14">
+								<p:tree id="ip_subnet_tree" value="#{ipSubnetVM.rootElement}" var="node"
+										styleClass="width-100-percents m-ov-auto tree-no-border" selectionMode="single"
+										selection="#{ipSubnetVM.selectedNode}" style="overflow-x: hidden"
+										propagateSelectionDown="false" propagateSelectionUp="false" dynamic="true">
+
+									<p:ajax event="select" listener="#{ipSubnetVM.onNodeSelect}"
+											update="ip_subnet_info_form" />
+									<p:ajax event="expand" listener="#{ipSubnetVM.onNodeExpand}"/>
+									<p:ajax event="collapse" listener="#{ipSubnetVM.onNodeCollapse}"/>
+
+									<p:treeNode>
+										<h:outputText value="#{node.name}" style="padding-left: 5px;"/>
+									</p:treeNode>
+
+								</p:tree>
+							</p:outputPanel>
+						</h:form>
+
+						<script>
+                            $(document).ready(function () {
+                                Argus.System.AutoHeight.compute('ip_subnet_tree_form', 40);
+                                Argus.System.AutoHeight.compute('ip_subnet_tree_form-ip_subnet_tree', 35);
+                            });
+						</script>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container65 m-responsive100">
+			<h:form id="ip_subnet_info_form">
+				<p:outputPanel id="ip_subnet_info_panel" styleClass="m-container100"
+							   rendered="#{ipSubnetVM.selectedSubnet ne null}">
+					<ui:include src="IpSubnetInfoFrame.xhtml">
+						<ui:param name="subnet" value="#{ipSubnetVM.selectedSubnet}"/>
+					</ui:include>
+				</p:outputPanel>
+			</h:form>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="IpSubnetCreationDialog.xhtml">
+			<ui:param name="update"
+					  value="ip_subnet_info_form ip_subnet_tree_form"/>
+		</ui:include>
+		<p:dialog id="ip_comfirm_deleting_dlg"
+				  header="#{ipBundle['box.nri.logicalresource.ipsubnet.header']}" width="420"
+				  widgetVar="ipSubnetDeletingDlg" resizable="false" modal="true" closable="false"
+				  styleClass="icon-creation">
+			<h:form id="ip_comfirm_subnet_deleting_form">
+				<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ipsubnet.deleting_message']}" styleClass="width-380"/>
+				<div class="dialog-footer-buttons">
+					<p:commandButton id="no_button" value="#{overallBundle['box.overall.no']}"
+									 update="ip_subnet_info_form ip_subnet_tree_form"
+									 oncomplete="PF('ipSubnetDeletingDlg').hide();
+								 Argus.System.AutoHeight.compute('ip_subnet_tree_form-ip_subnet_tree', 35);"
+									 action="#{ipSubnetVM.removeSubnet()}"/>
+					<p:commandButton id="yes_button"
+									 value="#{overallBundle['box.overall.yes']}"
+									 update="ip_subnet_info_form ip_subnet_tree_form"
+									 oncomplete="PF('ipSubnetDeletingDlg').hide();
+								 Argus.System.AutoHeight.compute('ip_subnet_tree_form-ip_subnet_tree', 35);"
+									 action="#{ipSubnetVM.removeSubnetAndAllChildren()}"/>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

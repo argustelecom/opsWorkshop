@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>ru.argustelecom.box</groupId>
+	<version>0.15.0</version>
+
+	<artifactId>workspace</artifactId>
+	<packaging>pom</packaging>
+	<name>workspace</name>
+
+	<modules>
+		<module>parent</module>
+		<module>server-conf</module>
+		<module>server-app</module>
+	</modules>
+
+    <properties>
+        <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
+    <profiles>
+        <!-- Включает анализатор исходников для модуля nri -->
+        <profile>
+            <id>nri-sonar-analyser</id>
+            <properties>
+                <sonar.skip>false</sonar.skip>
+            </properties>
+        </profile>
+    </profiles>
+</project>

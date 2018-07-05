@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+        <o:importConstants type="ru.argustelecom.box.env.billing.bill.BillParamsDto.BillContext" var="contextType"/>
+        <o:importConstants type="ru.argustelecom.box.env.billing.bill.model.GroupingMethod"/>
+        <f:loadBundle basename="ContractBundle" var="contractBundle"/>
+        <f:loadBundle basename="PersonalAccountBundle" var="personalAccountBundle"/>
+	    <f:loadBundle basename="DocumentTypeBundle" var="documentTypeBundle"/>
+
+		<f:event type="preRenderComponent" listener="#{billParamsFm.preRender(billParams)}"/>
+        <div class="m-container100 m-responsive100">
+
+            <dl class="name-value width-150 name-value-tooltip">
+
+                <dt>
+                    <p:outputLabel for="bill_type" value="#{billBundle['box.bill.type']}:"/>
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="bill_type" value="#{billParamsFm.billParams.billType}"
+                                     required="true" label="#{billBundle['box.bill.type']}">
+                        <p:ajax process="@this" update="customer_type customer_name period_type bill_template
+                         grouping_object_list description"/>
+                        <f:selectItem itemValue=""/>
+                        <f:selectItems value="#{billParamsFm.possibleBillTypes}" var="billType"
+									   itemLabel="#{billType.name}" itemValue="#{billType}"/>
+                    </p:selectOneMenu>
+                </dd>
+
+				<dt>
+					<p:outputLabel for="description" value="#{billBundle['box.bill.description']}:"/>
+				</dt>
+				<dd>
+					<h:outputText id="description" value="#{billParamsFm.billParams.billType.description}"/>
+				</dd>
+
+                <ui:fragment rendered="#{billParamsFm.billParams.currentContext ne contextType.MASS}">
+                    <dt>
+                        <p:outputLabel for="bill_number" value="#{overallBundle['box.overall.number']}:"/>
+                    </dt>
+                    <dd>
+                        <p:inputText id="bill_number" value="#{billParamsFm.billParams.billNumber}"
+                                     placeholder="#{overallBundle['box.overall.numeration.hint']}"/>
+                    </dd>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{billParamsFm.billParams.currentContext eq contextType.LIST}">
+                    <dt>
+                        <p:outputLabel for="customer_type" value="#{billBundle['box.bill.customer.type']}:"/>
+                    </dt>
+                    <dd>
+                        <p:selectOneMenu id="customer_type" value="#{billParamsFm.billParams.customerType}"
+                                         required="true" label="#{billBundle['box.bill.customer.type']}"
+										 disabled="#{billParamsFm.billParams.billType eq null}">
+                            <p:ajax process="@this" update="customer_name"/>
+                            <f:selectItem itemValue=""/>
+                            <f:selectItems value="#{billParamsFm.possibleCustomerTypes}" var="customerType"
+                                           itemLabel="#{customerType.name}" itemValue="#{customerType}"/>
+                        </p:selectOneMenu>
+                    </dd>
+
+                    <dt>
+                        <p:outputLabel for="customer_name" value="#{billBundle['box.bill.customer']}:"/>
+                    </dt>
+                    <dd>
+                        <p:autoComplete id="customer_name" value="#{billParamsFm.billParams.customer}" var="customer"
+                                        itemValue="#{customer}" itemLabel="#{customer.name}" required="true"
+                                        disabled="#{billParamsFm.billParams.customerType eq null}"
+                                        completeMethod="#{billParamsFm.completeCustomer}"
+                                        label="#{billBundle['box.bill.customer']}">
+                            <p:ajax event="itemSelect" update="grouping_object_list"/>
+                        </p:autoComplete>
+                    </dd>
+
+                </ui:fragment>
+
+
+
+                <ui:fragment rendered="#{billParamsFm.billParams.currentContext eq contextType.CONTRACT or billParamsFm.billParams.currentContext eq contextType.PERSONAL_ACCOUNT}">
+                    <dt>
+                        <p:outputLabel for="customer" value="#{billBundle['box.bill.customer']}:"/>
+                    </dt>
+                    <dd>
+                        <h:outputText id="customer" value="#{billParamsFm.billParams.customer.name}" styleClass="text-redonly"/>
+                    </dd>
+                </ui:fragment>
+
+
+				<ui:fragment rendered="#{billParamsFm.billParams.currentContext eq contextType.CONTRACT or billParamsFm.billParams.currentContext eq contextType.PERSONAL_ACCOUNT}">
+					<dt>
+						<p:outputLabel for="grouping_object" value="#{billBundle['box.bill.grouping_object']}:"/>
+					</dt>
+					<dd>
+						<h:outputText id="grouping_object" value="#{billParamsFm.billParams.groupingMethod eq GroupingMethod.CONTRACT ?
+										    contractBundle['box.contract'] : personalAccountBundle['box.personal_account']} :
+										    #{billParamsFm.billParams.groupingMethod eq GroupingMethod.CONTRACT ? billParamsFm.billParams.groupingObject.getIdentifiable().documentNumber
+										   : billParamsFm.billParams.groupingObject.getIdentifiable().number}"
+                                     />
+					</dd>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{billParamsFm.billParams.currentContext eq contextType.LIST}">
+					<dt>
+                        <p:outputLabel for="grouping_object_list" value="#{billBundle['box.bill.grouping_object']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="grouping_object_list" value="#{billParamsFm.billParams.groupingObject}"
+                                         required="true" label="#{billBundle['box.bill.grouping_object']}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{billParamsFm.possibleGroupingObjects}" var="groupObject"
+										   itemLabel="#{billParamsFm.billParams.groupingMethod eq GroupingMethod.CONTRACT ?
+										    contractBundle['box.contract'] : personalAccountBundle['box.personal_account']} :
+										   #{billParamsFm.billParams.groupingMethod eq GroupingMethod.CONTRACT ? groupObject.getIdentifiable().documentNumber
+										   : groupObject.getIdentifiable().number}" itemValue="#{groupObject}"/>
+						</p:selectOneMenu>
+					</dd>
+				</ui:fragment>
+
+				<dt>
+					<p:outputLabel for="period" value="#{billBundle['box.bill.period']}:"/>
+				</dt>
+				<dd>
+					<h:panelGroup id="period_type" styleClass="columns width-100-percents">
+						<h:outputText value="#{billParamsFm.billParams.billType.billPeriodType.name}"
+									  styleClass="column m-no-padding width-110" rendered="#{billParamsFm.billParams.billType ne null}"/>
+						<div  class="column m-no-padding m-pad-left-3 width-320">
+							<boxenv:inputPeriod id="period" value="#{billParamsFm.billParams.billPeriod}" required="true" styleClass="period"
+												periodUnit="#{billParamsFm.billParams.billType.periodUnit}"/></div>
+						<div  class="column m-pad-left-0">
+							<h:outputText id="ptttp" class="icon-help_outline tooltip-help" position="top"
+										  title="#{documentTypeBundle['box.doc.bill.type.period.type.hint']}"/>
+							<p:tooltip id="ttp1" for="ptttp"/>
+						</div>
+					</h:panelGroup>
+				</dd>
+
+                <dt>
+                    <p:outputLabel for="bill_date" value="#{billBundle['box.bill.date']}:"/>
+                </dt>
+                <dd>
+                    <p:calendar id="bill_date" value="#{billParamsFm.billParams.billDate}" required="true" locale="#{languageBean.locale.language}"
+                                pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-93-percents"
+                                label="#{billBundle['box.bill.date']}"/>
+                    <h:outputText id="pcttdb" class="icon-help_outline tooltip-help" position="top"
+                                  title="#{documentTypeBundle['box.doc.type.bill.date.hint']}"/>
+                    <p:tooltip id="ttp7" for="pcttdb"/>
+                </dd>
+
+				<ui:fragment rendered="#{billParamsFm.billParams.templateRendered}">
+                	<dt>
+                    	<p:outputLabel for="bill_template" value="#{billBundle['box.bill.template']}:"/>
+                	</dt>
+                	<dd>
+                    	<p:selectOneMenu id="bill_template" value="#{billParamsFm.billParams.template}">
+                        	<f:selectItem itemValue=""/>
+                        	<f:selectItems value="#{billParamsFm.billParams.billType.reportModelTemplates}" var="template"
+                                       	itemLabel="#{template.fileName}" itemValue="#{template}"/>
+                    	</p:selectOneMenu>
+                	</dd>
+                </ui:fragment>
+            </dl>
+        </div>
+</ui:composition>

@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+                <f:loadBundle basename="ContactBundle" var="contactBundle"/>
+
+                <o:importConstants type="ru.argustelecom.box.env.contact.ContactCategory" var="category"/>
+                <f:event listener="#{contactEditFM.preRender(party)}" type="preRenderComponent"/>
+ 
+				<p:outputPanel id="contact_edit_frame_panel">
+                <ui:repeat value="#{contactEditFM.contacts}" var="contact">
+                    <p:outputPanel id="contact_panel" styleClass="contact-edit-list m-disp-table width-100-percents fs14">
+
+                        <p:outputPanel class="m-disp-table-cell width-30">
+                            <i class="#{contact.category.icon} fs20 m-mar-right10" title="#{contact.type.objectName}"/>
+                        </p:outputPanel>
+
+						<p:outputPanel id="contact_value_panel">
+							<p:outputPanel class="m-disp-table-cell width-400" rendered="#{contact.category.equals(category.PHONE)}">
+								<boxenv:inputPhoneNumber id="contact_phone_value" value="#{contact.value}" styleClass="width-230"
+                                                         preferred="#{languageBean.locale.language}"/>
+								<o:validateAllOrNone components="contact_type contact_phone_value-contact_phone_value"
+                                                     message="#{contactBundle['box.contact.block.validation.msg']}"/>
+							</p:outputPanel>
+
+							<p:outputPanel class="m-disp-table-cell width-400" rendered="#{!contact.category.equals(category.PHONE)}">
+								<p:inputText id="contact_other_value" value="#{contact.value}"
+                                             label="#{contactBundle['box.contact.block.hint']}"
+											 placeholder="#{contactBundle['box.contact.block.hint']}" styleClass="width-215">
+									<p:ajax event="blur" process="@this" update="contact_value_panel"/>
+								</p:inputText>
+								<o:validateAllOrNone components="contact_type contact_other_value"
+													 message="#{contactBundle['box.contact.block.validation.msg']}"/>
+							</p:outputPanel>
+						</p:outputPanel>
+
+                        <p:outputPanel class="m-disp-table-cell width-200">
+                            <p:selectOneMenu id="contact_type" value="#{contact.type}"
+                                             var="ct" style="width:190px">
+
+                                <p:ajax process="@this"/>
+
+                                <f:selectItem itemLabel="#{contactBundle['box.contact.type.empty']}"
+                                              itemValue=""/>
+                                <f:selectItems value="#{contactEditFM.getContactTypes(contact)}" var="contactType"
+                                               itemValue="#{contactType}" itemLabel="#{contactType.objectName}"/>
+
+                                <p:column>
+                                    <i class="#{ct.category.icon} fs14"/>
+                                </p:column>
+
+                                <p:column>
+                                    #{ct.objectName}
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:outputPanel>
+
+                        <p:outputPanel id="contact_note_panel" class="m-disp-table-cell width-30-percents">
+                            <p:inputTextarea rows="1" id="contact_note" maxlength="64" styleClass="width-80-percents"
+                                             placeholder="#{contactBundle['box.contact.note']}"
+                                         value="#{contact.comment}" title="#{contactBundle['box.contact.note']}">
+                                         <p:ajax event="blur" process="@this" update="contact_note_panel"/>
+                            </p:inputTextarea>
+                        </p:outputPanel>
+
+                        <p:outputPanel class="m-disp-table-cell m-tex-al-right width-20">
+                            <p:commandLink styleClass="m-mar-right10 arisen-link" action="#{contactEditFM.removeContact(contact)}"
+                            			   update="@form-contact_edit_frame_panel" immediate="true">
+                                <i  id="remove_contact" class="icon-clear fs20"
+                                    title="#{overallBundle['box.overall.delete']}"/>
+                            </p:commandLink>
+                        </p:outputPanel>
+
+                        <p:outputPanel class="m-disp-table-cell m-tex-al-right width-20">
+                            <p:commandLink styleClass="m-mar-right10 arisen-link" action="#{contactEditFM.createContact(contact)}"
+                            			   update="@form-contact_edit_frame_panel" immediate="true">
+                                <i  id="add_contact" class="icon-add fs20" title="#{overallBundle['box.overall.add']}"/>
+                            </p:commandLink>
+                        </p:outputPanel>
+
+                    </p:outputPanel>
+                </ui:repeat>
+                </p:outputPanel>
+
+</ui:composition>

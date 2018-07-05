@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <o:importConstants type="ru.argustelecom.box.env.billing.privilege.PrivilegeTypeRef" var="privilegeType"/>
+
+    <h:form id="privilege_remove_form">
+        <p:dialog id="privilege_remove_dlg" header="#{privilegeRemoveDm.dialogHeader}" width="600"
+                  styleClass="#{privilegeRemoveDm.privilege.type eq privilegeType.DISCOUNT ? 'icon-trash-dialog' : 'icon-stop-dialog'}"
+                  widgetVar="privilegeRemoveDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+
+            <p:outputPanel id="message_panel">
+                <ui:fragment rendered="#{privilegeRemoveDm.privilege.type eq privilegeType.TRUST_PERIOD}">
+                    <div class="message message-bg-info message-info message-icon message-icon-info">
+                        <p>#{privilegeBundle['box.privilege.trust_period.delete_dialog.details']}</p>
+                    </div>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{privilegeRemoveDm.privilege.type eq privilegeType.DISCOUNT}">
+                    <ui:fragment rendered="#{privilegeRemoveDm.discountIntersectionWithOpenInvoice}">
+                        <div class="message message-bg-warn message-warn message-icon message-icon-warn">
+                            <p>#{privilegeBundle['box.privilege.discount.delete_dialog.details']}</p>
+                        </div>
+                    </ui:fragment>
+                </ui:fragment>
+            </p:outputPanel>
+
+            <dl class="name-value width-170">
+                <dt>
+                    <h:outputText value="#{privilegeRemoveDm.privilege.type eq privilegeType.DISCOUNT ? privilegeRemoveDm.privilege.objectName : privilegeRemoveDm.privilege.type.name}"/>
+                </dt>
+                <dd>
+                    <p:outputLabel for="valid_from" value="#{overallBundle['box.overall.valid_from']}:"/>
+                    <h:outputText id="valid_from" value="#{privilegeRemoveDm.privilege.validFrom}">
+                        <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                    </h:outputText>
+
+                    <p:outputLabel for="valid_to" value="#{overallBundle['box.overall.valid_to.short']}" styleClass="m-pad-left20"/>
+                    <h:outputText id="valid_to" value="#{privilegeRemoveDm.privilege.validTo}">
+                        <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                    </h:outputText>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" process="@this" action="#{privilegeRemoveDm.cancel()}"
+                                 onclick="PF('privilegeRemoveDlgVar').hide();"/>
+                <p:commandButton id="remove_button" value="#{privilegeRemoveDm.privilege.type eq privilegeType.DISCOUNT ? overallBundle['box.overall.delete'] : overallBundle['box.overall.close']}"
+                                 disabled="#{privilegeEditDm.disableCreation}" action="#{privilegeRemoveDm.submit()}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('privilegeRemoveDlgVar').hide()}"
+                                 process="privilege_remove_dlg" update="#{update}"/>
+            </div>
+
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

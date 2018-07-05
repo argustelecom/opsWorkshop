@@ -1,0 +1,58 @@
+/* ui-fieldset */
+
+.ui-fieldset-legend {
+	width: 32%;
+	color: #546e7a;
+	background-color: #f5f5f5;
+	padding: 10px 72px 10px 10px !important;
+	border: solid 1px #e0e0e0;
+	font: 14px 'robotoregular';
+
+	&.ui-state-hover {
+		background-color: #e6e6e6;
+	}
+
+	.ui-icon-minusthick {
+		background-image: url("#{resource['modena-layout/images/minus-sign-gray.svg']}");
+	}
+	.ui-icon-plusthick {
+		background-image: url("#{resource['modena-layout/images/plus-sign-gray.svg']}");
+	}
+}
+
+.ui-fieldset-content {
+	position: relative;
+	display: block;
+}
+
+.type-content-outer {
+	position: absolute;
+	top: -40px;
+	left: 32%;
+}
+
+.type-content-inner {
+	.ui-commandlink {
+		.icon-btn {
+			display: inline-block;
+			font-size: 16px !important;
+
+			&.icon-create, &.icon-playlist_add {
+				vertical-align: top !important;
+			}
+			&.icon-playlist_add {
+				font-size: 19px !important;
+			}
+		}
+	}
+}
+
+.type-content {
+	overflow: auto;
+	margin-right: -16px;
+	padding-right: 16px;
+}
+
+.hide-toolbar {
+	z-index: -100;
+}

@@ -1,0 +1,15 @@
+.close-code-tree.ui-scrollpanel-native {
+	overflow-x: visible
+}
+
+.close-code-tree {
+	height: 128px
+}
+
+.close-code-tree .ui-tree .ui-tree-container {
+	overflow: visible
+}
+
+.close-code-tree>div {
+	border: none
+}

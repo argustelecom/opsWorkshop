@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+>
+
+	<f:loadBundle basename="MenuBundle" var="menuBundle"/>
+	<f:loadBundle basename="SecurityRoleBundle" var="securityRoleBundle"/>
+
+	<!-- Личный кабинет Argus Box -->
+	<p:menuitem icon="icon-settings" value="#{menuBundle['box.menu.pa.settings']}" url="/views/pa/PersonalAreaSettingsView.xhtml" rendered="#{p:ifGranted('Customer')}"/>
+	<p:menuitem icon="icon-settings" value="#{menuBundle['box.menu.pa.home_measurement']}" url="/views/homemeasurement/HomeMeasurementView.xhtml" rendered="#{p:ifGranted('Customer')}"/>
+
+	<!-- Основное приложение Argus Box -->
+	<p:menuitem value="#{menuBundle['box.menu.dir.map']}" url="/views/env/directory/DirectoryDashboardView.xhtml" rendered="#{p:ifGranted('User')}"/>
+
+	<p:submenu label="#{menuBundle['box.menu.report']}" rendered="#{p:ifGranted('System_ReportTypesEdit')}">
+		<p:menuitem value="#{menuBundle['box.menu.report.editor']}" url="/views/env/report/ReportTypeEditorView.xhtml" rendered="#{p:ifGranted('System_ReportTypesEdit')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.report.map']}" url="/views/env/report/ReportTypeMapView.xhtml" rendered="#{p:ifGranted('System_ReportTypesEdit')}"/>
+	</p:submenu>
+
+    <p:submenu label="#{menuBundle['box.menu.service']}" rendered="#{p:ifAnyGranted('System_ServiceView,System_ServiceEdit,System_ServiceTypeParamEdit')}">
+        <p:menuitem value="#{menuBundle['box.menu.service.service']}" url="/views/env/services/ServiceListView.xhtml" rendered="#{p:ifGranted('System_ServiceView')}"/>
+    </p:submenu>
+
+	<p:submenu label="#{menuBundle['box.menu.product_management']}" rendered="#{p:ifAnyGranted('ProductManagment_CatalogEdit,ProductManagment_PriceListView,ProductManagment_TariffView')}">
+		<p:menuitem value="#{menuBundle['box.menu.product_management.product_spec']}" url="/views/env/product/ProductTypeDirectoryView.xhtml" rendered="#{p:ifGranted('ProductManagment_CatalogEdit')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.product_management.price_list']}" url="/views/env/pricing/PricelistJournalView.xhtml" rendered="#{p:ifGranted('ProductManagment_PriceListView')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.tariffs']}" url="/views/env/telephony/tariff/TariffListView.xhtml" rendered="#{p:ifGranted('ProductManagment_TariffView')}"/>
+	</p:submenu>
+
+	<p:submenu label="#{menuBundle['box.menu.contractor']}" rendered="#{p:ifAnyGranted('PartnerManagement_SuppliersView,PartnerManagement_SuppliersEdit')}">
+		<p:menuitem value="#{menuBundle['box.menu.contractor.supplier']}" url="/views/env/contractor/SupplierListView.xhtml" rendered="#{p:ifGranted('PartnerManagement_SuppliersView')}"/>
+	</p:submenu>
+
+	<p:submenu label="#{menuBundle['box.menu.crm']}" rendered="#{p:ifAnyGranted('CRM_CustomerView,CRM_OrderView,CRM_ContractView')}">
+		<p:menuitem value="#{menuBundle['box.menu.crm.customer']}" url="/views/env/customer/CustomerListView.xhtml" rendered="#{p:ifGranted('CRM_CustomerView')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.crm.order']}" url="/views/env/order/OrderListView.xhtml" rendered="#{p:ifGranted('CRM_OrderView')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.crm.contract']}" url="/views/env/contract/ContractListView.xhtml" rendered="#{p:ifGranted('CRM_ContractView')}"/>
+	</p:submenu>
+
+	<p:submenu label="#{menuBundle['box.menu.billing']}" rendered="#{p:ifAnyGranted('Billing_SaldoImportView,Billing_SaldoExportView,Billing_ChargeJobView')}">
+		<p:submenu label="#{menuBundle['box.menu.unprocessed_calls']}" rendered="#{p:ifAnyGranted('Mediation_UnsuitableCallsView,Billing_RatedCallsWithoutInvoiceView')}">
+			<p:menuitem value="#{menuBundle['box.menu.unprocessed_calls.converter']}" url="/views/env/mediation/ConvertationListView.xhtml" rendered="#{p:ifGranted('Mediation_UnsuitableCallsView')}"/>
+			<p:menuitem value="#{menuBundle['box.menu.unprocessed_calls.analysis']}" url="/views/env/mediation/AnalysisListView.xhtml" rendered="#{p:ifGranted('Mediation_UnsuitableCallsView')}"/>
+			<p:menuitem value="#{menuBundle['box.menu.unprocessed_calls.identification']}" url="/views/env/mediation/IdentificationListView.xhtml" rendered="#{p:ifGranted('Mediation_UnsuitableCallsView')}"/>
+			<p:menuitem value="#{menuBundle['box.menu.unprocessed_calls.charging']}" url="/views/env/mediation/ChargingListView.xhtml" rendered="#{p:ifGranted('Mediation_UnsuitableCallsView')}"/>
+			<p:menuitem value="#{menuBundle['box.menu.unprocessed_calls.unsuitable']}" url="/views/env/billing/invoice/unsuitable/UnsuitableRatedOutgoingCallsListView.xhtml"
+						rendered="#{p:ifGranted('Billing_RatedCallsWithoutInvoiceView')}"/>
+		</p:submenu>
+		<p:menuitem value="#{menuBundle['box.menu.billing.saldo.import']}" url="/views/env/saldo/import/RegisterImportView.xhtml" rendered="#{p:ifGranted('Billing_SaldoImportView')}"/>
+		<!--TODO-->
+		<!--<p:menuitem value="#{menuBundle['box.menu.billing.saldo.export']}" url="/views/env/saldo/export/SaldoExportView.xhtml" rendered="#{p:ifGranted('Billing_SaldoExportView')}"/>-->
+		<p:menuitem value="#{menuBundle['box.menu.billing.bill']}" url="/views/env/billing/bill/BillListView.xhtml" rendered="#{p:ifGranted('Billing_BillView')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.billing.charge_job']}" url="/views/env/billing/invoice/chargejob/ChargeJobListView.xhtml" rendered="#{p:ifGranted('Billing_ChargeJobView')}"/>
+	</p:submenu>
+
+	<p:submenu label="#{menuBundle['box.menu.nri']}" rendered="#{menuContentFrameModel.isNriAvailable() and p:ifGranted('User')}">
+		<p:menuitem value="#{menuBundle['box.menu.nri.resources.map']}" url="/views/nri/map/NetworkMapView.xhtml"
+					rendered="#{p:ifGranted('Nri_NetworkMapView')}"/>
+		<p:menuitem value="#{menuBundle['box.menu.nri.resources']}" url="/views/nri/resources/ResourcesView.xhtml"
+					rendered="#{p:ifGranted('Nri_ResourceSearchView')}"/>
+		<p:submenu label="#{menuBundle['box.menu.nri.resources.logical']}" rendered="#{menuContentFrameModel.isNriAvailable()}">
+			<p:submenu label="#{menuBundle['box.menu.nri.resources.logical.pn']}">
+				<p:menuitem value="#{menuBundle['box.menu.nri.resources.logical.pn.pools']}" url="/views/nri/logicalresources/PhoneNumberPoolView.xhtml"
+							rendered="#{p:ifGranted('Nri_PhoneNumberPoolView')}"/>
+				<p:menuitem value="#{menuBundle['box.menu.nri.resources.logical.pn.list']}" url="/views/nri/logicalresources/PhoneNumbersView.xhtml"
+							rendered="#{p:ifGranted('Nri_PhoneNumberListEdit') or p:ifGranted('Nri_PhoneNumberPoolView')}"/>
+			</p:submenu>
+			<p:submenu label="#{menuBundle['box.menu.nri.resources.logical.ip-addresses']}" rendered="#{p:ifGranted('Nri_IpAddressesView')}">
+				<p:menuitem value="#{menuBundle['box.menu.nri.resources.logical.ip.ip-subnets']}"
+							url="/views/nri/logicalresources/ipsubnet/IpSubnetView.xhtml"
+							rendered="#{p:ifGranted('Nri_IpAddressesView')}"/>
+				<p:menuitem value="#{menuBundle['box.menu.nri.resources.logical.ip.ip-lists']}"
+							url="/views/nri/logicalresources/ipaddress/IpAddressesView.xhtml"
+							rendered="#{p:ifGranted('Nri_IpAddressesView')}"/>
+			</p:submenu>
+		</p:submenu>
+    </p:submenu>
+
+</ui:composition>

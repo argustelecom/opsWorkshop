@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<h:form id="charge_job_creation_form">
+
+		<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+
+		<o:importConstants type="ru.argustelecom.box.env.billing.invoice.chargejob.ChargeJobCreationDialogModel.Step"
+						   var="step"/>
+		<p:remoteCommand name="onCancel" action="#{chargeJobCreationDm.onCancel}" autoRun="false"
+						 oncomplete="PF('chargeJobCreationDlgVar').hide(); PF('chargeJobWizardVar').loadStep('#{step.SELECTION_CAUSE.id}', true)"
+						 update="#{update}" immediate="true"/>
+
+		<p:dialog id="charge_job_creation_dlg" header="#{chargeJobBundle['box.charge_job.wizard.header']}"
+				  widgetVar="chargeJobCreationDlgVar" width="800" resizable="true" modal="true" closable="true"
+				  dynamic="true" styleClass="icon-creation" closeOnEscape="true" onHide="onCancel()">
+
+
+			<p:wizard id="charge_job_creation_wizard" widgetVar="chargeJobWizardVar"
+					  flowListener="#{chargeJobCreationDm.handleImportFlow}"
+					  step="#{step.SELECTION_CAUSE.id}"
+					  showNavBar="false"
+					  styleClass="dialog-nav-wizard">
+
+				<p:tab id="#{step.SELECTION_CAUSE.id}" title="#{chargeJobBundle['box.charge_job.wizard.step.selection_cause']}">
+					<ui:include src="ChargeJobSelectionCauseFrame.xhtml">
+						<ui:param name="update" value="charge_job_creation_form"/>
+					</ui:include>
+				</p:tab>
+
+				<p:tab id="#{step.INPUT_PARAMS.id}" title="#{chargeJobBundle['box.charge_job.wizard.step.input_params']}">
+					<ui:include src="ChargeJobInputParamsFrame.xhtml"/>
+				</p:tab>
+
+				<p:tab id="#{step.FINISHED.id}" title="#{chargeJobBundle['box.charge_job.wizard.step.finished']}">
+					<ui:include src="ChargeJobFinishedFrame.xhtml">
+						<ui:param name="update" value="#{update}"/>
+					</ui:include>
+				</p:tab>
+
+			</p:wizard>
+		</p:dialog>
+	</h:form>
+</ui:composition>

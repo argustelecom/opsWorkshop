@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="phone_number_pool_creation_dlg"
+			  header="#{phoneNumberPoolBundle['box.nri.phone.pool.creation']}"
+			  widgetVar="phoneNumberPoolCreationDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation" style="max-width: 75%; min-width: 50%;">
+		<h:form id="phone_number_pool_creation_form">
+			<dl class="name-value">
+				<dt>
+					<p:outputLabel for="new_name"
+								   value="#{phoneNumberPoolBundle['box.nri.phone.pool.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_name" value="#{phoneNumberPoolCreationDM.newPool.name}"
+								 style="width: 100%;"
+								 validator="#{phoneNumberPoolCreationDM.nameValidator}"
+								 maxlength="128" required="true"
+
+								 requiredMessage="#{commonBundle['box.nri.common.pool_req']}"/>
+				</dd>
+				<dt>
+					<p:outputLabel value="#{phoneNumberPoolBundle['box.nri.phone.pool.comment']}"/>
+				</dt>
+				<dd style="min-height: min-content">
+					<p:inputTextarea id="pool_comment" value="#{phoneNumberPoolCreationDM.newPool.comment}"
+									 rows="3" maxlength="256"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 update="phone_number_pool_creation_dlg" process="@this"
+								 styleClass="m-blue-text-button" onclick="PF('phoneNumberPoolCreationDlg').hide()"/>
+				<p:commandButton id="create_button"
+								 value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('phoneNumberPoolCreationDlg').hide();
+								 Argus.System.AutoHeight.compute('phone_number_pool_tree_form-phone_number_pool_tree', 35);};"
+								 actionListener="#{phoneNumberPoolCreationDM.create()}"
+								 update="-phone_number_pool_info_form
+									 -phone_number_info_form
+									 phone_number_pool_tree_form-phone_number_pool_tree_panel
+									 phone_number_pool_tree_form-tree_buttons_panel"/>
+			</div>
+		</h:form>
+	</p:dialog>
+</ui:composition>

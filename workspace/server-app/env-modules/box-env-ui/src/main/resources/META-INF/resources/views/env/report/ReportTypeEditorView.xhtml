@@ -1,0 +1,103 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena">
+
+    <ui:param name="viewModel" value="#{reportTypeEditorVm}"/>
+    <ui:param name="pageTitle" value="#{reportBundle['box.report.editor']}"/>
+
+    <ui:define name="metadata">
+        <f:metadata>
+			<f:viewParam name="reportType" value="#{currentType.value}" required="false" />
+            <f:viewParam name="activeTab" value="#{reportTypeMetadataFs.activeTab}" required="false"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css" />
+        <h:outputStylesheet name="inf/styles/box-functional-block.css" />
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <f:loadBundle basename="OverallBundle" var="overallBundle" />
+        <f:loadBundle basename="TypeBundle" var="typeBundle" />
+        <f:loadBundle basename="ReportBundle" var="reportBundle" />
+
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{reportBundle['box.report.editor']}"/>
+    </ui:define>
+
+    <ui:define name="body">
+        <div class="m-container30 m-responsive100">
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect simple-fb">
+                        <ui:include src="ReportTypeTreeFrame.xhtml">
+							<ui:param name="reportTypeDto" value="#{reportTypeEditorVm.reportTypeDto}"/>
+						</ui:include>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-container70 m-responsive100">
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect">
+                        <h:form id="report_attributes_form">
+                            <ui:fragment>
+                                <ui:include src="ReportTypeAttributesFrame.xhtml">
+									<ui:param name="reportType" value="#{reportTypeTreeFm.reportTypeBODto}"/>
+									<ui:param name="reportTypeGroup" value="#{reportTypeTreeFm.reportTypeGroupDto}"/>
+									<ui:param name="update" value="report_type_tree_form report_attributes_form report_type_tab_view"/>
+								</ui:include>
+                            </ui:fragment>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <ui:fragment rendered="#{reportTypeTreeFm.reportTypeBODto ne null}">
+                        <ui:include src="ReportTypeMetadataFrame.xhtml"/>
+                    </ui:fragment>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="ReportTypeGroupCreationDialog.xhtml">
+        	<ui:param name="update" value="report_type_tree_form report_attributes_form report_type_tab_view"/>
+		</ui:include>
+
+        <ui:include src="ReportTypeCreationDialog.xhtml">
+	    	<ui:param name="update" value="report_type_tree_form report_attributes_form report_type_tab_view"/>
+		</ui:include>
+
+        <ui:include src="ReportBandCreationDialog.xhtml">
+            <ui:param name="update" value="report_type_tab_view-report_band_tree_form-report_band_tree report_type_tab_view-query_metadata_form"/>
+        </ui:include>
+
+        <ui:include src="ReportTypeExportDialog.xhtml"/>
+
+        <ui:include src="/views/env/type/TypePropertyAddDialog.xhtml">
+            <ui:param name="updatedElements" value="report_type_tab_view-type_property_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/type/TypePropertyEditDialog.xhtml">
+            <ui:param name="updatedElements" value="report_type_tab_view-type_property_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/type/TypePropertyGroupEditDialog.xhtml">
+            <ui:param name="updatedElements" value="report_type_tab_view-type_property_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/report/ReportTemplatesEditDialog.xhtml">
+            <ui:param name="update" value="report_type_tab_view-doctype_templates_form" />
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

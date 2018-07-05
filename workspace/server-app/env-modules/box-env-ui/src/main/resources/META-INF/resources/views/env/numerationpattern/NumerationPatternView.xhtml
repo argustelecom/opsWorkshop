@@ -1,0 +1,73 @@
+<ui:composition template="/views/inf/page/View.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf"
+	xmlns:pm="http://primefaces.org/modena"
+    xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<ui:param name="viewModel" value="#{numerationPatternVm}" />
+	<ui:param name="pageTitle" value="#{numerationBundle['box.numeration.plural']}" />
+	<ui:param name="resultFormId" value="num_pattern_tab_view-sequence_search_result_form"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="activeTab" value="#{numerationPatternVs.activeTab}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css" />
+		<f:loadBundle var="numerationBundle" basename="NumerationBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+
+		<f:loadBundle basename="NumerationBundle" var="numerationBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}"
+			url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem  value="#{numerationBundle['box.numeration.plural']}" />
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-shadow-effect m-hei-auto-on-mobile">
+					<p:tabView id="num_pattern_tab_view" activeIndex="#{numerationPatternVs.activeTab}">
+						<p:ajax event="tabChange" listener="#{numerationPatternVs.onTabChange}"/>
+						<p:tab title="#{numerationBundle['box.numeration.pattern.plural']}">
+							<ui:include src="NumerationPatternFrame.xhtml"/>
+						</p:tab>
+						<p:tab title="#{numerationBundle['box.numeration.sequence.plural']}">
+							<ui:include src="NumerationSequenceListFrame.xhtml" >
+								<ui:param name="container_id" value="num_pattern_tab_view" />
+								<ui:param name="lazyDm" value="#{numerationSequenceFrameModel.lazyDm}" />
+								<ui:param name="viewModel" value="#{numerationSequenceFrameModel}"/>
+								<ui:param name="viewState" value="#{numerationSequenceFilterFs}"/>
+								<ui:param name="page" value="NumerationPatternListView.xhtml"/>
+								<ui:param name="filterFormId" value="sequence_search_form"/>
+								<ui:param name="resultFormId" value="#{resultFormId}"/>
+								<ui:param name="update" value="#{container_id}-#{filterFormId}"/>
+							</ui:include>
+						</p:tab>
+					</p:tabView>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="NumerationSequenceEditDialog.xhtml" >
+			<ui:param name="update" value="num_pattern_tab_view-sequence_search_result_form" />
+		</ui:include>
+
+	</ui:define>
+
+</ui:composition>

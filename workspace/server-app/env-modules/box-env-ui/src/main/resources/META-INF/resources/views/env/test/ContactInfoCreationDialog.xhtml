@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui">
+	
+	<f:loadBundle basename="ContactBundle" var="contactBundle"/>
+	<f:loadBundle basename="PersonnelBundle" var="personnelBundle"/>
+
+	<h:form>
+	
+	<!--  -->
+		<p:dialog id="contact_creation_dlg" header="#{personnelBundle['box.personnel.contact.person.create_dialog']}" width="500"
+				  widgetVar="contactCreationDlg" resizable="false" modal="true" closable="false" dynamic="true" styleClass="icon-creation">
+			<dl class="name-value width-160">
+				<dt>
+					<p:outputLabel for="first_name" value="#{personnelBundle['box.personnel.name.first']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="first_name" value="#{contactInfoCreationDlgModel.firstName}" maxlength="64"
+								 required="true" label="#{personnelBundle['box.personnel.name.first']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="contact_type" value="#{contactBundle['box.contact.contact_type_label']}:"/>
+				</dt>
+				<dd class="width-89-percents">
+					<p:selectOneMenu id="contact_type" value="#{contactInfoCreationDlgModel.contactType}">
+
+						<p:ajax process="@this" update="contact"/>
+
+						<f:selectItem itemLabel="#{contactBundle['box.contact.type.empty']}" itemValue=""/>
+						<f:selectItems value="#{contactInfoCreationDlgModel.contactTypes}" var="contactType"
+									   itemValue="#{contactType}" itemLabel="#{contactType.objectName}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="contact" value="#{contactBundle['box.contact.contact_label']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="contact" value="#{contactInfoCreationDlgModel.contactValue}" required="#{contactInfoCreationDlgModel.contactType != null}"/>
+				</dd>
+				
+				<dt>
+					<p:outputLabel for="contact_description" value="#{contactBundle['box.contact.description_label']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="contact_description" value="#{contactInfoCreationDlgModel.contactDescription}" />
+				</dd>
+
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_personnel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="contact_creation_dlg"
+								 process="@this" action="#{contactInfoCreationDlgModel.clean()}" onclick="PF('contactCreationDlg').hide()"/>
+				<p:commandButton id="create_contact_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('contactCreationDlg').hide()}"
+								 action="#{contactInfoCreationDlgModel.createContactPerson}" process="contact_creation_dlg"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

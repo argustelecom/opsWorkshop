@@ -1,0 +1,89 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:o="http://omnifaces.org/ui">
+
+    <ui:param name="viewModel" value="#{serviceCardVm}"/>
+    <ui:param name="pageTitle" value="#{serviceBundle['box.service']}"/>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="service" value="#{currentService.value}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <f:loadBundle var="serviceBundle" basename="ServiceBundle"/>
+
+        <h:outputStylesheet name="box-env/styles/box-env.css"/>
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{serviceBundle['box.service.plural']}" url="/views/env/services/ServiceListView.xhtml"/>
+        <p:menuitem value="#{currentService.value.type.name} #{currentService.value.id}"/>
+    </ui:define>
+
+    <ui:define name="body">
+
+        <ui:include src="ServiceAtributesFrame.xhtml"/>
+
+        <div class="m-container100 m-responsive100">
+            <div class="m-container50 m-responsive100">
+                <ui:include src="ServicePropertiesFrame.xhtml">
+                	<ui:param name="service" value="#{currentService.value}" />
+                	<ui:param name="options" value="#{serviceCardVm.options}" />
+                	<ui:param name="isEditableSection" value="true" />
+                </ui:include>
+				<ui:fragment rendered="#{moduleCheckingBean.isNriIntegrationEnabled() and p:ifGranted('System_ResourceEdit')}">
+                	<ui:include src="/views/nri/integration/ServiceResourcesInfoFrame.xhtml">
+                        <ui:param name="service" value="#{currentService.value}"/>
+                        <ui:param name="restrictions" value="#{serviceCardVm.restrictions}"/>
+                    </ui:include>
+                </ui:fragment>
+
+				<ui:include src="ServiceOptionsFrame.xhtml">
+					<ui:param name="service" value="#{currentService.value}" />
+					<ui:param name="update" value="services_form"/>
+				</ui:include>
+
+                <ui:fragment rendered="#{!(moduleCheckingBean.isNriIntegrationEnabled() and p:ifGranted('System_ResourceEdit'))}">
+                    <ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+                        <ui:param name="headerIcon" value="fa fa-list-ol" />
+                        <ui:param name="headerText" value="#{serviceBundle['box.service.resources']}" />
+                        <ui:param name="permission" value="#{permissionRepository.getPermission('System_ResourceEdit')}" />
+                    </ui:include>
+                </ui:fragment>
+            </div>
+
+            <div class="m-container50 m-responsive100">
+                <ui:include src="/views/env/customer/CustomerAttributesBlockFrame.xhtml">
+                    <ui:param name="customer" value="#{serviceCardVm.customer}"/>
+                    <ui:param name="containerClass" value="m-container100"/>
+                </ui:include>
+
+                <ui:include src="/views/env/address/AddressFrame.xhtml">
+                    <ui:param name="location" value="#{serviceCardVm.location}"/>
+                    <ui:param name="readOnly" value="true"/>
+                    <ui:param name="containerClass" value="m-container100"/>
+                </ui:include>
+
+				<ui:fragment rendered="#{serviceCardVm.subscription != null}">
+                    <ui:include src="/views/env/billing/subscription/SubscriptionFrame.xhtml">
+                        <ui:param name="subscription" value="#{serviceCardVm.subscription}"/>
+                    </ui:include>
+                </ui:fragment>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="ServiceOptionEditDialog.xhtml">
+			<ui:param name="update" value="service_options_form services_form"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

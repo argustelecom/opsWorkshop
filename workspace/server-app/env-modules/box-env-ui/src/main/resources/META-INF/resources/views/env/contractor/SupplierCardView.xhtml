@@ -1,0 +1,69 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{supplierCardVm}"/>
+	<ui:param name="pageTitle" value="#{contractorBundle['box.contractor.supplier']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="supplier" value="#{currentPartyRole.value}" required="#{!facesContext.postback}"
+						 requiredMessage="Supplier param required"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+		<f:loadBundle var="contractorBundle" basename="ContractorBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{contractorBundle['box.contractor.plural']}"
+					url="/views/env/contractor/SupplierListView.xhtml"
+					disabled="#{!p:ifGranted('PartnerManagement_SuppliersView')}"/>
+		<p:menuitem value="#{supplierCardVm.currentPartyRole.value.objectName}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="SupplierAttributesFrame.xhtml">
+			<ui:param name="supplier" value="#{supplierCardVs.supplierDto}"/>
+		</ui:include>
+
+		<div class="m-container50 m-responsive100">
+			<ui:include src="/views/env/customer/PartyPropertiesFrame.xhtml">
+				<ui:param name="readonly" value="#{!p:ifGranted('PartnerManagement_SuppliersEdit')}"/>
+				<ui:param name="instance" value="#{supplierCardVm.currentPartyRole.value.party.typeInstance}"/>
+			</ui:include>
+		</div>
+
+		<div class="m-container50 m-responsive100">
+			<ui:include src="/views/env/contact/ContactFunctionalBlock.xhtml">
+				<ui:param name="party" value="#{supplierCardVm.currentPartyRole.value.party}"/>
+				<ui:param name="canEdit"
+						  value="#{p:ifGranted('PartnerManagement_SuppliersEdit') and !employeeCardVM.employee.fired}"/>
+				<ui:param name="containerClass" value="m-container100"/>
+			</ui:include>
+
+			<ui:include src="/views/env/contactperson/ContactPersonsFrame.xhtml">
+				<ui:param name="canEdit" value="true"/>
+				<ui:param name="containerClass" value="m-container100"/>
+				<ui:param name="company" value="#{supplierCardVm.currentPartyRole.value.party}"/>
+			</ui:include>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/contact/ContactCreationDialog.xhtml">
+			<ui:param name="update" value="contacts_form"/>
+		</ui:include>
+
+
+		<ui:include src="/views/env/contactperson/ContactPersonEditDialog.xhtml">
+			<ui:param name="update" value="contact_persons_form"/>
+		</ui:include>
+
+		<ui:include src="/views/env/contactperson/ContactPersonViewDialog.xhtml"/>
+	</ui:define>
+</ui:composition>

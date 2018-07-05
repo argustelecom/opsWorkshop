@@ -1,0 +1,135 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{customerCardViewModel}" />
+	<ui:param name="pageTitle" value="#{customerBundle['box.customer']}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="customer" value="#{currentPartyRole.value}" required="#{!facesContext.postback}"
+						 requiredMessage="Pricelist param required" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+		<f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{customerBundle['box.customer.plural']}" url="/views/env/customer/CustomerListView.xhtml" disabled="#{!p:ifGranted('CRM_CustomerView')}"/>
+		<p:menuitem value="#{customerCardViewModel.customer.objectName}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="CustomerAttributesFrame.xhtml"/>
+		<div class="m-container100 m-responsive100">
+
+			<o:importConstants type="ru.argustelecom.box.env.billing.bill.BillParamsDto.BillContext" var="contextType"/>
+
+			<ui:include src="/views/env/billing/bill/BillsFunctionalBlock.xhtml">
+				<ui:param name="currentContext" value="#{contextType.CUSTOMER}"/>
+				<ui:param name="customer" value="#{customerCardViewModel.customer}"/>
+				<ui:param name="containerClass" value="m-container100"/>
+				<ui:param name="canCreateBill" value="false"/>
+			</ui:include>
+
+			<div class="m-container50 m-responsive100">
+				<ui:include src="PartyPropertiesFrame.xhtml">
+					<ui:param name="readonly" value="#{!p:ifGranted('CRM_CustomerEdit')}" />
+					<ui:param name="instance" value="#{customerCardViewModel.customer.party.typeInstance}"/>
+				</ui:include>
+
+				<ui:include src="CustomerPropertiesFrame.xhtml"/>
+
+                <ui:include src="/views/env/billing/privilege/PrivilegeFrame.xhtml">
+                    <ui:param name="privilegeSubject" value="#{customerCardViewModel.privilegeSubject}"/>
+                </ui:include>
+
+                <ui:fragment rendered="#{sysinf:isEntity(customerCardViewModel.customer.party, 'Company')}">
+					<ui:include src="/views/env/contactperson/ContactPersonsFrame.xhtml">
+						<ui:param name="canEdit" value="true"/>
+						<ui:param name="containerClass" value="m-container100"/>
+						<ui:param name="company" value="#{customerCardViewModel.customer.party}"/>
+					</ui:include>
+				</ui:fragment>
+
+				<ui:include src="/views/env/contact/ContactFunctionalBlock.xhtml">
+					<ui:param name="party" value="#{customerCardViewModel.customer.party}"/>
+					<ui:param name="canEdit" value="#{p:ifGranted('System_EmployeeEdit') and !employeeCardVM.employee.fired}"/>
+					<ui:param name="containerClass" value="m-container100" />
+				</ui:include>
+
+				<ui:fragment rendered="#{!customerAttributesFrameModel.individual}">
+					<ui:include src="CustomerManagersFrame.xhtml">
+						<ui:param name="containerClass" value="m-container100" />
+					</ui:include>
+				</ui:fragment>
+			</div>
+
+			<div class="m-container50 m-responsive100">
+				<ui:include src="/views/env/billing/account/PersonalAccountsFrame.xhtml">
+					<ui:param name="personalAccounts" value="#{customerCardViewModel.customer.personalAccounts}"/>
+				</ui:include>
+
+				<ui:include src="PersonalAreaFrame.xhtml">
+					<ui:param name="customer" value="#{customerCardViewModel.customer}"/>
+				</ui:include>
+
+				<ui:include src="CustomerContractsFrame.xhtml">
+					<ui:param name="contracts" value="#{customerCardViewModel.contracts}"/>
+				</ui:include>
+
+				<ui:include src="CustomerOrdersFrame.xhtml">
+					<ui:param name="customer" value="#{customerCardViewModel.customer}" />
+					<ui:param name="orders" value="#{customerCardViewModel.orders}"/>
+				</ui:include>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/contact/ContactCreationDialog.xhtml">
+			<ui:param name="update" value="contacts_form"/>
+		</ui:include>
+
+		<ui:include src="AddEmployeeDialog.xhtml">
+			<ui:param name="update" value="managers_form-employees_table"/>
+		</ui:include>
+
+		<ui:include src="/views/env/contract/ContractCreationDialog.xhtml">
+			<ui:param name="update" value="customer_contracts_form"/>
+			<ui:param name="party" value="#{employeeCardVM.employee.party}" />
+		</ui:include>
+
+		<ui:include src="/views/env/order/OrderCreationDialog.xhtml"/>
+
+		<ui:fragment rendered="#{sysinf:isEntity(customerCardViewModel.customer.party, 'Company')}">
+			<ui:include src="/views/env/contactperson/ContactPersonEditDialog.xhtml">
+				<ui:param name="update" value="contact_persons_form"/>
+			</ui:include>
+
+			<ui:include src="/views/env/contactperson/ContactPersonViewDialog.xhtml"/>
+		</ui:fragment>
+
+		<ui:include src="/views/env/billing/privilege/PrivilegeEditDialog.xhtml">
+			<ui:param name="update" value="privilege_form"/>
+		</ui:include>
+
+		<ui:include src="/views/env/billing/privilege/ExtendPrivilegeDialog.xhtml">
+			<ui:param name="update" value="privilege_form"/>
+		</ui:include>
+
+		<ui:include src="/views/env/billing/privilege/PrivilegeRemoveDialog.xhtml">
+			<ui:param name="update" value="privilege_form"/>
+		</ui:include>
+
+	</ui:define>
+
+</ui:composition>

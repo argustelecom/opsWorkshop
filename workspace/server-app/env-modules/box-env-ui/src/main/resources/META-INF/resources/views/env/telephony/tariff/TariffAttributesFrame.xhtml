@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+				<h:form id="tariff_attributes_form">
+					<f:event listener="#{tariffAttrFm.preRender(tariff)}" type="preRenderComponent"/>
+					<div class="columns">
+
+						<div class="column m-pad-0">
+							<p:panelGrid columns="1" layout="grid"
+										 styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+								<i class="fs50 icon-library_books"/>
+								<h:outputText styleClass="fs16"
+											  value="#{overallBundle['box.overall.id']} #{tariffAttrFm.tariff.id}"/>
+							</p:panelGrid>
+						</div>
+
+						<o:importConstants
+								type="ru.argustelecom.box.env.telephony.tariff.lifecycle.AbstractTariffLifecycle.Behaviors"
+								var="behavior"/>
+
+						<div class="columns ">
+							<div class="column m-container35 m-responsive30">
+								<sysinf:editableSection
+										disabled="#{(sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+												or (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))
+												or behaviorUtils.isForbidden(currentTariff.value, behavior.editAttributes)}"
+										saveLabel="#{overallBundle['box.overall.save']}"
+										cancelLabel="#{overallBundle['box.overall.cancel']}">
+									<p:ajax event="save" listener="#{tariffAttrFm.saveName()}"
+											update="tariff_attributes_form"/>
+									<dl class="name-value width-100">
+										<dt>
+											<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+										</dt>
+										<dd>
+											<p:inputText id="name"
+														 value="#{tariffAttrFm.tariff.name}"
+														 maxlength="128" required="true"
+														 label="#{overallBundle['box.overall.name']}"/>
+										</dd>
+									</dl>
+								</sysinf:editableSection>
+								<dl class="name-value width-100 m-pad-top8">
+									<dt>
+										<p:outputLabel for="type" value="#{overallBundle['box.overall.type']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="type" styleClass="m-mar-left-8"
+													  value="#{tariffAttrFm.tariff.type}"/>
+									</dd>
+
+									<ui:fragment rendered="#{tariffAttrFm.tariff.customer ne null}">
+										<dt>
+											<p:outputLabel for="customer" value="#{tariffBundle['box.telephony.tariff.customer']}:"/>
+										</dt>
+										<dd>
+											<boxenv:linkToCard id="customer" styleClass="m-mar-left-8"
+															   value="#{tariffAttrFm.tariff.customer.getIdentifiable()}"
+															   text="#{tariffAttrFm.tariff.customer.objectName}"/>
+										</dd>
+									</ui:fragment>
+
+									<dt>
+										<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="state" styleClass="m-mar-left-8"
+													  value="#{tariffAttrFm.tariff.state}"/>
+									</dd>
+								</dl>
+							</div>
+							<div class="column m-container65 m-responsive50">
+								<sysinf:editableSection
+										disabled="#{(sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+													or (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))
+													or behaviorUtils.isForbidden(currentTariff.value, behavior.editAttributes)}"
+										saveLabel="#{overallBundle['box.overall.save']}"
+										cancelLabel="#{overallBundle['box.overall.cancel']}">
+									<p:ajax event="save" listener="#{tariffAttrFm.save()}"
+											update="tariff_attributes_form"/>
+									<dl class="name-value width-180">
+										<dt>
+											<p:outputLabel for="valid_from"
+														   value="#{overallBundle['box.overall.valid_from']}:"/>
+										</dt>
+										<dd class="nv-composit">
+											<p:calendar id="valid_from"
+														value="#{tariffAttrFm.tariff.validFrom}"
+														pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+														locale="#{languageBean.locale.language}"
+														required="true"
+														label="#{overallBundle['box.overall.valid_from']}"/>
+
+											<p:outputLabel for="valid_to"
+														   value="#{overallBundle['box.overall.valid_to.short']}:"
+														   styleClass="m-mar-left10"/>
+											<p:calendar id="valid_to"
+														value="#{tariffAttrFm.tariff.validTo}"
+														pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+														locale="#{languageBean.locale.language}"
+														mindate="#{tariffAttrFm.tariff.validFrom}"
+														label="#{overallBundle['box.overall.valid_to.short']}"/>
+										</dd>
+									</dl>
+								</sysinf:editableSection>
+
+								<sysinf:editableSection
+										disabled="#{(sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+													or (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))
+													or behaviorUtils.isForbidden(currentTariff.value, behavior.editAttributes)}"
+										saveLabel="#{overallBundle['box.overall.save']}"
+										cancelLabel="#{overallBundle['box.overall.cancel']}">
+									<p:ajax event="save" listener="#{tariffAttrFm.save()}"
+											update="tariff_attributes_form"/>
+									<o:importConstants
+											type="ru.argustelecom.box.env.billing.provision.model.RoundingPolicy"/>
+
+									<dl class="name-value width-180">
+										<dt>
+											<p:outputLabel for="rated_unit"
+														   value="#{tariffBundle['box.telephony.tariff.rated_unit']}:"/>
+										</dt>
+										<dd>
+											<p:selectOneMenu id="rated_unit" value="#{tariffAttrFm.tariff.ratedUnit}"
+															 process="@this">
+												<f:selectItems value="#{tariffAttrFm.getPossiblePeriodValues()}"
+															   var="period" itemLabel="#{period.name}"
+															   itemValue="#{period}"/>
+											</p:selectOneMenu>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="round_policy"
+														   value="#{tariffBundle['box.telephony.tariff.round_policy']}:"/>
+										</dt>
+										<dd>
+											<p:selectOneMenu id="round_policy"
+															 value="#{tariffAttrFm.tariff.roundingPolicy}"
+															 process="@this">
+												<f:selectItems value="#{RoundingPolicy.values()}"
+															   var="roundPolicy" itemLabel="#{roundPolicy.name}"
+															   itemValue="#{roundPolicy}"/>
+											</p:selectOneMenu>
+										</dd>
+									</dl>
+								</sysinf:editableSection>
+							</div>
+						</div>
+
+						<div class="column m-tex-al-right m-pad-0">
+							<div class="width-180">
+								<ui:include src="/views/env/lifecycle/LifecycleFrame.xhtml">
+									<ui:param name="businessObject" value="#{currentTariff.value}"/>
+									<ui:param name="styleClass" value="splitbutton-width-142 m-mar-bot10"/>
+									<ui:param name="update" value="tariff_attributes_form activity_form tariff_entry_history_form tariff_entry_form"/>
+									<ui:param name="readonly" value="#{(sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffStatusEdit'))
+																		or (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffStatusEdit'))}"/>
+								</ui:include>
+
+								<o:importFunctions type="ru.argustelecom.box.env.telephony.tariff.model.TariffState" var="state"/>
+
+								<p:commandButton value="#{overallBundle['box.overall.delete']}"
+												 styleClass="width-100-percents" action="#{tariffCardVm.removeTariff()}"
+												 rendered="#{!behaviorUtils.isForbidden(currentTariff.value, behavior.remove)}"
+												 disabled="#{   (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffDelete'))
+												 			 or (sysinf:isEntity(tariffAttrFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffDelete'))}"/>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

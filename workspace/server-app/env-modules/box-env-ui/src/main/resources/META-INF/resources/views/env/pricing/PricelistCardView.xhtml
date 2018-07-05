@@ -1,0 +1,85 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{pricelistCardViewModel}" />
+	<ui:param name="pageTitle" value="#{pricelistBundle['box.pricelist']}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="pricelist" value="#{currentPricelist.value}" required="#{!facesContext.postback}"
+						 requiredMessage="Pricelist param required" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css" />
+		<f:loadBundle var="pricelistBundle" basename="PricelistBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{pricelistBundle['box.pricelist.plural']}" url="/views/env/pricing/PricelistJournalView.xhtml"
+					disabled="#{!p:ifGranted('ProductManagment_PriceListView')}"/>
+		<p:menuitem value="#{pricelistCardViewModel.pricelist.objectName}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="PricelistAttributesFrame.xhtml">
+			<ui:param name="pricelist" value="#{pricelistCardViewState.pricelistDto}"/>
+		</ui:include>
+
+			<div class="m-container100 m-responsive100">
+				<ui:include src="PricelistProductOfferingsFrame.xhtml">
+					<ui:param name="pricelist" value="#{pricelistCardViewModel.pricelist}"/>
+				</ui:include>
+			</div>
+
+			<div class="m-container100 m-responsive100">
+				<div class="m-container50 m-responsive100">
+					<ui:fragment rendered="#{sysinf:isEntity(pricelistCardViewModel.pricelist, 'CustomPricelist')}">
+						<ui:include src="/views/env/customer/CustomerAttributesBlockFrame.xhtml">
+							<ui:param name="customer" value="#{sysinf:castEntity(pricelistCardViewModel.pricelist, 'CustomPricelist').customer}"/>
+						</ui:include>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{sysinf:isEntity(pricelistCardViewModel.pricelist, 'CommonPricelist')}">
+						<ui:include src="SegmentsFrame.xhtml">
+							<ui:param name="pricelist" value="#{pricelistCardViewModel.pricelist}"/>
+						</ui:include>
+					</ui:fragment>
+				</div>
+
+				<div class="m-container50 m-responsive100">
+					<div class="m-container-indent">
+						<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+							<ui:include src="/views/env/activity/ActivityFrame.xhtml">
+								<ui:param name="contextObject" value="#{pricelistCardViewModel.pricelist}"/>
+							</ui:include>
+						</div>
+					</div>
+				</div>
+			</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/activity/comment/CommentEditDialog.xhtml"/>
+
+		<ui:include src="PricelistAddSegmentDialog.xhtml">
+			<ui:param name="update" value="pricelist_segments_form"/>
+		</ui:include>
+
+		<ui:include src="ProductOfferingEditDialog.xhtml">
+			<ui:param name="update" value="pricelist_products_form"/>
+		</ui:include>
+
+		<ui:include src="/views/env/lifecycle/LifecycleRoutingDialog.xhtml">
+			<ui:param name="update" value="pricelist_attributes_form activity_form pricelist_products_form pricelist_segments_form"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

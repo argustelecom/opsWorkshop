@@ -1,0 +1,171 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{directoryDashboardViewModel}"/>
+	<ui:param name="pageTitle" value="#{overallBundle['box.overall.dir.dashboard']}" />
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+	</ui:define>
+
+	<ui:define name="body">
+
+		<f:loadBundle basename="DirectoryDashboardBundle" var="directoryDashboardBundle"/>
+
+		<div class="m-container50 m-responsive100">
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+						 style="min-height: 430px;">
+						<h:form>
+
+							<div class="ui-dashboard-header">
+								<i class="fa fa-diamond fs28"/>
+								<h:outputText class="fs20 card-header" value="#{directoryDashboardBundle['box.dir.dashboard.general']}"/>
+							</div>
+
+							<p:treeTable styleClass="directory-dashboard-panel"
+										 value="#{directoryDashboardViewModel.overallDirectoryNode}"
+										 var="overallDirectory"
+										 emptyMessage="#{overallBundle['box.overall.module_not_connected']}"
+										 scrollable="true" scrollHeight="430">
+								<p:column
+										rendered="#{empty overallDirectory.permissions or p:ifAnyGranted(overallDirectory.permissions)}">
+									<h:link value=" #{overallDirectory.name}" outcome="#{overallDirectory.path}"
+											disabled="#{empty overallDirectory.path}"/>
+								</p:column>
+							</p:treeTable>
+
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+						 style="min-height: 165px;">
+						<h:form>
+
+							<div class="ui-dashboard-header">
+								<i class="fa fa-plug fs28"/>
+								<h:outputText class="fs20" value="#{directoryDashboardBundle['box.dir.dashboard.nri']}"/>
+							</div>
+
+							<p:treeTable styleClass="directory-dashboard-panel"
+										 value="#{directoryDashboardViewModel.nriDirectoryNode}"
+										 var="nriDirectory"
+										 emptyMessage="#{overallBundle['box.overall.module_not_connected']}"
+										 scrollable="true" scrollHeight="165">
+								<p:column
+										rendered="#{empty nriDirectory.permissions or p:ifAnyGranted(nriDirectory.permissions)}">
+									<h:link value=" #{nriDirectory.name}" outcome="#{nriDirectory.path}"
+											disabled="#{empty nriDirectory.path}"/>
+								</p:column>
+							</p:treeTable>
+
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container50 m-responsive100">
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+						 style="min-height: 165px;">
+						<h:form>
+
+							<div class="ui-dashboard-header">
+								<i class="icon-attach_money fs28"/>
+								<h:outputText value="#{directoryDashboardBundle['box.dir.dashboard.billing']}" class="fs20 card-header"/>
+							</div>
+
+							<p:treeTable styleClass="directory-dashboard-panel"
+										 value="#{directoryDashboardViewModel.billingDirectoryNode}"
+										 var="billingDirectory"
+										 emptyMessage="#{overallBundle['box.overall.module_not_connected']}"
+										 scrollable="true" scrollHeight="165">
+								<p:column
+										rendered="#{empty billingDirectory.permissions or p:ifAnyGranted(billingDirectory.permissions)}">
+									<h:link value=" #{billingDirectory.name}" outcome="#{billingDirectory.path}"
+											disabled="#{empty billingDirectory.path}"/>
+								</p:column>
+							</p:treeTable>
+
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+						 style="min-height: 165px;">
+						<h:form>
+
+							<div class="ui-dashboard-header">
+								<i class="fa fa-comments-o fs28"/>
+								<h:outputText value="#{directoryDashboardBundle['box.dir.dashboard.crm']}" class="fs20 card-header"/>
+							</div>
+
+							<p:treeTable styleClass="directory-dashboard-panel"
+										 value="#{directoryDashboardViewModel.crmDirectoryNode}"
+										 var="crmDirectory"
+										 emptyMessage="#{overallBundle['box.overall.module_not_connected']}"
+										 scrollable="true" scrollHeight="165">
+								<p:column
+										rendered="#{empty crmDirectory.permissions or p:ifAnyGranted(crmDirectory.permissions)}">
+									<h:link value=" #{crmDirectory.name}" outcome="#{crmDirectory.path}"
+											disabled="#{empty crmDirectory.path}"/>
+								</p:column>
+							</p:treeTable>
+
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+						 style="min-height: 165px;">
+						<h:form>
+
+							<div class="ui-dashboard-header">
+								<i class="icon-card_giftcard fs28"/>
+								<h:outputText value="#{directoryDashboardBundle['box.dir.dashboard.product_management']}"
+											  class="fs20 card-header"/>
+							</div>
+
+							<p:treeTable styleClass="directory-dashboard-panel"
+										 value="#{directoryDashboardViewModel.productManagementDirectoryNode}"
+										 var="productManagementDirectory"
+										 emptyMessage="#{overallBundle['box.overall.module_not_connected']}"
+										 scrollable="true" scrollHeight="165">
+								<p:column
+										rendered="#{empty productManagementDirectory.permissions or p:ifAnyGranted(productManagementDirectory.permissions)}">
+									<h:link value=" #{productManagementDirectory.name}"
+											outcome="#{productManagementDirectory.path}"
+											disabled="#{empty productManagementDirectory.path}"/>
+								</p:column>
+							</p:treeTable>
+
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

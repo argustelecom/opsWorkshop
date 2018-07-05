@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena">
+
+    <h3 class="h3-header">
+        <i class="icon-info_outline h3-header-icon"/>
+        <h:outputText styleClass="m-disp-inl-block" value="#{topBarBundle['box.top_bar.system_info']}"/>
+    </h3>
+
+    <dl class="name-value width-130">
+        <dt>
+            <p:outputLabel for="app_version" value="#{topBarBundle['box.top_bar.system_info.app.version']}:"/>
+        </dt>
+        <dd>
+            <h:outputText id="app_version" value="#{applicationPropertiesFm.properties.appVersion}"/>
+        </dd>
+
+        <dt>
+            <p:outputLabel for="db_version" value="#{topBarBundle['box.top_bar.system_info.db.version']}:"/>
+        </dt>
+        <dd>
+            <h:outputText id="db_version" value="#{applicationPropertiesFm.properties.dbVersion}"/>
+        </dd>
+
+        <dt>
+            <p:outputLabel for="db_name" value="#{topBarBundle['box.top_bar.system_info.db.name']}:"/>
+        </dt>
+        <dd>
+            <h:outputText id="db_name" value="#{applicationPropertiesFm.properties.dbName}"/>
+        </dd>
+    </dl>
+
+</ui:composition>

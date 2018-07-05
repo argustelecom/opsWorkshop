@@ -1,0 +1,60 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<ui:param name="viewModel" value="#{taskListViewModel}"/>
+	<ui:param name="pageTitle" value="#{taskBundle['box.task.unresolved']}"/>
+	<ui:param name="resultFormId" value="task_search_result_form"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+		<f:loadBundle var="taskBundle" basename="TaskBundle"/>
+		<f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+		<f:loadBundle var="personalAccountBundle" basename="PersonalAccountBundle"/>
+		<f:loadBundle var="productBundle" basename="ProductBundle"/>
+		<f:loadBundle var="locationBundle" basename="LocationBundle"/>
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="number" value="#{taskListViewState.number}"/>
+			<f:viewParam name="taskType" value="#{taskListViewState.taskType}"/>
+			<f:viewParam name="assignee" value="#{taskListViewState.assignee}"/>
+			<f:viewParam name="createdFrom" value="#{taskListViewState.createdFrom}">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+			</f:viewParam>
+			<f:viewParam name="createTo" value="#{taskListViewState.createdTo}">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+			</f:viewParam>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{taskBundle['box.task.unresolved']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="TaskListFrame.xhtml">
+			<ui:param name="viewState" value="#{taskListViewState}"/>
+			<ui:param name="lazyDm" value="#{taskListViewModel.lazyDm}"/>
+			<ui:param name="page" value="TaskListView.xhtml"/>
+			<ui:param name="filterFormId" value="task_search_form"/>
+			<ui:param name="resultFormId" value="${resultFormId}"/>
+			<ui:param name="update" value="${filterFormId}"/>
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/task/TaskLifecycleDialog.xhtml">
+			<ui:param name="update" value="task_search_result_form-task_table"/>
+		</ui:include>
+
+		<ui:include src="/views/env/task/TaskAssigneeDialog.xhtml">
+            <ui:param name="update" value="task_search_result_form-task_table"/>
+        </ui:include>
+	</ui:define>
+
+</ui:composition>

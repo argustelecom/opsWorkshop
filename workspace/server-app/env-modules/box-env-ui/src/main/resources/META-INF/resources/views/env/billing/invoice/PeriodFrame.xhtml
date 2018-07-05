@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:boxenv="http://argustelecom.ru/box/env"
+                xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html">
+
+        <div class="m-container100 m-responsive100">
+            <div class="m-container100 m-responsive100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect">
+                        <dl class="name-value width-350">
+                            <dt>
+								<p:outputLabel for="period_type" value="#{billingBundle['box.billing.period.type']}:"/>
+                            </dt>
+                            <dd>
+								<h:outputText id="period_type" value="#{period.type.toString()}"/>
+                            </dd>
+							<dt>
+								<p:outputLabel for="period_start_date" value="#{billingBundle['box.billing.period.start_date']}:"/>
+							</dt>
+							<dd>
+								<h:outputText id="period_start_date" value="#{period.startDateTime()}"/>
+							</dd>
+							<dt>
+								<p:outputLabel for="period_end_date" value="#{billingBundle['box.billing.period.end_date']}:"/>
+							</dt>
+							<dd>
+								<h:outputText id="period_end_date" value="#{period.endDateTime()}"/>
+							</dd>
+							<dt>
+								<p:outputLabel for="period_duration" value="#{billingBundle['box.billing.period.duration']}:"/>
+							</dt>
+							<dd>
+								<h:outputText id="period_duration" value="#{period.duration()}"/>
+							</dd>
+							<dt>
+								<p:outputLabel for="period_cost" value="#{billingBundle['box.billing.period.overall_cost']}"/>
+							</dt>
+							<dd>
+								<boxenv:money id="period_cost" value="#{period.cost()}"
+											  size="fs14" styleClass="m-disp-inl-block"/>
+							</dd>
+							<dt>
+								<p:outputLabel for="period_unit" value="#{billingBundle['box.billing.period.base_unit']}:"/>
+							</dt>
+							<dd>
+								<h:outputText id="period_unit" value="#{period.type.baseUnit.toString()}"/>
+							</dd>
+							<dt>
+								<p:outputLabel for="period_unit_count" value="#{billingBundle['box.billing.period.base_unit_count']}:"/>
+							</dt>
+							<dd>
+								<h:outputText id="period_unit_count" value="#{period.baseUnitCount()}"/>
+							</dd>
+                            <dt>
+								<p:outputLabel for="period_unit_cost" value="#{billingBundle['box.billing.period.unit_cost']}:"/>
+                            </dt>
+                            <dd>
+								<h:outputText id="period_unit_cost" value="#{period.cost()}/#{period.baseUnitCount()} ~ #{period.baseUnitCost()}"/>
+								<h:outputText styleClass="m-disp-inl-block m-mar-left-8" value="(#{billingBundle['box.billing.period.hint_rounded_value']})"/>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+</ui:composition>

@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="invoiceBundle" basename="InvoiceBundle"/>
+	<h:form id="invoice_creation_form">
+		<p:dialog id="invoice_creation_dlg" header="#{invoiceBundle['box.invoice.create_dialog']}" width="700"
+				  widgetVar="invoiceCreationVar" resizable="false" modal="true" closable="false" dynamic="true" styleClass="icon-creation">
+			<dl class="name-value width-150">
+				<dt>
+					<p:outputLabel value="#{overallBundle['box.overall.valid_from']}:"/>
+				</dt>
+				<dd>
+					<h:outputText value=" "/>
+					<h:outputText
+							value="#{dateUtils.format(invoiceCreationDialogModel.currentDate, dateUtils.DATE_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+					<h:outputText value=" #{overallBundle['box.overall.valid_to.short']} "/>
+					<h:outputText
+							value="#{dateUtils.format(invoiceCreationDialogModel.currentDate, dateUtils.DATE_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+				</dd>
+			</dl>
+
+			<dl class="name-value width-150">
+				<dt>
+					<p:outputLabel for="amount" value="#{invoiceBundle['box.invoice.amount.total']}:"/>
+				</dt>
+				<dd>
+					<boxenv:money id="amount" value="#{invoiceCreationDialogModel.totalAmount}" unicolour="true" size="fs14"/>
+				</dd>
+			</dl>
+
+			<dl class="name-value width-100">
+				<dt>
+					<p:outputLabel for="pricelist" value="#{invoiceBundle['box.invoice.pricelist']}:"/>
+				</dt>
+				<dd class="width-40-percents m-mar-right10">
+					<p:selectOneMenu id="pricelist" value="#{invoiceCreationDialogModel.selectedPriceList}">
+						<p:ajax listener="#{invoiceCreationDialogModel.onPriceListSelection()}"
+								update="pricelist_entry"/>
+
+						<f:selectItem value="#{selectItems.nullItem(false)}"/>
+						<f:selectItems value="#{invoiceCreationDialogModel.priceLists}" var="priceList"
+									   itemLabel="#{priceList.objectName}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="pricelist_entry" value="#{invoiceBundle['box.invoice.product']}:"/>
+				</dt>
+				<dd class="width-40-percents">
+					<p:selectOneMenu id="pricelist_entry" value="#{invoiceCreationDialogModel.selectedEntry}" var="e">
+						<f:selectItems value="#{invoiceCreationDialogModel.priceListEntries}" var="entry"
+									   itemLabel="#{entry.objectName}"/>
+
+						<p:column>
+							<h:outputText value="#{e.price.roundAmount}" styleClass="#{invoiceCreationDialogModel.styleClassForEntryPrice(e)}"/>
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{e.objectName}"/>
+						</p:column>
+					</p:selectOneMenu>
+				</dd>
+
+				<p:commandButton value="#{overallBundle['box.overall.add']}" action="#{invoiceCreationDialogModel.addEntry()}"
+								 update="pricelist_entry entry_table amount -invoice_creation_form-create_button" styleClass="m-fright"/>
+			</dl>
+
+			<p:outputPanel>
+				<p:outputPanel styleClass="bottom-border m-mar-bot10">
+					<h3 class="h3-header m-disp-inl-block">#{invoiceBundle['box.invoice.entry.plural']}</h3>
+				</p:outputPanel>
+				<p:dataTable id="entry_table" value="#{invoiceCreationDialogModel.entries}" var="entry"
+							 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+					<p:column headerText="#{invoiceBundle['box.invoice.product']}">
+						#{entry.objectName}
+					</p:column>
+
+					<p:column headerText="#{invoiceBundle['box.invoice.pricelist']}">
+						#{entry.pricelist.objectName}
+					</p:column>
+
+					<p:column headerText="#{invoiceBundle['box.invoice.amount']}">
+						<boxenv:money value="#{entry.price}" unicolour="true" size="fs14"/>
+					</p:column>
+
+					<p:column styleClass="width-20">
+						<p:commandLink title="#{overallBundle['box.overall.delete']}" styleClass="m-fright"
+									   action="#{invoiceCreationDialogModel.remove(entry)}" id="remove_btn"
+									   update="-invoice_creation_form-pricelist_entry -invoice_creation_form-amount entry_table
+										 			 -invoice_creation_form-create_button">
+							<i class="fa fa-trash fs20 m-bold-gray"/>
+						</p:commandLink>
+
+					</p:column>
+
+
+				</p:dataTable>
+			</p:outputPanel>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="invoice_creation_dlg"
+								 process="@this" action="#{invoiceCreationDialogModel.cancel()}"
+								 onclick="PF('transactionCreationVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('invoiceCreationVar').hide()}"
+								 action="#{invoiceCreationDialogModel.create()}" disabled="#{empty invoiceCreationDialogModel.entries}"
+								 update="#{update} invoice_creation_dlg" onsuccess="updateTransactionTableData();"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

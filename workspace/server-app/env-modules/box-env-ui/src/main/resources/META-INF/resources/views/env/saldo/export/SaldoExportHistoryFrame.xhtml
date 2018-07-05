@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle basename="SaldoExportBundle" var="saldoExportBundle"/>
+
+    <div class="m-container-indent">
+        <div class="m-card m-shadow-effect simple-fb">
+            <h:form id="history_form">
+
+                <div class="ui-dashboard-header">
+                    <i class="icon-history" />
+                    <h:outputText styleClass="card-header" value="#{saldoExportBundle['box.saldo.export.history.register']}" />
+                    <h:outputText  id="settingsttp" class="icon-help_outline tooltip-help-15" position="top"
+                                   title="#{saldoExportBundle['box.saldo.export.history.register.hint']}"/>
+                    <p:tooltip id="saldo_sett_ttp" for="settingsttp" />
+                </div>
+                <p:outputPanel id="history_panel">
+                    <p:dataTable id="history_table" value="#{saldoExportHistoryFM.issues}" var="issue" styleClass="paginator-top-hidden"
+                                 rows="5" paginator="true" rowsPerPageTemplate="5,10,15"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {CurrentPageReport}"
+                                 emptyMessage="#{saldoExportBundle['box.saldo.export.history.operation.empty']}"
+                                 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+                                 selectionMode="single" selection="#{saldoExportHistoryFM.selectedIssue}" rowKey="#{issue.id}">
+                        <p:ajax event="rowSelect" immediate="true" update="operation_history_form" />
+
+                        <p:ajax event="rowSelect" update="operation_history_form" listener="#{saldoExportOperationHistoryFM.setIssue(saldoExportHistoryFM.selectedIssue)}">
+                            <!--<f:setPropertyActionListener value="#{saldoExportHistoryFM.selectedIssue}" target="#{saldoExportOperationHistoryFM.issue}"/>-->
+                        </p:ajax>
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.date']}" styleClass="width-200">
+                            <h:outputText value="#{issue.exportDate}">
+                                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.period']}">
+                            <h:outputText value="#{issue.from}">
+                                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                            </h:outputText>
+                            -
+                            <h:outputText value="#{issue.to}">
+                                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.history.register.number']}" styleClass="width-200">
+                            <h:outputText value="#{issue.number}" />
+                        </p:column>
+
+                        <p:column styleClass="width-20">
+
+                            <ui:fragment rendered="#{not (issue.file eq null)}">
+                                <p:commandLink ajax="false" styleClass="m-fleft">
+                                    <i class="#{issue.state.iconStyle}" title="#{saldoExportBundle[issue.state.title]}"/>
+                                    <p:fileDownload value="#{saldoExportHistoryFM.getStreamedContent(issue)}" />
+                                </p:commandLink>
+                            </ui:fragment>
+
+                            <ui:fragment rendered="#{issue.file eq null}">
+                                <i class="#{issue.state.iconStyle}" title="#{saldoExportBundle[issue.state.title]}"/>
+                            </ui:fragment>
+                        </p:column>
+
+
+                    </p:dataTable>
+                </p:outputPanel>
+            </h:form>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,237 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="provisionTermsBundle" basename="ProvisionTermsBundle"/>
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect simple-fb">
+                <h:form id="provision_terms_properties_form">
+
+                    <!--<o:importConstants type="ru.argustelecom.box.env.billing.provision.model.InvoiceProcessingRulesContainerType" var="ruleContainerType"/>-->
+
+                    <script>
+                        $( document ).ready(function() {
+                            Argus.System.AutoHeight.compute('provision_terms_properties_form', 40);
+                        });
+                    </script>
+
+                    <div class="ui-dashboard-header">
+                        <i class="fa fa-tasks"/>
+                        <h:outputText value="#{provisionTermsBundle['box.provision_terms.params']}" styleClass="card-header"/>
+                    </div>
+                    
+                    <ui:fragment rendered="#{sysinf:isEntity(terms, 'RecurrentTerms')}">
+
+                        <f:event type="preRenderComponent" listener="#{recurrentTermsParamsFm.preRender(terms)}" />
+
+                        <o:importConstants type="ru.argustelecom.box.env.billing.provision.model.RecurrentTermsState" var="state"/>
+                        
+                        <div class="clearfix">
+                            <div class="m-container100 m-responsive100 m-mar-bot10">
+                                <div class="m-container56 m-responsive100 mar-right-4-percents">
+                                    <h3 class="h3-header bottom-border">
+                                        <h:outputText value="#{provisionTermsBundle['box.provision_terms.subscription.period.charging']}"/>
+                                    </h3>
+
+                                    <sysinf:editableSection disabled="#{not (recurrentTermsParamsFm.recurrentTermsParams.state eq state.FORMALIZATION)}"
+                                                            saveLabel="#{overallBundle['box.overall.save']}"
+                                                            cancelLabel="#{overallBundle['box.overall.cancel']}"
+                                                            id="charging_period">
+
+                                        <p:ajax event="save" listener="#{recurrentTermsParamsFm.onChargingPeriodChanged()}" />
+                                        <p:ajax event="cancel" listener="#{recurrentTermsParamsFm.onParamEditionCanceled()}"/>
+
+                                        <dl class="name-value width-190">
+                                            <dt>
+                                                <p:outputLabel for="ptype" value="#{provisionTermsBundle['box.provision_terms.subscription.period.type']}:"/>
+                                            </dt>
+                                            <dd>
+                                                <p:selectOneMenu id="ptype" value="#{recurrentTermsParamsFm.recurrentTermsParams.periodType}"
+                                                                 required="true" label="#{provisionTermsBundle['box.provision_terms.subscription.period.type']}">
+
+                                                    <p:ajax process="@this" listener="#{recurrentTermsParamsFm.onPeriodTypeChanged()}" update="units number"/>
+
+                                                    <f:selectItem itemValue=""/>
+                                                    <f:selectItems value="#{recurrentTermsParamsFm.periodTypes}" var="periodType"
+                                                                   itemLabel="#{periodType.toString()}" itemValue="#{periodType}"/>
+                                                </p:selectOneMenu>
+                                            </dd>
+                                            <dt>
+                                                <p:outputLabel for="units"
+                                                               value="#{provisionTermsBundle['box.provision_terms.subscription.period.unit']}:"/>
+                                            </dt>
+                                            <dd>
+                                                <p:selectOneMenu id="units" value="#{recurrentTermsParamsFm.recurrentTermsParams.periodUnit}"
+                                                                 required="true" label="#{provisionTermsBundle['box.provision_terms.subscription.period.unit']}">
+
+                                                    <f:selectItem itemValue=""/>
+                                                    <f:selectItems value="#{recurrentTermsParamsFm.possibleChargingPeriodUnits}" var="periodUnit"
+                                                                   itemLabel="#{periodUnit.toString()}" itemValue="#{periodUnit}"/>
+                                                </p:selectOneMenu>
+                                            </dd>
+                                            <dt>
+                                                <p:outputLabel for="number" value="#{provisionTermsBundle['box.provision_terms.subscription.period.quantity']}:"/>
+                                            </dt>
+                                            <dd>
+                                                <p:inputText id="number" value="#{recurrentTermsParamsFm.recurrentTermsParams.amount}"
+                                                             required="true"
+                                                             label="#{provisionTermsBundle['box.provision_terms.subscription.period.quantity']}">
+                                                    <f:validateLongRange minimum="1"/>
+                                                </p:inputText>
+                                            </dd>
+                                        </dl>
+                                    </sysinf:editableSection>
+                                </div>
+
+                                <div class="m-container40 m-responsive100">
+                                    <div class="message-corner fs12">
+                                        <div class="message-info message-icon message-icon-info">
+                                            <p>#{provisionTermsBundle['box.provision_terms.period.charging.hint']}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="m-container100 m-responsive100 m-mar-bot10">
+                                <div class="m-container56 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+                                    <sysinf:editableSection disabled="#{not (recurrentTermsParamsFm.recurrentTermsParams.state eq state.FORMALIZATION)}"
+                                                            id="reserve_funds_rule">
+
+                                        <p:ajax event="save" listener="#{recurrentTermsParamsFm.onReserveFundsChanged()}" />
+
+                                        <dl class="name-value width-190">
+                                            <dt>
+                                                <p:outputLabel for="reserve_funds" value="#{provisionTermsBundle['box.provision_terms.subscription.rules.reservation']}:"/>
+                                            </dt>
+                                            <dd>
+                                                <p:selectBooleanCheckbox id="reserve_funds" value="#{recurrentTermsParamsFm.recurrentTermsParams.reserveFunds}"/>
+                                            </dd>
+                                        </dl>
+                                    </sysinf:editableSection>
+                                </div>
+
+                                <div class="m-container40 m-responsive100">
+                                    <div class="message-corner fs12">
+                                        <div class="message-info message-icon message-icon-info">
+                                        	<p>#{provisionTermsBundle['box.provision_terms.subscription.rules.reservation.hint']}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="m-container100 m-responsive100 m-mar-bot10">
+                                <div class="m-container56 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+                                    <sysinf:editableSection disabled="#{not (recurrentTermsParamsFm.recurrentTermsParams.state eq state.FORMALIZATION)}"
+                                                            id="rounding_policy_rule">
+
+                                        <p:ajax event="save" listener="#{recurrentTermsParamsFm.onRoundingPolicyChanged()}" />
+
+                                        <dl class="name-value width-150">
+                                            <dt>
+                                                <p:outputLabel for="rounding_policy" value="#{provisionTermsBundle['box.provision_terms.subscription.rules.rounding']}:"/>
+                                            </dt>
+                                            <dd>
+
+                                                <o:importConstants type="ru.argustelecom.box.env.billing.provision.model.RoundingPolicy" var="roundingPolicy"/>
+
+                                                <p:selectOneMenu id="rounding_policy" value="#{recurrentTermsParamsFm.recurrentTermsParams.roundingPolicy}">
+                                                    <f:selectItem itemValue=""/>
+                                                    <f:selectItems value="#{roundingPolicy.values()}"/>
+                                                </p:selectOneMenu>
+                                            </dd>
+                                        </dl>
+                                    </sysinf:editableSection>
+                                </div>
+
+                                <div class="m-container40 m-responsive100">
+                                    <div class="message-corner fs12">
+                                        <div class="message-info message-icon message-icon-info">
+                                            <p>#{provisionTermsBundle['box.provision_terms.subscription.rules.rounding.hint']}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="m-container100 m-responsive100">
+                                <div class="m-container56 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+                                    <h3 class="h3-header bottom-border">
+                                        <h:outputText value="#{provisionTermsBundle['box.provision_terms.subscription.lc.params']}"/>
+                                    </h3>
+
+									<o:importConstants type="ru.argustelecom.box.env.billing.subscription.model.SubscriptionLifecycleQualifier"/>
+
+                                    <div class="columns">
+                                        <div class="column width-70-percents">
+
+                                            <sysinf:editableSection disabled="#{not (recurrentTermsParamsFm.recurrentTermsParams.state eq state.FORMALIZATION)}"
+                                                                    saveLabel="#{overallBundle['box.overall.save']}"
+                                                                    cancelLabel="#{overallBundle['box.overall.cancel']}"
+                                                                    id="lifecycle_qualifier">
+
+                                                <p:ajax event="save" listener="#{recurrentTermsParamsFm.onLifecycleQualifierChanged()}" update="scheme_link"/>
+                                                <p:ajax event="cancel" listener="#{recurrentTermsParamsFm.onParamEditionCanceled()}"/>
+
+                                                <dl class="name-value width-275">
+                                                    <dt>
+                                                        <p:outputLabel for="lcpt" value="#{provisionTermsBundle['box.provision_terms.subscription.lc']}:"/>
+                                                    </dt>
+                                                    <dd>
+                                                        <p:selectOneMenu id="lcpt" value="#{recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier}">
+                                                            <f:selectItem itemValue=""/>
+                                                            <f:selectItems value="#{recurrentTermsParamsFm.subscriptionQualifiers}" var="lifecyclePeriod"
+                                                                           itemLabel="#{lifecyclePeriod.name}" itemValue="#{lifecyclePeriod}"/>
+															<p:ajax update="manual_control_panel subscription_lc_hint_panel" process="@this"/>
+                                                        </p:selectOneMenu>
+                                                    </dd>
+                                                </dl>
+
+												<p:outputPanel id="manual_control_panel"
+															   rendered="#{recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier ne null
+                                           								 and recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier.equals(SubscriptionLifecycleQualifier.FULL)}">
+													<dl class="name-value width-275">
+														<dt>
+															<p:outputLabel for="nps" value="#{provisionTermsBundle['box.provision_terms.subscription.params.manual_control']}:"/>
+														</dt>
+														<dd>
+															<p:selectBooleanCheckbox id="nps" value="#{recurrentTermsParamsFm.recurrentTermsParams.manualControl}" />
+														</dd>
+													</dl>
+												</p:outputPanel>
+                                            </sysinf:editableSection>
+                                        </div>
+                                        <div class="column width-10-percents">
+                                            <p:commandLink id="scheme_link" styleClass="fs12 m-disp-inl-block strike-link" onclick="PF('lifecycleSchemeDlg').show()"
+                                                           title="#{provisionTermsBundle['box.provision_terms.subscription.scheme.show']}" value="#{provisionTermsBundle['box.provision_terms.subscription.scheme.show']}" immediate="true"
+                                                               disabled="#{recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier eq null}"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+								<p:outputPanel id="subscription_lc_hint_panel">
+                                	<div class="m-container40 m-responsive100">
+                                    	<div class="message-corner fs12">
+                                        	<div class="message-info message-icon message-icon-info">
+												<p>#{provisionTermsBundle[recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier ne null
+														and recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier.equals(SubscriptionLifecycleQualifier.FULL)
+														? 'box.provision_terms.subscription.lc.params.full.hint'
+														: 'box.provision_terms.subscription.lc.params.hint']}</p>
+                                        	</div>
+                                    	</div>
+                                	</div>
+								</p:outputPanel>
+                            </div>
+                        </div>
+                    </ui:fragment>
+
+                    <ui:fragment rendered="#{sysinf:isEntity(terms, 'NonRecurrentTerms')}">
+                        #{provisionTermsBundle['box.provision_terms.non_recurrent.hint']}
+                    </ui:fragment>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

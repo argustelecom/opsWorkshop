@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<o:importConstants type="ru.argustelecom.box.nri.resources.spec.model.ParameterDataType"/>
+
+	<p:dialog id="param_requirement_creation_dlg"
+			  header="#{serviceSpecificationBundle['box.nri.service_specification.param_dialog_header']}"
+			  width="700"
+			  widgetVar="paramRequirementCreationDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation">
+		<h:form id="param_requirement_form">
+			<dl class="name-value width-250">
+				<dt>
+					<p:outputLabel
+							value="#{serviceSpecificationBundle['box.nri.service_specification.param_specification_label']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_spec"
+									 value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification}"
+									 required="true"
+									 requiredMessage="#{commonBundle['box.nri.common.specification_required']}"
+									 style="width: 100%;">
+						<f:converter converterId="nriDtoConverter"/>
+						<p:ajax update="@form"/>
+						<f:selectItem itemValue="#{null}"/>
+						<f:selectItems var="type" value="#{paramsRequirementInfoFrameModel.possibleParamSpecification}"
+									   itemLabel="#{type.name}"/>
+					</p:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel
+							value="#{serviceSpecificationBundle['box.nri.service_specification.param_operation_label']}*:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_compare_action" required="true"
+									 requiredMessage="#{commonBundle['box.nri.common.service_specification_param_operation_req']}"
+									 value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.compareAction}">
+						<f:selectItem value="#{null}"/>
+						<f:selectItems value="#{paramsRequirementInfoFrameModel.types}" var="compareAction"
+									   itemValue="#{compareAction}" itemLabel="#{compareAction.name}"/>
+					</p:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel for="new_value"
+								   value="#{serviceSpecificationBundle['box.nri.service_specification.param_value_label']}:"/>
+				</dt>
+				<dd>
+					<ui:param name="dataType"
+							  value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification.dataType}"/>
+					<p:inputText id="new_value"
+								 rendered="#{(dataType eq ParameterDataType.STRING
+										 or dataType eq ParameterDataType.INTEGER
+										 or dataType eq ParameterDataType.FLOAT)}"
+								 value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.value}"
+								 style="width: 100%;" maxlength="128" required="true"
+								 requiredMessage="#{commonBundle['box.nri.common.value_required']}">
+						<o:validator validatorId="javax.faces.RegularExpression"
+									 message="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification.name}
+									 #{commonBundle['box.nri.common.reg_mismatch']}"
+
+									 pattern="#{not empty paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification.regex ?
+									 paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification.regex :
+									 paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.parameterSpecification.dataType.regex}"/>
+					</p:inputText>
+
+					<p:selectBooleanButton id="new_boolean_value"
+										   value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.value}"
+										   styleClass="small-boolean-button"
+										   onLabel="#{commonBundle['box.nri.common.true']}"
+										   offLabel="#{commonBundle['box.nri.common.false']}"
+										   rendered="#{dataType eq ParameterDataType.BOOLEAN}">
+					</p:selectBooleanButton>
+
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button"
+								 value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button"
+								 process="@this"
+								 action="#{paramsRequirementInfoFrameModel.cleanCreationParams()}"
+								 onclick="PF('paramRequirementCreationDlg').hide()"/>
+				<p:commandButton id="create_button"
+								 value="#{paramsRequirementInfoFrameModel.currentRequiredParameterValueDto.id == null ? overallBundle['box.overall.create'] : overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('paramRequirementCreationDlg').hide()};"
+								 action="#{paramsRequirementInfoFrameModel.submit()}"
+								 update="#{update}" process="param_requirement_creation_dlg"/>
+
+			</div>
+
+		</h:form>
+	</p:dialog>
+</ui:composition>

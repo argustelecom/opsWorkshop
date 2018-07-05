@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+				<h:form id="ip_address_attributes_form">
+					<div class="columns">
+						<div class="column m-vertical-al-middle m-pad-0">
+							<p:panelGrid id="ip_address_id_grid" columns="1" layout="grid"
+										 styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+								<i class="fs50 fa fa-laptop (alias)"/>
+								<h:outputText styleClass="fs16" value="ID #{ipaddressVM.ipAddress.id}"/>
+							</p:panelGrid>
+						</div>
+						<div class="column width-100-percents">
+							<div class="columns">
+								<div class="column width-50-percents">
+									<dl class="name-value width-200">
+										<dt>
+											<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.ip_address_word']}:"/>
+										</dt>
+										<dd>
+											<h:outputText value="#{ipaddressVM.ipAddress.name}"/>
+										</dd>
+										<dt>
+											<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.Ip_addr_type_label']}:"/>
+										</dt>
+										<dd>
+											<h:outputText
+													value="#{ipaddressVM.ipAddress.isPrivate ? ipBundle['box.nri.logicalresource.ip.inner_word']
+													 : ipBundle['box.nri.logicalresource.ip.outer_word']}"/>
+										</dd>
+										<dt>
+											<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.transmition_type_label']}:"/>
+										</dt>
+										<dd>
+											<h:outputText value="#{ipaddressVM.ipAddress.transferType.name}"/>
+										</dd>
+										<dt>
+											<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.ip_addr_static_label']}:"/>
+										</dt>
+										<dd>
+											<h:outputText
+													value="#{ipaddressVM.ipAddress.isStatic ? ipBundle['box.nri.logicalresource.static_word']
+													 : ipBundle['box.nri.logicalresource.dynamic_word']}"/>
+										</dd>
+									</dl>
+								</div>
+								<div class="column width-50-percents">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.status_word']}:"/>
+										</dt>
+										<dd>
+											<!--Из-за нижних editableSection нужно смещать вправо на 8 пикселей-->
+											<h:outputText value="#{ipaddressVM.ipAddress.state.name}" style="margin-left: 8px"/>
+										</dd>
+									</dl>
+									<sysinf:editableSection id="purpose_section" disabled="#{not ipaddressVM.getPurposeEditable()}">
+										<p:ajax event="save" update="@form" listener="#{ipaddressVM.changePurpose()}"/>
+										<dl class="name-value width-150">
+											<dt>
+												<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.purpose_word']}:"/>
+											</dt>
+											<dd>
+												<p:selectOneMenu id="purposeSelector" value="#{ipaddressVM.ipAddress.purpose}">
+													<f:selectItems value="#{ipaddressVM.purposes}" var="purpose"
+																   itemLabel="#{purpose.name}" itemValue="#{purpose}"/>
+												</p:selectOneMenu>
+												<h:outputLabel id="purposeLabel" styleClass="sys-comp-editable-section-output"
+															   value="#{ipaddressVM.ipAddress.purpose.name}"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+									<sysinf:editableSection disabled="#{!p:ifGranted('Nri_IpAddressEdit')}">
+										<p:ajax event="save" update="@form" listener="#{ipaddressVM.changeComment()}"/>
+
+										<dl class="name-value width-150">
+											<dt>
+												<p:outputLabel value="#{ipBundle['box.nri.logicalresource.ip.commment_word']}:"/>
+											</dt>
+											<dd class="auto-height min-height62">
+												<p:inputTextarea id="ip_address_comment"
+																 value="#{ipaddressVM.ipAddress.comment}"
+																 rows="3" counter="ip_address_comment_display"
+																 maxlength="255" counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+												<h:outputText id="ip_address_comment_display" styleClass="fs12"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</ui:composition>

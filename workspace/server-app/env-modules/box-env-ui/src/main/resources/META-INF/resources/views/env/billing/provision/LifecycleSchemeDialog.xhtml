@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="provisionTermsBundle" basename="ProvisionTermsBundle"/>
+    <h:form id="lifecycle_scheme_form">
+        <p:dialog id="lifecycle_scheme_dlg" header="#{recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier.headerTitle}" width="850"
+                  widgetVar="lifecycleSchemeDlg" resizable="false" styleClass="icon-flow"
+                  modal="true" closable="true">
+
+                <div>
+                    <p:graphicImage id="scheme_src" name="#{recurrentTermsParamsFm.recurrentTermsParams.lifecycleQualifier.pathToSchema}" styleClass="m-pad-10px white-back"/>
+                </div>
+        </p:dialog>
+    </h:form>
+</ui:composition>

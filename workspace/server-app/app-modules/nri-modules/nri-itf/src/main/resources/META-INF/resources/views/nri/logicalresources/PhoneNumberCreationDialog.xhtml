@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+	<p:dialog id="phone_number_creation_dlg"
+			  header="#{phoneNumberPoolBundle['box.nri.phone.creation']}"
+			  widgetVar="phoneNumberCreationDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation" style="max-width: 75%; min-width: 50%;">
+		<p:tabView>
+			<p:tab title="#{phoneNumberPoolBundle['box.nri.phone.one_number']}">
+				<h:form id="phone_number_creation_form">
+					<dl class="name-value">
+						<dt>
+							<p:outputLabel for="new_spec" value="#{phoneNumberPoolBundle['box.nri.phone.type_word']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="new_spec" value="#{phoneNumberCreationDM.newPhoneSpec}"
+											 required="true">
+								<p:ajax event="change" update="@form  new_name" process="@this"
+										oncomplete="PF('phoneNumberCreationDlg').initPosition()"/>
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{phoneNumberCreationDM.possiblePhoneSpecs}" var="spec"
+											   itemValue="#{spec}" itemLabel="#{spec.objectName}"/>
+							</p:selectOneMenu>
+						</dd>
+						<dt>
+							<p:outputLabel for="new_name"
+										   value="#{phoneNumberPoolBundle['box.nri.phone.name']}:"/>
+						</dt>
+						<dd>
+							<script>
+                                $.mask.definitions['9'] = '';
+                                $.mask.definitions['*'] = '[0-9]';
+                                $.mask.definitions['+'] = '';
+                                $.mask.definitions['#'] = '+';
+							</script>
+							<p:inputMask id="new_name" value="#{phoneNumberCreationDM.newPhone.name}"
+										 mask="#{phoneNumberCreationDM.newPhoneSpec.mask}"
+										 validator="#{phoneNumberCreationDM.nameValidator}"
+										 maxlength="128" required="true"
+										 requiredMessage="#{commonBundle['box.nri.common.phone_number_required']}:"/>
+						</dd>
+					</dl>
+					<div class="dialog-footer-buttons">
+						<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+										 update="phone_number_creation_dlg" process="@this"
+										 styleClass="m-blue-text-button" onclick="PF('phoneNumberCreationDlg').hide()"/>
+						<p:commandButton id="create_button"
+										 value="#{overallBundle['box.overall.create']}"
+										 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('phoneNumberCreationDlg').hide();
+										 Argus.System.AutoHeight.compute('phone_number_pool_tree_form-phone_number_pool_tree', 35);};"
+										 action="#{phoneNumberCreationDM.create()}"
+
+										 update="-phone_number_pool_info_form
+									 -phone_number_info_form
+									 phone_number_pool_tree_form-phone_number_pool_tree_panel
+									 phone_number_pool_tree_form-tree_buttons_panel">
+						</p:commandButton>
+					</div>
+				</h:form>
+			</p:tab>
+			<p:tab title="#{phoneNumberPoolBundle['box.nri.phone.many_numbers']}">
+				<h:form id="generate_numbers_form">
+					<dl class="name-value">
+						<dt>
+							<p:outputLabel for="new_spec2" value="#{phoneNumberPoolBundle['box.nri.phone.type_word']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="new_spec2" value="#{phoneNumberCreationDM.newPhoneSpec}"
+											 required="true">
+								<f:selectItem itemValue="#{phoneNumberCreationDM.newPhoneSpec}"/>
+								<p:ajax event="change" update="@form  from to" process="@this"
+										oncomplete="PF('phoneNumberCreationDlg').initPosition()"/>
+								<f:selectItems value="#{phoneNumberCreationDM.possiblePhoneSpecs}" var="spec"
+											   itemValue="#{spec}" itemLabel="#{spec.objectName}"/>
+							</p:selectOneMenu>
+						</dd>
+						<dt>
+							<p:outputLabel for="from" value="#{phoneNumberPoolBundle['box.nri.phone.from']}"/>
+						</dt>
+						<dd>
+							<p:inputMask id="from" value="#{phoneNumberCreationDM.fromPhone}"
+										 mask="#{phoneNumberCreationDM.newPhoneSpec.mask}"
+										 style="width: 100%;" maxlength="128" required="true"
+										 requiredMessage="#{phoneNumberPoolBundle['box.nri.phone.first_number_required']}"/>
+						</dd>
+						<dt>
+							<p:outputLabel for="to" value="#{phoneNumberPoolBundle['box.nri.phone.to']}"/>
+						</dt>
+						<dd>
+							<p:inputMask id="to" value="#{phoneNumberCreationDM.toPhone}"
+										 mask="#{phoneNumberCreationDM.newPhoneSpec.mask}"
+										 style="width: 100%;" maxlength="128" required="true"
+										 requiredMessage="#{phoneNumberPoolBundle['box.nri.phone.last_number_required']}"/>
+						</dd>
+					</dl>
+					<div class="dialog-footer-buttons">
+						<p:commandButton id="gen_cancel_button"
+										 value="#{overallBundle['box.overall.cancel']}"
+										 immediate="true"
+										 styleClass="m-blue-text-button" onclick="PF('phoneNumberCreationDlg').hide()"/>
+						<p:commandButton id="gen_create_button" process="@form"
+										 value="#{overallBundle['box.overall.create']}"
+										 action="#{phoneNumberCreationDM.generateNumbers()}">
+						</p:commandButton>
+					</div>
+				</h:form>
+			</p:tab>
+		</p:tabView>
+	</p:dialog>
+</ui:composition>

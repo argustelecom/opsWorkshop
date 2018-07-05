@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="invoiceBundle" basename="InvoiceBundle"/>
+	<f:event listener="#{invoiceFrameModel.preRender(personalAccount, frameHeight)}" type="preRenderComponent"/>
+
+	<p:outputPanel rendered="#{p:ifGranted('Billing_InvoiceView')}">
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect simple-fb">
+					<h:form id="invoice_frame_form">
+
+						<div class="ui-dashboard-header">
+							<i class="fa fa-tasks"/>
+                            <h:outputText value="#{invoiceBundle['box.invoice.plural']}" styleClass="card-header"/>
+
+							<p:outputPanel id="property_managed_buttons" styleClass="m-fright">
+								<p:outputLabel for="show_only_active"
+											   value="#{invoiceBundle['box.invoice.show_only_active']}"/>
+								<p:selectBooleanCheckbox id="show_only_active" styleClass="m-mar-left10"
+														 value="#{invoiceFrameModel.showOnlyActive}">
+									<p:ajax update="invoice_table" listener="#{invoiceFrameModel.refresh}"/>
+								</p:selectBooleanCheckbox>
+								<p:commandLink styleClass="m-mar-left10" title="#{overallBundle['box.overall.create']}"
+											   oncomplete="PF('invoiceCreationVar').show()" action="#{invoiceCreationDialogModel.init()}"
+											 	process="@this" update="invoice_creation_form"
+											 	disabled="#{!p:ifGranted('Billing_InvoiceEdit')}">
+												<i class="fa fa-edit icon-btn"/>
+												<f:setPropertyActionListener value="#{invoiceFrameModel.personalAccount}"
+																			target="#{invoiceCreationDialogModel.personalAccount}"/>
+								</p:commandLink>
+							</p:outputPanel>
+						</div>
+
+						<p:dataTable id="invoice_table" value="#{invoiceFrameModel.invoices}" var="invoice" paginator="true" tableStyle="table-layout: auto;"
+									 rowsPerPageTemplate="5,10,15" rows="5" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									 emptyMessage="#{overallBundle['box.overall.empty']}" currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+									 styleClass="paginator-top-hidden">
+
+							<p:column headerText="#{overallBundle['box.overall.id']}">
+								<boxenv:linkToCard value="#{invoice.getIdentifiable()}" text="#{invoice.id}"/>
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.state']}">
+								<h:outputText value="#{invoice.state.name}"/>
+							</p:column>
+
+							<p:column headerText="#{invoiceBundle['box.invoice.subject']}">
+								<h:outputText value="#{invoice.subscriptionName}" title="#{invoice.subscriptionName}"/>
+							</p:column>
+							<p:column headerText="#{invoiceBundle['box.invoice.type']}">
+								<h:outputText value="#{invoiceBundle[sysinf:isEntity(invoice.getIdentifiable(), 'LongTermInvoice') ? 'box.invoice.type.subscription' : 'box.invoice.type.telephony']}"
+											  title="#{invoice.subscriptionName}"/>
+							</p:column>
+
+							<p:column headerText="#{invoiceBundle['box.invoice.amount']}">
+								<boxenv:money value="#{invoice.totalPrice}" size="fs14" unicolour="true"/>
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.valid_from']}" sortBy="#{invoice.startDate}">
+								<h:outputText value="#{dateUtils.format(invoice.startDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.valid_to']}" sortBy="#{invoice.endDate}">
+								<h:outputText value="#{dateUtils.format(invoice.endDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+								<ui:fragment rendered="#{invoice.privilege ne null}">
+									<i class="fa fa-hourglass-half m-mar-left10 m-orange" title="#{invoice.privilege.objectName}"/>
+								</ui:fragment>
+							</p:column>
+						</p:dataTable>
+
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</p:outputPanel>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="fa fa-tasks" />
+		<ui:param name="headerText" value="#{invoiceBundle['box.invoice.plural']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('Billing_InvoiceView')}" />
+	</ui:include>
+
+	<ui:include src="InvoiceCreationDialog.xhtml">
+		<ui:param name="update" value="personal_account_attributes_form"/>
+	</ui:include>
+</ui:composition>

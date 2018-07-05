@@ -1,0 +1,132 @@
+/* buttons */
+
+/* arisen button кнопка, которая имеет бледный цвет, при hover становится темнее.
+    Пример использования: SaldoExportView.xhtml кнопка для удаления e-mails*/
+.arisen-button {
+	position: relative;
+}
+
+.arisen-button button {
+	position: absolute;
+	right: .5em;
+	top: 50%;
+	margin-top: -10px;
+	background-color: transparent;
+	color: #546e7a;
+	opacity: .2;
+}
+
+.arisen-button:hover button {
+	background-color: transparent;
+	opacity: 1;
+}
+
+.ui-datatable .arisen-button .ui-button-icon-only {
+	min-width: 20px !important;
+	max-width: 20px !important;
+	height: 20px !important;
+}
+
+.arisen-button .ui-button-icon-only .ui-button-icon-only .ui-icon {
+	font-size: 14px;
+}
+
+/* Кнопка в виде иконки, добавить в тег <i/> к классам fa fa-(icon-name) */
+.icon-btn {
+	color: @icon-btn-color !important;
+	font-size: @icon-btn-font-size !important;
+	vertical-align: middle !important;
+}
+
+/* hover for icon-btn except disabled buttons */
+.ui-commandlink {
+
+	&:not(.ui-state-disabled) {
+		.icon-btn {
+			&:hover {
+				color: @dark-gray-lighter !important;
+			}
+		}
+	}
+}
+
+/* fake-btn */
+.fake-btn {
+
+	position: absolute;
+	width: 180px;
+	height: 39px;
+	margin: 0 -5px 0 0;
+	background: #0288d1;
+	border-radius: 2px;
+
+	&:before {
+		position: relative;
+		top: 12px;
+		display: block;
+		content: attr(content);
+		color: #fff;
+		font-family: 'robotolight';
+		line-height: 1;
+		text-align: center;
+	}
+
+	&:hover {
+		background: #03a9f4;
+	}
+
+	.ui-selectonemenu {
+		z-index: 1;
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		height: 39px;
+		border: none !important;
+		&.ui-state-hover {
+			border: none !important;
+		}
+
+		&.ui-state-focus label.ui-selectonemenu-label,
+		&.ui-state-focus .ui-selectonemenu-label {
+			background-color: transparent !important;
+		}
+	}
+	.ui-selectonemenu-trigger {
+		display: none;
+	}
+
+	.ui-selectonemenu label.ui-selectonemenu-label {
+		color: transparent !important;
+		width: 180px !important;
+		height: 39px;
+		padding: 0 !important;
+	}
+}
+
+.ui-selectonemenu-panel .ui-selectonemenu-item-group {
+	max-width: 200px;
+	overflow: hidden;
+	background-color: #e0e0e0;
+	color: #546e7a;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* ui-buttonset */
+.ui-buttonset {
+	margin-right: 11px;
+}
+
+/* ui-splitbutton */
+.ui-splitbutton {
+	.ui-button-text-only {
+		.ui-button-text {
+			padding: 10px !important;
+		}
+	}
+}
+
+.ui-button-icon-only .ui-icon {
+	font-size: 18px !important;
+}

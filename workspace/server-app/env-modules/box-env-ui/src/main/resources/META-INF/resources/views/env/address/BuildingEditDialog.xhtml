@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="locationBundle" basename="LocationBundle"/>
+	<h:form id="building_edit_form">
+		<p:dialog id="building_edit_dlg" header="#{buildingEditDlgM.header}" width="550"
+				  widgetVar="buildingEditDlgVar" styleClass="building-edit" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value nvtest width-120">
+				<dt>
+					<p:outputLabel for="parent" value="#{locationBundle['box.location']}:"/>
+				</dt>
+				<dd>
+					<h:outputText id="parent" value="#{buildingEditDlgM.parent.fullName}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_number" value="#{locationBundle['box.location.structure.building.number']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_number" value="#{buildingEditDlgM.newNumber}" required="true" maxlength="64"
+								 styleClass="width-75 m-mar-right10"
+								 label="#{locationBundle['box.location.structure.building.number']}"/>
+
+					<p:outputLabel for="new_corpus" value="#{locationBundle['box.location.structure.building.corpus']}:"/>
+					<p:inputText id="new_corpus" value="#{buildingEditDlgM.newCorpus}" maxlength="10"
+								 styleClass="width-75 m-mar-right10"/>
+
+					<p:outputLabel for="new_wing" value="#{locationBundle['box.location.structure.building.wing']}:"/>
+					<p:inputText id="new_wing" value="#{buildingEditDlgM.newWing}" maxlength="10" styleClass="width-75"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_post_index" value="#{locationBundle['box.location.structure.building.postal_index']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_post_index" value="#{buildingEditDlgM.newPostIndex}"
+								 maxlength="50"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_landmark" value="#{locationBundle['box.location.structure.building.landmark']}:"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="new_landmark" value="#{buildingEditDlgM.newLandmark}" rows="1" cols="30"
+									 counter="landmark_display" maxlength="512"
+									 counterTemplate="#{overallBundle['box.overall.chars_left']}" autoResize="false" />
+					<h:outputText id="landmark_display" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+
+				<p:commandButton id="cancel_building_button"  value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="building_edit_dlg"
+								 process="@this" action="#{buildingEditDlgM.cancel()}" onclick="PF('buildingEditDlgVar').hide()"/>
+				<p:commandButton id="submit_building_button"  value="#{buildingEditDlgM.submitButtonLabel}"
+								 action="#{buildingEditDlgM.submit()}"
+								 update="#{update}" process="building_edit_dlg"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

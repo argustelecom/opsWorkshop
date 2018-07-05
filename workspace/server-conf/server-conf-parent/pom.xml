@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>server-conf-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>server-conf-parent</name>
+
+	<properties>
+		<main.basedir>${project.parent.basedir}/..</main.basedir>
+
+		<!-- Нужно для скрипта конфигурации -->
+		<buildedconfig.dir>argus-core-package-${version.ru.argustelecom.argus}</buildedconfig.dir>
+		<!-- Нужно для скрипта конфигурации -->
+
+		<!-- Артефакты Аргус server-conf -->
+		<argus.imitation.core>${main.basedir}/server-conf/core</argus.imitation.core>
+		<argus.imitation.core.package>${argus.imitation.core}/target/${buildedconfig.dir}</argus.imitation.core.package>
+		<argus.imitation.jboss-conf>${main.basedir}/server-conf/jboss-conf</argus.imitation.jboss-conf>
+
+		<version.commons-configuration>1.10</version.commons-configuration>
+		<version.commons-lang>2.6</version.commons-lang>
+		<version.commons-logging>1.2</version.commons-logging>
+		<version.org.codehaus.izpack>5.0.0-rc5-ARGUS-2</version.org.codehaus.izpack>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>jboss-conf</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-api</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-core</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-installer</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-event</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-panel</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>${version.commons-configuration}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>${version.commons-logging}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>${version.commons-lang}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-all</artifactId>
+				<version>${version.groovy}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>${version.ant}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant-launcher</artifactId>
+				<version>${version.ant}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<!-- 
+			Предназначен для создания строкового свойства, содержащего абсолютный путь к argus-core-package. 
+			Это вынужденное решение, т.к. ant не может опознать путь, частично указанный через свойство main.basedir, 
+			которое резолвится в объект класса File 
+			-->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>initialize-core-package-absolute-path</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								def absolutePath = new File(project.properties['argus.imitation.core.package']).getAbsolutePath();
+								project.properties.setProperty('argus.imitation.core.package.absolutepath', absolutePath);
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

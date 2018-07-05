@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<p:outputPanel id="order_attribute_panel" styleClass="m-card m-shadow-effect">
+		<!-- <f:attribute name="updateEvent" value="#{currentCommoditySpec.changedEvent}"/>
+		<f:event listener="#{orderAttributesFrameModel.preRender()}" type="preRenderComponent"/> -->
+		
+		<h:form id="order_attribute_form">
+			<div class="columns fs14">
+				<div class="column width-200">
+					<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center">
+						<i class="fa fa-edit fs60" />
+						<h:outputText value="ID: 45327896654" />
+					</p:panelGrid>
+				</div>
+
+					<div class="column width-40-percents">
+
+						<dl class="name-value width-100">
+							<dt>
+								<p:outputLabel for="type" value="Тип: #{orderBundle['box.order.type']}" />
+							</dt>
+							<dd>
+								<h:outputText id="type" value="Подключение" />
+							</dd>
+
+							<dt>
+								<p:outputLabel for="priority" value="Приоритет: #{orderBundle['box.order.priority']}" />
+							</dt>
+							<dd>
+								<h:outputText id="priority" value="Высокий" />
+							</dd>
+							
+							<dt>
+								<p:outputLabel for="creation_date" value="Создана: #{orderBundle['box.order.creation_date']}" />
+							</dt>
+							<dd>
+								<h:outputText id="creation_date" value="10.07.2016" />
+							</dd>
+						</dl>
+					</div>
+
+					<div class="column width-40-percents">
+						<dl class="name-value width-120">
+							<dt>
+								<p:outputLabel for="time" value="Срок: #{orderBundle['box.order.time']}" />
+							</dt>
+							<dd>
+								<!-- <h:outputText id="time" value="#{orderAttributesFrameModel.time}" /> -->
+								<h:outputText id="time" value="15.07.2016 20:30:00" />
+							</dd>
+
+							<dt>
+								<p:outputLabel for="executor" value="Исполнитель: #{orderBundle['box.order.executor']}" />
+							</dt>
+							<dd>
+								<!-- <h:outputText id="executor" value="#{orderAttributesFrameModel.executor}" /> -->
+								<h:outputText id="executor" value="Продавайкин И. А." />
+							</dd>
+							
+							<dt>
+								<p:outputLabel for="observers" value="Наблюдатели: #{orderBundle['box.order.observers']}" />
+							</dt>
+							<dd>
+								<!-- <h:outputText id="observers" value="#{orderAttributesFrameModel.order.category.name}" /> -->
+								<h:outputText id="observers" value="Иванов И.И." />
+							</dd>
+						</dl>
+					</div>
+
+				<div class="column width-200">
+					<o:importConstants type="ru.argustelecom.box.env.test.OrderAttributesFrameModel.OrderStatus" />
+					<p:selectOneMenu id="state" value="#{orderAttributesFrame.state}" style="width: 100%; box-sizing: border-box;">
+						<f:selectItems value="#{OrderStatus.values()}" var="s" itemLabel="#{s.name}" />
+					</p:selectOneMenu>
+				</div>
+			</div>
+		</h:form>
+	</p:outputPanel>
+</ui:composition>

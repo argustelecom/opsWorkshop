@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ Copyright (c) 2012, Red Hat, Inc. and/or its affiliates or third-party contributors as
+  ~ indicated by the @author tags or express copyright attribution
+  ~ statements applied by the authors.  All third-party contributions are
+  ~ distributed under license by Red Hat, Inc.
+  ~
+  ~ This copyrighted material is made available to anyone wishing to use, modify,
+  ~ copy, or redistribute it subject to the terms and conditions of the GNU
+  ~ Lesser General Public License, as published by the Free Software Foundation.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  ~ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this distribution; if not, write to:
+  ~ Free Software Foundation, Inc.
+  ~ 51 Franklin Street, Fifth Floor
+  ~ Boston, MA  02110-1301  USA
+  -->
+<module xmlns="urn:jboss:module:1.1" name="org.bgee.log4jdbc" slot="main">
+	<resources>
+		<resource-root path="log4jdbc-log4j2-jdbc4.1-1.16.jar" />
+	</resources>
+	<dependencies>
+		<module name="javax.api" />
+		<!-- 
+		  надо показать класс заврапленного jdbc-драйвера
+		  ru.argustelecom.system.inf.dataaccess.connection.ArgusDatasourceWrapper, иначе логгирующий драйвер не
+		  сможет его заврапить, см. java.sql.DriverManager.isDriverAllowed(Driver, ClassLoader) 
+		-->
+		<module name="ru.argustelecom.core" />
+		<module name="org.postgresql.pgjdbc" />
+	</dependencies>
+</module>

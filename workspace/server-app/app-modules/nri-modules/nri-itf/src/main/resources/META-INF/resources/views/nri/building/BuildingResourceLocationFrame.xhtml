@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle basename="BuildingElementBundle" var="buildingElementBundle"/>
+	<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+	<f:event listener="#{buildingResLocationFM.preRender(location)}" type="preRenderComponent"/>
+
+	<p:outputPanel styleClass="m-container100" id="geo_location_panel">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect ui-dashboard-card simple-fb">
+
+				<div class="ui-dashboard-header">
+					<i class="fa fa-map-marker"/>
+					<h:outputText styleClass="card-header" value="#{buildingElementBundle['box.nri.building.map.location']}"/>
+
+					<p:outputPanel id="address_map_toolbar" styleClass="m-fright">
+						<p:commandButton
+								value="#{buildingResLocationFM.buildingOnMap ? buildingElementBundle['box.nri.building.map.change']
+									: buildingElementBundle['box.nri.building.map.set']} #{buildingElementBundle['box.nri.building.map.addr_coord']}"
+								action="#{buildingResLocationFM.startAddressPositioning()}"
+								rendered="#{not buildingResLocationFM.geoEditing and buildingResLocationFM.isAddressLayerVisible()}"
+								title="#{buildingElementBundle['box.nri.building.map.start_location_edit']}"
+								update="address_map_toolbar"/>
+
+						<p:commandButton
+								value="#{buildingResLocationFM.buildingOnMap ? overallBundle['box.overall.save']
+										: overallBundle['box.overall.cancel']}"
+								styleClass="ui-priority-primary"
+								action="#{buildingResLocationFM.stopAddressPositioning()}"
+								rendered="#{buildingResLocationFM.geoEditing and buildingResLocationFM.isAddressLayerVisible()}"
+								title="#{buildingElementBundle['box.nri.building.map.finish_location_edit']}"
+								update="address_map_toolbar"/>
+					</p:outputPanel>
+				</div>
+				<div style="width: 100%; height: 400px;">
+					<ui:include src="/views/env/address/BuildingLayerOptions.xhtml"/>
+					<sysinf:lmap id="address_map" widgetVar="#{buildingResLocationFM.mapWidget.var}"
+								 model="#{buildingResLocationFM.map}" viewport="#{buildingResLocationFM.viewport}"
+								 style="width:100%; height: 100%;">
+						<p:ajax event="featureCreated" listener="#{buildingResLocationFM.onFeatureCreated}"
+							update="@this address_map_toolbar"/>
+						<p:ajax event="featureEdited" listener="#{buildingResLocationFM.onFeatureEdited}"
+							update="address_map_toolbar"/>
+						<p:ajax event="overLayerChanged" update="address_map_toolbar"/>
+					</sysinf:lmap>
+				</div>
+			</div>
+		</div>
+	</p:outputPanel>
+</ui:composition>

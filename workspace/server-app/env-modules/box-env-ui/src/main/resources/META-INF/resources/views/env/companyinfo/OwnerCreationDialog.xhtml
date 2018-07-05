@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:form id="owner_creation_form">
+        <p:dialog id="owner_creation_dlg" header="#{companyInfoBundle['box.company_info.creation_dialog_header']}"
+                  width="520" widgetVar="ownerCreationDlgVar" styleClass="icon-creation" resizable="false"
+                  modal="true" closable="false" dynamic="true">
+
+            <dl class="name-value width-200 name-value-tooltip">
+                <dt>
+                    <p:outputLabel for="party_type" value="#{overallBundle['box.overall.party_type']}:"/>
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="party_type" value="#{ownerCreationDm.ownerCreationDto.partyType}" required="true" >
+                        <p:ajax process="@this"/>
+                        <f:selectItems value="#{ownerCreationDm.partyTypes}" var="pt" itemValue="#{pt}" itemLabel="#{pt.objectName}"/>
+                    </p:selectOneMenu>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="name" value="#{ownerCreationDm.ownerCreationDto.name}" maxlength="256" required="true"
+                                 label="#{overallBundle['box.overall.name']}"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="tax_rate" value="#{companyInfoBundle['box.company_info.tax_rate_label']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="tax_rate" value="#{ownerCreationDm.ownerCreationDto.taxRate}" required="true"
+                                 styleClass="width-60">
+                        <f:validateLongRange minimum="0" maximum="100"/>
+                    </p:inputText>
+                </dd>
+
+                <o:importConstants type="ru.argustelecom.box.env.party.model.role.Owner"/>
+                <o:importFunctions type="java.lang.System"/>
+
+                <!--Шаблон для генерации QR-кода-->
+                <ui:fragment rendered="#{System:getProperty(Owner.QR_CODE_PATTERN_ENABLED)}">
+                    <dt>
+                        <p:outputLabel for="bill_type_qr_code_create"
+                                       value="#{companyInfoBundle['box.company_info.qr_code_pattern']}:"/>
+                    </dt>
+                    <dd>
+                        <p:inputTextarea id="bill_type_qr_code_create" value="#{ownerCreationDm.ownerCreationDto.qrCodePattern}"
+                                         rows="4" autoResize="true" required="true">
+                            <f:validator binding="#{qrCodePatternValidator}"/>
+                            <f:attribute value="#{ownerCreationDm.ownerCreationDto.partyType.id}" name="entityId"/>
+                            <f:attribute value="#{true}" name="partyType"/>
+                        </p:inputTextarea>
+                        <h:outputText id="qr_code_pattern_hint" class="icon-help_outline tooltip-help" position="top"
+                                      title="#{ownerCreationDm.tooltip}" escape="false"/>
+                        <p:tooltip id="ttp" for="qr_code_pattern_hint"/>
+                    </dd>
+                </ui:fragment>
+            </dl>
+
+            <dl class="name-value width-200">
+                <dt>
+                    <p:outputLabel for="principal" value="#{companyInfoBundle['box.company_info.use_by_default_label']}:"/>
+                </dt>
+                <dd>
+                    <p:selectBooleanCheckbox id="principal" value="#{ownerCreationDm.ownerCreationDto.principal}"/>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" process="@this"
+                                 action="#{ownerCreationDm.cancel()}" onclick="PF('ownerCreationDlgVar').hide()"/>
+                <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+                                 action="#{ownerCreationDm.create()}" update="#{update} party_type name tax_rate" process="owner_creation_dlg"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('ownerCreationDlgVar').hide()}"/>
+            </div>
+
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

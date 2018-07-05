@@ -1,0 +1,4 @@
+<langpack>
+    <str id="myApplicationPack" txt="Main Application"/>
+    <str id="myApplicationPack.description" txt="A description of my main application package"/>
+</langpack>

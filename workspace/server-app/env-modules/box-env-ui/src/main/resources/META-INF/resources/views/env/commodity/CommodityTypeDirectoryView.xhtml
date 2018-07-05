@@ -1,0 +1,187 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+	
+	<ui:param name="viewModel" value="#{commodityTypeDirectoryVm}" />
+	<ui:param name="pageTitle" value="#{commodityTypeBundle['box.commodity.type.plural']}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="selectedType" value="#{commodityTypeDirectoryVs.nodeDto}" required="false" converter="#{commodityTypeTreeNodeDtoConverter}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css" />
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="TypeBundle" var="typeBundle"/>
+		
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml" />
+		
+		<p:menuitem value="#{commodityTypeBundle['box.commodity.type.plural']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+						<h:form id="commodity_tree_form">		
+							<div class="ui-dashboard-header">
+								<p:inputText styleClass="m-wid50 m-wid-auto-on-mobile m-mar-right10" />
+								<i class="fa fa-search" />
+
+								<p:outputPanel id="tree_managed_buttons" styleClass="m-tex-al-right m-fright">
+									<p:commandLink  id="create_commodity_button" styleClass="m-mar-left10"
+											update="commodity_type_creation_form category" title="#{overallBundle['box.overall.create']}"
+											disabled="#{!p:ifGranted('System_CommodityTypeEdit')}">
+										<i class="fa fa-edit icon-btn"/>
+										<f:setPropertyActionListener value="#{commodityTypeDirectoryVs.nodeDto.groupId}" target="#{commodityTypeCreationDm.groupId}"/>
+										<f:setPropertyActionListener value="#{commodityTypeDirectoryVm.callbackAfterCreation}" target="#{commodityTypeCreationDm.callback}"/>
+									</p:commandLink>
+
+									<p:overlayPanel id="create_commodity_category" widgetVar="categoriesPanel" for="create_commodity_button"
+													styleClass="select-one-item-overlay-panel">
+										<o:importConstants type="ru.argustelecom.box.env.commodity.CommodityTypeRef" var="typeCategory"/>
+
+										<p:selectOneListbox id="category" value="#{commodityTypeCreationDm.creationDto.category}">
+
+											<p:ajax process="@this commodity_tree_form-create_commodity_button" listener="#{commodityTypeCreationDm.open()}"/>
+
+											<f:selectItems value="#{typeCategory.values()}" var="cat" itemValue="#{cat}" itemLabel="#{cat.name}"/>
+										</p:selectOneListbox>
+									</p:overlayPanel>
+
+									<p:commandLink  styleClass="m-mar-left10" action="#{commodityTypeDirectoryVm.remove()}" process="@this"
+													disabled="#{!p:ifGranted('System_CommodityTypeEdit') or commodityTypeDirectoryVm.selectedNode eq null}" update="commodity_tree_form"
+											title="#{overallBundle['box.overall.delete']}">
+										<i class="fa fa-trash icon-btn"/>
+										<p:confirm header="#{commodityTypeBundle['box.commodity.type.delete_dialog']}"
+											   message="#{commodityTypeBundle['box.commodity.type.delete_dialog.details']} '#{commodityTypeDirectoryVm.selectedNode.data.name}'?" />
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<o:importConstants type="ru.argustelecom.box.env.commodity.CommodityTypeRef" var="commodityTypeRef"/>
+							
+							<p:outputPanel id="tree_panel">
+								<p:tree id="commodity_tree" styleClass="width-100-percents m-ov-auto tree-no-border" value="#{commodityTypeDirectoryVm.treeNode}"
+										var="node" lazy="true" dynamic="true" selectionMode="single" selection="#{commodityTypeDirectoryVm.selectedNode}"
+										highlight="true" cashe="false" propagateSelectionUp="false" propagateSelectionDown="false">
+
+									<p:ajax event="select" update="commodity_type_attribute_panel commodity_tree_form-tree_managed_buttons type_property_panel"/>
+
+									<p:treeNode type="#{commodityTypeRef.GROUP.name()}">
+										<i class="#{commodityTypeRef.GROUP.iconClass} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value="#{node.name}" />
+									</p:treeNode>
+
+									<p:treeNode type="#{commodityTypeRef.SERVICE_TYPE.name()}">
+										<i class="#{commodityTypeRef.SERVICE_TYPE.iconClass} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}" />
+									</p:treeNode>
+
+									<p:treeNode type="#{commodityTypeRef.GOODS_TYPE.name()}">
+										<i class="#{commodityTypeRef.GOODS_TYPE.iconClass} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}" />
+									</p:treeNode>
+
+									<p:treeNode type="#{commodityTypeRef.OPTION_TYPE.name()}">
+										<i class="#{commodityTypeRef.OPTION_TYPE.iconClass} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}" />
+									</p:treeNode>
+								</p:tree>
+								
+								<script>
+									$( document ).ready(function() {
+										Argus.System.AutoHeight.compute('commodity_tree_form', 40);
+										Argus.System.AutoHeight.compute('commodity_tree_form-commodity_tree', 50);
+									});
+								</script>
+							</p:outputPanel>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Информация по выбранному объекту -->
+		<div class="m-container65 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect">
+						<ui:include src="CommodityTypeAttributesFrame.xhtml">
+							<ui:param name="nodeDto" value="#{commodityTypeDirectoryVs.nodeDto}"/>
+							<ui:param name="update" value="commodity_tree_form-commodity_tree"/>
+							<ui:param name="callbackAfterGroupChanged" value="#{commodityTypeDirectoryVm.callbackAfterGroupChanged}"/>
+						</ui:include>
+					</div>
+				</div>
+			</div>
+
+			<p:outputPanel id="type_property_panel">
+				<ui:fragment rendered="#{commodityTypeDirectoryVs.nodeDto.type ne commodityTypeRef.OPTION_TYPE}">
+					<ui:fragment rendered="#{commodityTypeDirectoryVs.nodeDto.type eq commodityTypeRef.SERVICE_TYPE}">
+						<ui:include src="ServiceTypeOptionTypeFrame.xhtml">
+							<ui:param name="nodeDto" value="#{commodityTypeDirectoryVs.nodeDto}"/>
+						</ui:include>
+					</ui:fragment>
+
+					<div class="m-container100">
+						<div class="m-container-indent">
+							<div class="m-card m-shadow-effect simple-fb">
+								<ui:include src="/views/env/type/TypePropertyFrame.xhtml">
+									<ui:param name="readonly" value="#{!p:ifGranted('System_CommodityTypePropertyEdit')}"/>
+								</ui:include>
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{commodityTypeDirectoryVs.nodeDto.type eq commodityTypeRef.OPTION_TYPE}">
+					<ui:include src="OptionTypeServiceTypeFrame.xhtml">
+						<ui:param name="nodeDto" value="#{commodityTypeDirectoryVs.nodeDto}"/>
+					</ui:include>
+
+					<ui:include src="telephony/TelephonyOptionTypeZonesFrame.xhtml">
+						<ui:param name="nodeDto" value="#{commodityTypeDirectoryVs.nodeDto}"/>
+					</ui:include>
+				</ui:fragment>
+			</p:outputPanel>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="CommodityTypeCreationDialog.xhtml">
+			<ui:param name="updatedElements" value="commodity_tree_form commodity_type_attribute_panel type_property_form"/>
+		</ui:include>
+
+		<ui:include src="/views/env/type/TypePropertyAddDialog.xhtml"/>
+
+		<ui:include src="/views/env/type/TypePropertyEditDialog.xhtml"/>
+		
+		<ui:include src="/views/env/type/TypePropertyGroupEditDialog.xhtml">
+			<ui:param name="updatedElements" value="type_property_form" />
+		</ui:include>
+
+		<ui:include src="telephony/EditTelephonyOptionTypeZonesDialog.xhtml">
+			<ui:param name="update" value="telephony_option_type_zones_form"/>
+		</ui:include>
+
+		<ui:include src="EditServiceTypeToOptionTypeDialog.xhtml">
+			<ui:param name="update" value="service_type_option_type_form option_type_service_type_form"/>
+		</ui:include>
+
+		<ui:include src="EditOptionTypeToServiceTypeDialog.xhtml">
+			<ui:param name="update" value="option_type_service_type_form service_type_option_type_form"/>
+		</ui:include>
+	</ui:define>
+</ui:composition>

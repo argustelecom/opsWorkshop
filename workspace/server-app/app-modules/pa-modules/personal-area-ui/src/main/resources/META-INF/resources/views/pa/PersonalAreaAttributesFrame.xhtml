@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="personalAreaBundle" basename="PersonalAreaBundle"/>
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile m-vertical-al-middle" style="padding: 6px;">
+
+                <h:form id="personal_area_attributes_form">
+                    <div class="columns">
+
+                        <div class="column width-150 m-tex-al-center m-vertical-al-middle">
+                            <i class="fs28  icon-account_balance_wallet"/>
+                        </div>
+
+                        <div class="column #{personalAreaVM.showAccountList() ? 'width-70-percents' : 'width-30-percents'} fs20 m-vertical-al-middle">
+                            <h:outputText value="#{personalAreaBundle['box.pa.personal_account']}"/>
+                            <b id="current_account_number">#{personalAreaVM.selectedAccount.beautifulNumber}</b>
+                        </div>
+
+						<ui:fragment rendered="#{not personalAreaVM.showAccountList()}">
+							<div class="column width-40-percents m-vertical-al-middle">
+								<boxenv:money value="#{personalAccountBalanceService.getAvailableBalance(personalAreaVM.selectedAccount)}" size="fs22"/>
+							</div>
+						</ui:fragment>
+
+                        <div class="column width-25-percents m-tex-al-right m-vertical-al-middle">
+                            <p:commandButton value="#{overallBundle['box.overall.download']}" ajax="false" process="@this"
+                                             rendered="#{personalAreaVM.canExportBill()}" styleClass="width-185">
+                            	<p:fileDownload value="#{personalAreaVM.export()}"/>                    
+                        </p:commandButton>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

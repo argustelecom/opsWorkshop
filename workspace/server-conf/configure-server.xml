@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>server-conf-parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>server-conf-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>configure-server</artifactId>
+	<packaging>pom</packaging>
+	<name>configure-server</name>
+	
+	<properties>
+		<main.basedir>${project.parent.parent.basedir}/..</main.basedir>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<!--Должен вызываться руками командой mvn groovy:execute@clean-deployments-->
+					<execution>
+						<id>clean-deployments</id>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								import ru.argustelecom.system.inf.configuration.Configurator;
+								import ru.argustelecom.system.inf.configuration.WorkspaceProperties;
+
+								if (project.properties['main.basedir'] != null) {
+									baseDir = project.properties['main.basedir'];
+									workspaceProperties = new WorkspaceProperties(baseDir.endsWith('/') ? baseDir : baseDir + '/');
+								} else	
+									workspaceProperties = WorkspaceProperties.instance();
+									
+								Configurator.uninstallArgus(workspaceProperties);
+							</source>
+						</configuration>
+					</execution>
+					<!--Должен вызываться руками командой mvn groovy:execute@configure-server-->
+					<execution>
+						<id>configure-server</id>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>jboss-conf/src/main/groovy/configure-server.groovy</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

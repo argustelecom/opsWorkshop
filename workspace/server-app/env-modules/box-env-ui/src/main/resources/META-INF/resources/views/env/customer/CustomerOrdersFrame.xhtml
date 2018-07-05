@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="orderBundle" basename="OrderBundle"/>
+	<f:loadBundle var="contractBundle" basename="ContractBundle"/>
+	<p:outputPanel rendered="#{p:ifGranted('CRM_OrderView')}">
+		<div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+					<h:form id="customer_orders_form" style="height: 315px;">
+
+						<div class="ui-dashboard-header">
+							<i class="fa fa-edit (alias)"/>
+							<h:outputText value="#{orderBundle['box.order']}" styleClass="card-header"/>
+
+							<p:outputPanel styleClass="m-fright">
+								<p:commandLink id="create_order_button" styleClass="m-mar-left10" process="@this"
+											   action="#{orderCreationDialogModel.onCreationDialogOpen()}"
+											   disabled="#{!p:ifGranted('CRM_OrderEdit')}"
+											   title="#{overallBundle['box.overall.create']}">
+												<i class="fa fa-edit icon-btn"/>
+												<f:setPropertyActionListener value="#{customer}" target="#{orderCreationDialogModel.customer}"/>
+								</p:commandLink>
+							</p:outputPanel>
+						</div>
+
+						<p:dataTable id="customer_orders_table" value="#{orders}" var="order"
+									 emptyMessage="#{overallBundle['box.overall.empty']}">
+							<p:column headerText="#{overallBundle['box.overall.number']}">
+								<boxenv:linkToCard text="#{order.number}" value="#{order}"/>
+							</p:column>
+
+							<p:column headerText="#{contractBundle['box.contract']}">
+								<ui:repeat value="#{order.contracts}" var="contract">
+									<boxenv:linkToCard value="#{contract}" text="#{contract.documentNumber}"/><br/>
+								</ui:repeat>
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.state']}">
+								<h:outputText value="#{order.state.name}"/>
+							</p:column>
+
+							<p:column headerText="#{orderBundle['box.order.assignee']}">
+								<h:outputText value="#{order.assignee.objectName}"/>
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</p:outputPanel>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="fa fa-edit (alias)" />
+		<ui:param name="headerText" value="#{orderBundle['box.order.plural']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('CRM_OrderView')}" />
+	</ui:include>
+
+</ui:composition>

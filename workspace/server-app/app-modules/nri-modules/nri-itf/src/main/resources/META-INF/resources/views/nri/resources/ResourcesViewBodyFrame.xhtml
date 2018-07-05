@@ -1,0 +1,133 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+>
+
+	<ui:define name="completeFilterFields">
+		<ul class="search-row-2-column">
+			<li>
+				<p:outputLabel value="#{resourcesBundle['box.nri.resources.name']}:"/>
+				<p:inputText value="#{resourcesViewState.name}" process="@this" maxlength="128"/>
+			</li>
+			<li>
+				<p:outputLabel for="s_location"
+							   value="#{resourcesBundle['box.nri.resources.location']}:"/>
+				<p:autoComplete id="s_location" queryDelay="500" value="#{resourcesViewState.locationString}"
+								completeMethod="#{resourcesVM.completeLocation}" effect="blind"
+								valueChangeListener="#{resourcesVM.updateLocator}"
+								queryEvent="keyup" minQueryLength="2" maxlength="1000" autoHighlight="false"
+								style="width: calc(100% - 100px)">
+				</p:autoComplete>
+			</li>
+
+		</ul>
+		<ul class="search-row-2-column">
+			<li>
+				<p:outputLabel value="#{resourcesBundle['box.nri.resources.specification']}:"/>
+				<p:selectOneMenu value="#{resourcesViewState.specificationName}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{resourcesVM.rootSpecifications}" var="spec"
+								   itemValue="#{spec.name}" itemLabel="#{spec.name}"/>
+				</p:selectOneMenu>
+			</li>
+			<li>
+				<p:outputLabel value="#{resourcesBundle['box.nri.resources.status']}:"/>
+				<p:selectOneMenu value="#{resourcesViewState.resourceStatus}" style="width: calc(100% - 100px)">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{resourcesVM.statuses}" var="stat" itemLabel="#{stat.name}"/>
+				</p:selectOneMenu>
+			</li>
+		</ul>
+		<p:outputPanel id="additional_resources" rendered="#{resourcesVM.useAdditionalFilters}">
+			<ui:repeat var="res" value="#{resourcesViewState.paramDescriptors}" varStatus="resStatus">
+				<ul class="search-row-2-column">
+					<li>
+						<p:outputLabel value="#{resourcesBundle['box.nri.resources.parameter']}:"/>
+						<p:selectOneMenu value="#{res.paramSpec}">
+							<f:converter converterId="nriDtoConverter"/>
+							<f:selectItem itemValue="#{null}" noSelectionOption="true"/>
+							<f:selectItems value="#{resourcesVM.availableParams}" var="resParam"
+										   itemLabel="#{resParam.name}" itemValue="#{resParam}"/>
+						</p:selectOneMenu>
+					</li>
+					<li>
+						<p:outputLabel value="#{resourcesBundle['box.nri.resources.value']}:"/>
+						<p:inputText value="#{res.paramValue}" process="@this" maxlength="128"
+									 style="width: calc(100% - 150px); box-sizing: border-box"/>
+						<p:commandLink id="delete_param_#{resStatus.index}"
+									   actionListener="#{resourcesVM.deleteParam(resStatus.index)}"
+									   styleClass="m-fright m-mar-top3" style="margin-right: 15px;"
+									   process="@this" update="#{filterFormId}-additional_resources">
+							<i class="fa fa-minus icon-btn"/>
+						</p:commandLink>
+					</li>
+				</ul>
+			</ui:repeat>
+		</p:outputPanel>
+
+		<p:commandButton styleClass="m-fleft m-mar-top10" value="${resourcesBundle['box.nri.resources.search_by_params']}"
+						 action="#{resourcesVM.toggleAdditionalFilters()}"
+						 icon="fa fa-play #{resourcesVM.useAdditionalFilters ? 'fa-rotate-270' : 'fa-rotate-90'}"
+						 update="#{filterFormId}"/>
+		<p:commandLink id="add_param" actionListener="#{resourcesVM.addParamFilter}"
+					   styleClass="m-fleft m-mar-top20 m-mar-left10"
+					   rendered="#{resourcesVM.useAdditionalFilters}"
+					   update="#{filterFormId}-additional_resources">
+			<p:tooltip id="add_param_focus" for="@form-add_param" position="top" value="#{resourcesBundle['box.nri.resources.add_param']}"/>
+			<i class="fa fa-plus icon-btn"/>
+		</p:commandLink>
+	</ui:define>
+
+	<ui:define name="shortFilterFields"/>
+
+	<ui:define name="searchResult">
+		<h:form id="#{resultFormId}">
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{resourcesBundle['box.nri.resources.search_result']}"/>
+				<p:outputPanel id="header_buttons" styleClass="m-fright">
+					<p:commandButton id="delete_resource_button" rendered="#{resourcesVM.selectedResource ne null and p:ifGranted('Nri_ResourceInfoEdit')}"
+									 value="#{overallBundle['box.overall.delete']}"
+									 actionListener="#{resourcesVM.deleteSelectedResource}" update="@form">
+						<p:confirm header="#{overallBundle['box.overall.delete']}?" message="#{overallBundle['box.overall.delete']} #{resourcesVM.selectedResource.name}?"
+								   icon="ui-icon-alert"/>
+					</p:commandButton>
+					<p:commandButton id="create_resource_button"
+									 rendered="#{p:ifGranted('Nri_ResourceInfoEdit')}"
+									 value="#{overallBundle['box.overall.create']}"
+									 onclick="PF('resourceCreationDlg').show()"/>
+				</p:outputPanel>
+
+			</div>
+
+			<p:dataTable id="personnel_table" value="#{resourcesVM.lazyResources}" var="res" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+								{PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 selection="#{resourcesVM.selectedResource}" selectionMode="single"
+						 sortBy="#{ResourceInstanceSort.NAME}">
+				<p:ajax event="rowSelect" process="@this" update="@form-header_buttons"/>
+				<p:column headerText="#{resourcesBundle['box.nri.resources.name']}"
+						  sortBy="#{ResourceInstanceSort.NAME}">
+					<h:outputLink value="ResourceView.xhtml?resource=ResourceInstance-#{res.id}">
+						<h:outputText value="#{res.name}"/>
+					</h:outputLink>
+				</p:column>
+
+				<p:column headerText="#{resourcesBundle['box.nri.resources.specification']}"
+						  sortBy="#{ResourceInstanceSort.SPECIFICATION}">
+					<h:outputText value="#{res.specification}"/>
+				</p:column>
+
+				<p:column headerText="#{resourcesBundle['box.nri.resources.status']}"
+						  sortBy="#{ResourceInstanceSort.STATUS}">
+					<h:outputText value="#{res.status.name}"/>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

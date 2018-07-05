@@ -1,0 +1,15 @@
+.idea/
+builds/
+*.log
+.#*
+*.*~
+*.jsfdia
+*.orig
+*.bak
+*.ids
+*.iml
+*.ipr
+*.iws
+automerge*.sh
+automerge*.bat
+rebel.xml

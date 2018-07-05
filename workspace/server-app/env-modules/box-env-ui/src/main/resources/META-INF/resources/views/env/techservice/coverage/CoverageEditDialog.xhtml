@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <h:form id="coverage_edit_form">
+        <p:dialog id="coverage_edit_dlg"
+                  header="#{coverageEditDlgM.isEditMode() ? coverageBundle['box.coverage.edit_dialog'] : coverageBundle['box.coverage.create_dialog']}"
+                  width="500" styleClass="icon-creation"
+                  widgetVar="coverageEditDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+            <ui:include src="/views/env/address/AddressInputFrame.xhtml">
+                <ui:param name="inputAddressValue" value="#{coverageEditDlgM.newBuilding}"/>
+                <ui:param name="inputAddressValueLabel" value="#{coverageBundle['box.coverage.address']}"/>
+                <ui:param name="isInputAddressDisabled" value="#{coverageEditDlgM.isEditMode()}"/>
+                <ui:param name="isInputAddressRequired" value="#{true}"/>
+                <ui:param name="logingTypeValue" value="#{abstractContractCreationDialogMolde.newLodgingType}"/>
+                <ui:param name="logingTypeValueLabel" value="#{coverageBundle['box.coverage.loging.type']}"/>
+                <ui:param name="isLogingTypeDisabled" value="#{false}"/>
+                <ui:param name="isLogingTypeRendered" value="#{false}"/>
+                <ui:param name="logingTypes" value="#{abstractContractCreationDialogMolde.lodgingTypes}"/>
+                <ui:param name="logingValue" value="#{abstractContractCreationDialogMolde.newLodging}"/>
+                <ui:param name="logingValueLabel" value="#{coverageBundle['box.covarage.loging.number']}"/>
+                <ui:param name="isLogingValueDisabled" value="#{false}"/>
+                <ui:param name="isLogingValueRendered" value="#{false}"/>
+            </ui:include>
+
+            <dl class="name-value width-110">
+                <dt>
+                    <p:outputLabel for="new_state" value="#{overallBundle['box.overall.state']}:" />
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="new_state" value="#{coverageEditDlgM.newState}"
+                                     required="true">
+                        <f:selectItem itemValue=""/>
+                        <f:selectItems value="#{coverageEditDlgM.states}" var="state"
+                                       itemValue="#{state}" itemLabel="#{state.objectName}" />
+                    </p:selectOneMenu>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="new_note" value="#{overallBundle['box.overall.desc']}:"/>
+                </dt>
+                <dd>
+                    <p:inputTextarea id="new_note" value="#{coverageEditDlgM.newNote}"
+                                     maxlength="512" counter="coverage_note_counter"
+                                     counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+                    <h:outputText id="coverage_note_counter" styleClass="fs12"/>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" update="coverage_edit_dlg" resetValues="true"
+                                 process="@this" action="#{coverageEditDlgM.cancel()}" onclick="PF('coverageEditDlgVar').hide()"/>
+                <p:commandButton id="create_button"
+                                 value="#{coverageEditDlgM.isEditMode() ? overallBundle['box.overall.save'] : overallBundle['box.overall.create']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('coverageEditDlgVar').hide()}"
+                                 action="#{coverageEditDlgM.submit()}" process="coverage_edit_dlg" update="#{update} new_building new_state"/>
+            </div>
+
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

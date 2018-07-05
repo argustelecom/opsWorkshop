@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="personalAreaBundle" basename="PersonalAreaBundle"/>
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect custom-content-card simple-fb">
+                <h:form id="transactions_form">
+
+                    <f:event listener="#{personalAreaTransactionsFM.preRender(account)}" type="preRenderComponent"/>
+
+                    <script>
+                        $( document ).ready(function() {
+                            Argus.System.AutoHeight.compute('transactions_form', 40);
+                        });
+                    </script>
+
+                    <div class="ui-dashboard-header ui-dashboard-header-dark">
+                        <i class="icon-youtube_searched_for"/>
+                        <h:outputText styleClass="card-header" value="#{personalAreaBundle['box.pa.home.history']}"/>
+                        <p:inputText style="visibility: hidden;"/>
+                    </div>
+
+                    <div class="m-pad10">
+                        <p:outputPanel id="date_filter_panel">
+                            <p:commandLink id="date_filter" styleClass="m-pad-right10" update="date_filter_overlay_panel">
+                                <i class="fa fa-calendar fs22"></i>
+                            </p:commandLink>
+
+                            <p:calendar id="start_date" value="#{personalAreaTransactionsFM.startDate}" pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"
+                                        styleClass="width-35-percents m-pad-right20" mindate="#{personalAreaTransactionsFM.minStartDate}"
+                                        maxdate="#{personalAreaTransactionsFM.currentDate}"
+                                        locale="#{languageBean.locale}">
+                                <p:ajax event="dateSelect" process="@this" update="end_date search_button"/>
+                            </p:calendar>
+
+                            <p:outputLabel for="end_date" value="#{overallBundle['box.overall.valid_to.short']}"/>
+                            <p:calendar id="end_date" value="#{personalAreaTransactionsFM.endDate}" pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"
+                                        disabled="#{personalAreaTransactionsFM.startDate eq null}" styleClass="width-35-percents m-pad-right20"
+                                        mindate="#{personalAreaTransactionsFM.startDate}" maxdate="#{personalAreaTransactionsFM.currentDate}"
+                                        locale="#{languageBean.locale}">
+                                <p:ajax event="dateSelect" process="@this" update="search_button"/>
+                            </p:calendar>
+
+                            <p:commandLink id="search_button" action="#{personalAreaTransactionsFM.initTransactionsMap()}"
+                                           process="@this transactions_form-date_filter_panel" update="transactions_table" title="#{overallBundle['box.overall.show']}"
+                                           disabled="#{personalAreaTransactionsFM.startDate eq null or personalAreaTransactionsFM.endDate eq null}">
+                                <i class="fa fa-search fs22"></i>
+                            </p:commandLink>
+                        </p:outputPanel>
+                    </div>
+
+                    <p:overlayPanel widgetVar="dateFilterVar" for="date_filter" styleClass="select-one-item-overlay-panel">
+                        <p:selectOneListbox id="date_filter_overlay_panel" value="#{personalAreaTransactionsFM.dateFilter}">
+
+                            <p:ajax process="@this" listener="#{personalAreaTransactionsFM.applyFilter()}"
+                                    update="@this start_date end_date search_button transactions_table" oncomplete="PF('dateFilterVar').hide();"/>
+
+                            <f:selectItems value="#{personalAreaTransactionsFM.dateFilters}" var="df"
+                                           itemValue="#{df}" itemLabel="#{personalAreaBundle[df.desc]}"/>
+                        </p:selectOneListbox>
+                    </p:overlayPanel>
+
+                    <p:dataTable id="transactions_table" value="#{personalAreaTransactionsFM.datesValue}" var="td" styleClass="hide-tr-header paginator-top-hidden"
+                                 rows="5" paginator="true" rowsPerPageTemplate="5,10,15" scrollable="true" scrollHeight="93%"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 emptyMessage="#{personalAreaTransactionsFM.tableEmptyMessage}" currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}">
+                        <p:column>
+                            <div>
+                                <b>
+                                    <h:outputText value="#{td}">
+                                        <sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+                                    </h:outputText>
+                                </b>
+                            </div>
+                            <p:dataList value="#{personalAreaTransactionsFM.transactionsMap.get(td)}" var="transaction"
+                                        type="definition" styleClass="personal-area-transaction-datalist">
+                                <div class="columns">
+                                    <div class="column width-40-percents m-pad-left20">
+                                        <boxenv:money value="#{transaction.amount}" negativeColorClass="m-grey" showBalanceSign="true"/>
+                                    </div>
+
+                                    <div class="column width-60-percents m-tex-al-left">
+                                        <h:outputText value="#{transaction.transactionDate}" styleClass="fs14 text-bold">
+                                            <sysinf:convertDateTime pattern="#{dateUtils.TIME_DEFAULT_PATTERN}"/>
+                                        </h:outputText>
+                                        <br/>
+                                        <h:outputText value="#{transaction.description}" styleClass="fs14"/>
+                                    </div>
+                                </div>
+                            </p:dataList>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>dbm-parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>dbm-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>dbm</artifactId>
+	<packaging>pom</packaging>
+	<name>dbm</name>
+
+	<properties>
+		<this.scriptdir>${project.basedir}/src/sql</this.scriptdir>
+		<this.basedir>${project.basedir}</this.basedir>
+		<this.target>${project.build.directory}</this.target>
+
+		<dbm.output.dir>${this.target}/dbm</dbm.output.dir>
+		<dbm.jar.name>dbmaintain.jar</dbm.jar.name>
+		<dbm.jar.fullname>${dbm.output.dir}/${dbm.jar.name}</dbm.jar.fullname>
+		<dbm.driver.name>postgresql-9.4.1208.jar</dbm.driver.name>
+		<dbm.driver.location>${this.basedir}/../workspace/server-conf/argus-overrides/src/static/modules/org/postgresql/pgjdbc/main</dbm.driver.location>
+		<dbm.props.template>${this.basedir}/src/specific/local.properties</dbm.props.template>		
+	</properties>
+	
+	<profiles>
+        <!-- Включает анализатор исходников для модуля nri -->
+        <profile>
+            <id>nri-sonar-analyser</id>
+            <properties>
+                <sonar.skip>false</sonar.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.dbmaintain</groupId>
+			<artifactId>dbmaintain</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<!-- Загружает свойства dbm-work.properties и dbm-my.properties в контекст проекта -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>read-work-props</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${this.basedir}/dbm-work.properties</file>
+							</files>
+						</configuration>
+					</execution>
+					<execution>
+						<id>override-with-my-props</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${this.basedir}/dbm-my.properties</file>
+							</files>
+							<quiet>true</quiet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Проверяет соответствие реальной кодировки скриптов и указанной в свойствах dbMaintainer 
+			
+			Временно отключено, потому что не правильно определяет кодировку для скриптов, 
+			в которых не используется кириллица. Кодировка определяется детектором, который 
+			"догадывается" по потоку символов. Соответственно, нужно либо в каждый скрипт 
+			добавить комментарий с сылкой на таск и автора скрипта (как это было в старом механизме 
+			обновлений) либо перекодировать скрипты в кодировку с BOM (но тут есть вероятность, что 
+			не взлетит dbmaintainer). Ну и на крайний случай, просто отказаться от проверки кодировки
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>check-script-encoding</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireEncoding>
+									<encoding>${dbMaintainer.script.encoding}</encoding>
+									<includes>src/sql/**,src/projects/**</includes>
+								</requireEncoding>
+							</rules>
+							<fastFail>false</fastFail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+
+			<!-- Скачивает из корпоративного репозитория артефакты dbmaintain и его командную строку -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dbm</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.dbmaintain</groupId>
+									<artifactId>dbmaintain</artifactId>
+									<version>${version.org.dbmaintain}</version>
+									<outputDirectory>${dbm.output.dir}</outputDirectory>
+									<destFileName>${dbm.jar.name}</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-dbm-cmd</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.dbmaintain</groupId>
+									<artifactId>dbmaintain-cmd</artifactId>
+									<version>${version.org.dbmaintain}</version>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${dbm.output.dir}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Копирует драйвер JDBC dbm.driver.name из директории dbm.driver.location в свою рабочую директорию -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>process-modules</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${dbm.output.dir}/driver</outputDirectory>
+							<resources>
+								<resource>
+									<filtering>false</filtering>
+									<directory>${dbm.driver.location}</directory>
+									<includes>
+										<include>${dbm.driver.name}</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Выполняет настройку драйвера и командной строки для dbMaintainer -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<executions> 
+					<!-- Убирает номер версии артефакта dbmaintain.jar из командной строки -->
+					<execution>
+						<id>replace-jar-name</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${dbm.output.dir}/dbmaintain.sh</include>
+								<include>${dbm.output.dir}/dbmaintain.bat</include>
+							</includes>
+							<token>dbmaintain\-.+\.jar</token>
+							<value>dbmaintain.jar</value>
+						</configuration>
+					</execution>
+
+					<!-- Указывает относительный путь к драйверу в setJdbcDriver.sh -->
+					<execution>
+						<id>set-driver-sh</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${dbm.output.dir}/setJdbcDriver.sh</include>
+							</includes>
+							<token>\#(\s)*JDBC_DRIVER(\s)*=</token>
+							<value>JDBC_DRIVER=driver/${dbm.driver.name}</value>
+							<regexFlags>
+								<regexFlag>CASE_INSENSITIVE</regexFlag>
+							</regexFlags>
+						</configuration>
+					</execution>
+
+					<!-- Указывает относительный путь к драйверу в setJdbcDriver.bat -->
+					<execution>
+						<id>set-driver-bat</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${dbm.output.dir}/setJdbcDriver.bat</include>
+							</includes>
+							<token>@REM\s*SET\s+JDBC_DRIVER\s*\=</token>
+							<value>SET JDBC_DRIVER=driver/${dbm.driver.name}</value>
+							<regexFlags>
+								<regexFlag>CASE_INSENSITIVE</regexFlag>
+							</regexFlags>
+						</configuration>
+					</execution>
+					
+					<!-- Удаляет из dbmaintain.sh и из setJdbcDriver.sh символ возврата каретки -->
+					<execution>
+						<id>replace-win-chars-in-sh</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${dbm.output.dir}/dbmaintain.sh</include>
+								<include>${dbm.output.dir}/setJdbcDriver.sh</include>
+							</includes>
+							<token>\r</token>
+							<value></value>
+							<regexFlags>
+								<regexFlag>CASE_INSENSITIVE</regexFlag>
+							</regexFlags>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Выполняет скритпы groovy для донастройки update -->
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+
+					<!-- 
+						Генерирует конфигурационный файл свойств dbmaintain-default.properties
+						на основе файла свойств из состава dbmaintain.jar, dbm-work.properties 
+						и dbm-my.properties
+						
+						подробнее см. комментарии в overwrite-props.groovy
+					-->
+					<execution>
+						<id>overwrite-props</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>${this.basedir}/src/groovy/overwrite-props.groovy</source>
+						</configuration>
+					</execution>
+
+					<!-- 
+						Архивирует скрипты в jar и готовит dbmaintain.properties
+						
+						подробнее см. комментарии в process-scripts.groovy
+					-->
+					<execution>
+						<id>process-scripts</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>${this.basedir}/src/groovy/process-scripts.groovy</source>
+						</configuration>
+					</execution>
+
+					<!-- 
+						TASK-87917, v.semchenko: Подсчет смещения портов у пропертей (calc-some-props), который мы наследуем от grandparent, в dbm не нужен.pom.xml
+						Иначе получаем _java.lang.NumberFormatException: null_ , так как у нас нет пропертей СП.
+					-->
+					<execution>
+						<id>calc-some-props</id>
+						<phase>none</phase>		
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Упаковывает dbmaintain-default.properties в dbmaintain.jar заменяя исходную -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>replace-default-properties</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>jar</executable>
+							<workingDirectory>${this.target}</workingDirectory>
+							<arguments>
+								<argument>uf</argument>
+								<argument>dbm/${dbm.jar.name}</argument>
+								<argument>dbmaintain-default.properties</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Собирает архив с готовым обновлением -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptor>${this.basedir}/src/assembly/assembly.xml</descriptor>
+							<finalName>update-${project.version}</finalName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

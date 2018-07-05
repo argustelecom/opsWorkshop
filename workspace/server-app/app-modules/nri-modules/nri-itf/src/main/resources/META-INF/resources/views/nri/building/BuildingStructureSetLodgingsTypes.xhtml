@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <p:dialog id="building_elements_set_type_dlg"
+              header="#{buildingElementBundle['box.nri.building.type_for_all']}" width="500"
+              widgetVar="buildingElementsSetTypeDlg" resizable="false" modal="true" closable="false"
+              styleClass="icon-creation">
+        <h:form id="building_elements_set_type_form">
+            <dl class="name-value">
+                <dt>
+                    <p:outputLabel for="new_building"
+                                   value="#{buildingElementBundle['box.nri.building.building_type_label']}:"/>
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="new_building" value="#{buildingStructureVM.typeForBuilding}"
+                                     required="true"
+                                     requiredMessage="#{commonBundle['box.nri.common.type_required']}"
+                                     style="width: 100%;">
+                        <p:ajax event="change" update="@form"/>
+						<f:converter converterId="nriDtoConverter"/>
+                        <f:selectItem itemValue="#{null}"/>
+                        <f:selectItems var="type" value="#{buildingStructureVM.buildingTypes}"
+                                       itemLabel="#{type.name}"/>
+                    </p:selectOneMenu>
+                </dd>
+            </dl>
+            <dl class="name-value">
+                <dt>
+                    <p:outputLabel for="new_level"
+                                   value="#{buildingElementBundle['box.nri.building.lodging_type_label']}:"
+                                   rendered="#{buildingStructureVM.possibleLodgings.size() > 0}"/>
+
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="new_level" value="#{buildingStructureVM.typeForAll}"
+                                     required="#{buildingStructureVM.possibleLodgings.size() > 0}"
+                                     requiredMessage="#{commonBundle['box.nri.common.type_required']}"
+                                     rendered="#{buildingStructureVM.possibleLodgings.size() > 0}"
+                                     style="width: 100%;">
+						<f:converter converterId="nriDtoConverter"/>
+                        <p:ajax event="change" update="@form"/>
+                        <f:selectItem itemValue="#{null}"/>
+                        <f:selectItems var="type" value="#{buildingStructureVM.lodgingTypes}"
+                                       itemLabel="#{type.name}"/>
+                    </p:selectOneMenu>
+                </dd>
+            </dl>
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button"
+                                 value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button"
+                                 update="building_element_creation_dlg" process="@this"
+                                 action="#{buildingStructureVM.cleanCreationParams()}"
+                                 onclick="PF('buildingElementsSetTypeDlg').hide()"/>
+                <p:commandButton id="create_button"
+                                 value="#{overallBundle['box.overall.create']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('buildingElementsSetTypeDlg').hide()};
+											 Argus.System.AutoHeight.compute('building_elem_tree_form-building_elem_tree', 35);"
+                                 action="#{buildingStructureVM.initDefaultStructure()}"
+                                 update="#{update}"/>
+            </div>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

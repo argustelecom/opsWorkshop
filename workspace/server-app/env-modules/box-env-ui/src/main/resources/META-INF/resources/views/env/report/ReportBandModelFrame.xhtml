@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:o="http://omnifaces.org/ui">
+
+    <f:loadBundle var="reportBundle" basename="ReportBundle"/>
+    <h:form id="query_metadata_form">
+           <script>
+               $( document ).ready(function() {
+                   Argus.System.AutoHeight.compute('report_type_tab_view-query_metadata_form', 40);
+                   Argus.System.AutoHeight.compute('query_metadata_panel', 40);
+                   Argus.System.AutoHeight.compute('codemirror-wrapper', 40);
+               });
+           </script>
+
+            <div id="query_metadata_panel" class="metadata-panel clearfix">
+                <div class="m-mar-bot-16">
+                    <h3 class="h3-header bottom-border">
+                        <h:outputText value="#{reportBundle['box.report.band.property.plural']}"
+                                      styleClass="m-disp-inl-block m-pad-bot5"/>
+                    </h3>
+                    <sysinf:editableSection disabled="#{reportBandsFm.selectedBand eq null or reportBandsFm.selectedBand.root or readonly}"
+                                            saveLabel="#{overallBundle['box.overall.save']}"
+                                            cancelLabel="#{overallBundle['box.overall.cancel']}">
+                        <dl class="name-value width-180">
+                            <dt>
+                                <p:outputLabel for="band_name" value="#{overallBundle['box.overall.name']}:"/>
+                            </dt>
+                            <dd>
+                                    <p:ajax event="save" process="@this" listener="#{reportBandsFm.changeSelectedBand()}"
+                                            update="report_type_tab_view-report_band_tree_form-report_band_tree"/>
+                                    <p:inputText id="band_name" value="#{reportBandsFm.selectedBand.keyword}"
+                                                 required="true" maxlength="128" label="#{overallBundle['box.overall.name']}">
+                                        <f:validateRegex pattern="[a-zA-Z_0-9]*"/>
+                                    </p:inputText>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="data_loader_type" value="#{reportBundle['box.report.band.loader_type']}:"/>
+                            </dt>
+                            <dd>
+                                <o:importConstants type="ru.argustelecom.box.env.report.model.DataLoaderType" var="dataLoaderType"/>
+
+                                <p:selectOneMenu id="data_loader_type" value="#{reportBandsFm.selectedBand.dataLoaderType}" required="true"
+                                                 maxlength="128" label="#{reportBundle['box.report.band.loader_type']}">
+                                    <f:selectItems value="#{dataLoaderType.values()}" var="dlt" itemValue="#{dlt}" itemLabel="#{dlt}"/>
+                                </p:selectOneMenu>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="orientation" value="#{reportBundle['box.report.band.orientation']}:"/>
+                            </dt>
+                            <dd>
+                                <o:importConstants type="com.haulmont.yarg.structure.BandOrientation" var="bandOrientation"/>
+
+                                <p:selectOneMenu id="orientation" value="#{reportBandsFm.selectedBand.orientation}" required="true"
+                                                 maxlength="128" label="#{reportBundle['box.report.band.orientation']}">
+                                    <f:selectItems value="#{bandOrientation.values()}" var="bo" itemValue="#{bo}" itemLabel="#{bo}"/>
+                                </p:selectOneMenu>
+                            </dd>
+                        </dl>
+                    </sysinf:editableSection>
+
+                    <dl class="name-value width-180">
+                        <dt>
+                            <p:outputLabel for="parent_band" value="#{reportBundle['box.report.band.parent']}:"/>
+                        </dt>
+                        <dd>
+                            <h:outputText id="parent_band" styleClass="m-mar-left-8" value="#{reportBandsFm.parentBandName}"/>
+                        </dd>
+                    </dl>
+                </div>
+
+                <h3 class="h3-header bottom-border">
+                    <h:outputText value="#{reportBundle['box.report.band.sql']}"/>
+                </h3>
+                <div id="codemirror-wrapper">
+                    <pe:codeMirror id="codeMirror" widgetVar="codeMirror" value="#{reportBandsFm.selectedBand.query}"
+                                   lineNumbers="true" readonly="#{reportBandsFm.selectedBand eq null or readonly}" />
+                    <p:commandButton value="#{reportBundle['box.report.band.sql.save']}" styleClass="m-fright m-mar-top10" disabled="#{reportBandsFm.selectedBand eq null}"
+                                     process="@this codeMirror" action="#{reportBandsFm.changeSelectedBandQuery()}" update="codeMirror"/>
+                </div>
+            </div>
+       </h:form>
+</ui:composition>

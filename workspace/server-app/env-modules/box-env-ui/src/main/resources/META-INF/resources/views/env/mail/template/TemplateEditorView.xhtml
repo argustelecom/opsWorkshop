@@ -1,0 +1,101 @@
+<ui:composition template="/views/inf/page/View.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf"
+	xmlns:pm="http://primefaces.org/modena"
+    xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<ui:param name="viewModel" value="#{templateEditorViewModel}" />
+	<ui:param name="pageTitle" value="#{templateEditorBundle['box.template_editor']}" />
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css" />
+		<f:loadBundle var="templateEditorBundle" basename="TemplateEditorBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}"
+			url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem value="#{templateEditorBundle['box.template_editor']}" />
+	</ui:define>
+
+	<ui:define name="body">
+		<h:form id="templates_form">
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="m-container40">
+						<dl class="name-value width-130">
+							<dt>
+								<p:outputLabel
+									class="m-disp-block m-bold-gray fs20 m-font-roboto-regular"
+									for="templates" value="#{templateEditorBundle['box.template_editor.template']}" />
+							</dt>
+							<dd>
+								<p:selectOneMenu id="templates"
+									value="#{templateEditorViewModel.selectedTemplate}">
+									<p:ajax event="itemSelect" update="managed_buttons md_template html_template" />
+									<f:selectItem itemValue="" />
+									<f:selectItems value="#{templateEditorViewModel.templates}"  var="template" itemLabel="#{template.name}" itemValue="#{template}"/>
+								</p:selectOneMenu>
+
+							</dd>
+						</dl>
+					</div>
+					<div class="m-container60">
+						<p:outputPanel id="managed_buttons" styleClass="m-fright">
+							<boxenv:markdownHelp/>
+							<p:commandButton value="#{templateEditorBundle['box.template_editor.show_html']}"
+								action="#{templateEditorViewModel.showInHtml()}"
+								update="html_template"
+								disabled="#{empty templateEditorViewModel.templateInMarkdown}" />
+							<p:commandButton value="#{overallBundle['box.overall.save']}"
+								action="#{templateEditorViewModel.saveTemplate()}"
+								disabled="#{empty templateEditorViewModel.templateInMarkdown}" />
+						</p:outputPanel>
+					</div>
+				</div>
+			</div>
+			<div class="m-container50 m-responsive100">
+				<div class="m-container-indent">
+					<div class="m-container100">
+						<div
+							class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile"
+							style="min-height: 500px;">
+							<div class="ui-dashboard-header">
+								<span class="m-disp-block m-bold-gray fs20 m-font-roboto-regular">#{templateEditorBundle['box.template_editor.markdown']}</span>
+							</div>
+							<p:inputTextarea id="md_template"
+								value="#{templateEditorViewModel.templateInMarkdown}" rows="15" cols="80" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container50 m-responsive100">
+				<div class="m-container100 m-responsive100">
+					<div class="m-container-indent">
+						<div
+							class="ui-dashboard-card m-card m-shadow-effect m-hei-auto-on-mobile"
+							style="min-height: 500px;">
+
+
+							<div class="ui-dashboard-header">
+								<span class="m-disp-block m-bold-gray fs20 m-font-roboto-regular">#{templateEditorBundle['box.template_editor.html']}</span>
+							</div>
+							<h:outputText id="html_template"
+								value="#{templateEditorViewModel.templateInHtml}" escape="false" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

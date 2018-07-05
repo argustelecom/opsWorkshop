@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+
+
+	<dl class="name-value #{width == mull ? 'width-110' : width}">
+		<dt>
+			<p:outputLabel for="new_building" value="#{inputAddressValueLabel}:"/>
+		</dt>
+		<dd class="width-100-percents">
+			<boxenv:inputAddress id="new_building" value="#{inputAddressValue}" disabled="#{isInputAddressDisabled}"
+								 required="#{isInputAddressRequired}"/>
+		</dd>
+	</dl>
+
+	<dl class="name-value #{width == mull ? 'width-110' : width}">
+		<ui:fragment rendered="#{isLogingTypeRendered}">
+			<dt>
+				<p:outputLabel for="new_lodging_type" value="#{logingTypeValueLabel}:"/>
+			</dt>
+			<dd class="width-50-percents">
+				<p:selectOneMenu id="new_lodging_type" value="#{logingTypeValue}" disabled="#{isLogingTypeDisabled}">
+					<f:selectItem itemValue=""/>
+					<f:selectItems value="#{logingTypes}" var="lodgingType"
+								   itemValue="#{lodgingType}" itemLabel="#{lodgingType.objectName}"/>
+				</p:selectOneMenu>
+			</dd>
+		</ui:fragment>
+		<ui:fragment rendered="#{isLogingTypeRendered}">
+			<dt class="width-130 m-tex-al-right">
+				<p:outputLabel for="new_lodging" value="#{logingValueLabel}:" styleClass="m-tex-al-right"/>
+			</dt>
+			<dd class="width-50-percents">
+				<p:inputText id="new_lodging" value="#{logingValue}" maxlength="10" disabled="#{isLogingValueDisabled}"/>
+			</dd>
+		</ui:fragment>
+	</dl>
+
+</ui:composition>

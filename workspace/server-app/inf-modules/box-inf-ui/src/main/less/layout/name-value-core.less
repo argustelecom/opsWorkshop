@@ -1,0 +1,1878 @@
+/* name-value - конструкция для списка определений, где пара Name-Value отрисовываются в одной строке.
+Недостаток - жесткое ограничение ширины в px поля Name и ограничение высоты элементов dt/dd.
+-----------------------------
+вид конструкции
+----------------------------
+<dl class="name-value width-<значение в px, которое установит ширину элемента dt>">
+	<dt>Name</dt>
+	<dd>Value</dd>
+</dl>
+
+Может быть рассширен третьим элементом, например,
+1) иконкой-подсказкой (контекст использования - диалоговое окно)
+
+<dl class="name-value name-value-tooltip width-<значение в px, которое установит ширину элемента dt>">
+	<dt>Name</dt>
+	<dd>Value</dd>
+</dl>
+
+2) как обычный список, где пара Name-Value отрисовываются в разных строках  (контекст использования - viewport размер менее 480px)
+<dl class="name-value name-value-list width-<значение в px, которое установит ширину элемента dt>">
+	<dt>Name</dt>
+	<dd>Value</dd>
+</dl>
+
+---------------------------------------------------------------------------------*/
+.name-value {
+	margin-top: 0;
+	margin-bottom: 10px;
+	padding: 4px;
+	width: auto !important;
+	overflow: hidden;
+}
+
+.name-value > dt, .name-value > dd {
+	box-sizing: border-box;
+	min-height: 22px;
+	line-height: 22px;
+	margin-bottom: 2px;
+	position: relative;
+}
+
+.name-value > dd > span:not([class^="icon-"]) {
+	font-family:"robotoregular";
+}
+
+.name-value > dt:last-of-type, .name-value > dd:last-of-type {
+	margin-bottom: 0;
+}
+
+.name-value > dt {
+	padding-left: 0;
+	white-space: nowrap;
+	clear: none;
+	z-index: 1;
+	float: left;
+}
+
+.name-value > dd {
+	margin-left: 0;
+	z-index: 0;
+	float: left;
+	width: 100%;
+}
+
+.name-value > dt {
+	width: 100px;
+}
+
+.name-value > dd {
+	padding-left: 100px;
+	margin-left: -100px;
+}
+
+.name-value.row > dd {
+	padding-right: 20px;
+	width: auto !important;
+}
+
+.name-value.row > dd:last-child {
+	padding-right: 0;
+}
+
+.name-value > dt > .ui-outputlabel, .name-value > dd > .ui-inputfield {
+	vertical-align: top;
+}
+
+.name-value > dd > .ui-inputfield, .name-value > dd > .ui-autocomplete, .name-value > dd > .ui-selectonemenu {
+	width: 100%;
+	margin-bottom: 0;
+}
+
+.name-value > dt > .ui-button {
+	vertical-align: top;
+}
+
+.name-value > dd > .sys-comp-editable-section {
+	margin-bottom: 0;
+}
+
+.name-value > dd > .sys-comp-editable-section .sys-comp-editable-section-output {
+	padding: 0;
+}
+
+.name-value > dd > .sys-comp-editable-section .ui-inplace-content > .ui-inputfield {
+	vertical-align: top;
+}
+
+.name-value > dd > .ui-chkbox:first-child {
+	margin-left: 0;
+}
+
+.name-value > dd > .sys-comp-editable-section-output, .name-value > dd > div > .sys-comp-editable-section-output {
+	padding: 0;
+}
+
+.name-value > dd > textarea {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.name-value > dd > .ui-selectoneradio {
+	margin-bottom: 0;
+}
+
+.container-simple .name-value {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.text-right > dt {
+	text-align: right;
+	padding-right: 4px;
+}
+
+.text-right > dt > *, .text-right > dd {
+	text-align: left;
+}
+
+.ui-grid-row.separator-logical > div > .name-value, .ui-grid-row > div > .ui-datalist {
+	margin-bottom: 0;
+}
+
+.ui-grid-row > div > .ui-datalist > .ui-datalist-item {
+	line-height: 22px;
+	margin-bottom: 2px;
+}
+
+.name-value.width-5 > dt {
+	width: 5px;
+}
+
+.name-value.width-5 > dd {
+	padding-left: 5px;
+	margin-left: -5px;
+}
+
+.name-value > dt.width-5 + dd {
+	padding-left: 5px;
+	margin-left: -5px;
+}
+
+.name-value.width-10 > dt {
+	width: 10px;
+}
+
+.name-value.width-10 > dd {
+	padding-left: 10px;
+	margin-left: -10px;
+}
+
+.name-value > dt.width-10 + dd {
+	padding-left: 10px;
+	margin-left: -10px;
+}
+
+.name-value.width-15 > dt {
+	width: 15px;
+}
+
+.name-value.width-15 > dd {
+	padding-left: 15px;
+	margin-left: -15px;
+}
+
+.name-value > dt.width-15 + dd {
+	padding-left: 15px;
+	margin-left: -15px;
+}
+
+.name-value.width-20 > dt {
+	width: 20px;
+}
+
+.name-value.width-20 > dd {
+	padding-left: 20px;
+	margin-left: -20px;
+}
+
+.name-value > dt.width-20 + dd {
+	padding-left: 20px;
+	margin-left: -20px;
+}
+
+.name-value.width-25 > dt {
+	width: 25px;
+}
+
+.name-value.width-25 > dd {
+	padding-left: 25px;
+	margin-left: -25px;
+}
+
+.name-value > dt.width-25 + dd {
+	padding-left: 25px;
+	margin-left: -25px;
+}
+
+.name-value.width-30 > dt {
+	width: 30px;
+}
+
+.name-value.width-30 > dd {
+	padding-left: 30px;
+	margin-left: -30px;
+}
+
+.name-value > dt.width-30 + dd {
+	padding-left: 30px;
+	margin-left: -30px;
+}
+
+.name-value.width-35 > dt {
+	width: 35px;
+}
+
+.name-value.width-35 > dd {
+	padding-left: 35px;
+	margin-left: -35px;
+}
+
+.name-value > dt.width-35 + dd {
+	padding-left: 35px;
+	margin-left: -35px;
+}
+
+.name-value.width-40 > dt {
+	width: 40px;
+}
+
+.name-value.width-40 > dd {
+	padding-left: 40px;
+	margin-left: -40px;
+}
+
+.name-value > dt.width-40 + dd {
+	padding-left: 40px;
+	margin-left: -40px;
+}
+
+.name-value.width-45 > dt {
+	width: 45px;
+}
+
+.name-value.width-45 > dd {
+	padding-left: 45px;
+	margin-left: -45px;
+}
+
+.name-value > dt.width-45 + dd {
+	padding-left: 45px;
+	margin-left: -45px;
+}
+
+.name-value.width-50 > dt {
+	width: 50px;
+}
+
+.name-value.width-50 > dd {
+	padding-left: 50px;
+	margin-left: -50px;
+}
+
+.name-value > dt.width-50 + dd {
+	padding-left: 50px;
+	margin-left: -50px;
+}
+
+.name-value.width-55 > dt {
+	width: 55px;
+}
+
+.name-value.width-55 > dd {
+	padding-left: 55px;
+	margin-left: -55px;
+}
+
+.name-value > dt.width-55 + dd {
+	padding-left: 55px;
+	margin-left: -55px;
+}
+
+.name-value.width-60 > dt {
+	width: 60px;
+}
+
+.name-value.width-60 > dd {
+	padding-left: 60px;
+	margin-left: -60px;
+}
+
+.name-value > dt.width-60 + dd {
+	padding-left: 60px;
+	margin-left: -60px;
+}
+
+.name-value.width-65 > dt {
+	width: 65px;
+}
+
+.name-value.width-65 > dd {
+	padding-left: 65px;
+	margin-left: -65px;
+}
+
+.name-value > dt.width-65 + dd {
+	padding-left: 65px;
+	margin-left: -65px;
+}
+
+.name-value.width-70 > dt {
+	width: 70px;
+}
+
+.name-value.width-70 > dd {
+	padding-left: 70px;
+	margin-left: -70px;
+}
+
+.name-value > dt.width-70 + dd {
+	padding-left: 70px;
+	margin-left: -70px;
+}
+
+.name-value.width-75 > dt {
+	width: 75px;
+}
+
+.name-value.width-75 > dd {
+	padding-left: 75px;
+	margin-left: -75px;
+}
+
+.name-value > dt.width-75 + dd {
+	padding-left: 75px;
+	margin-left: -75px;
+}
+
+.name-value.width-80 > dt {
+	width: 80px;
+}
+
+.name-value.width-80 > dd {
+	padding-left: 80px;
+	margin-left: -80px;
+}
+
+.name-value > dt.width-80 + dd {
+	padding-left: 80px;
+	margin-left: -80px;
+}
+
+.name-value.width-85 > dt {
+	width: 85px;
+}
+
+.name-value.width-85 > dd {
+	padding-left: 85px;
+	margin-left: -85px;
+}
+
+.name-value > dt.width-85 + dd {
+	padding-left: 85px;
+	margin-left: -85px;
+}
+
+.name-value.width-90 > dt {
+	width: 90px;
+}
+
+.name-value.width-90 > dd {
+	padding-left: 90px;
+	margin-left: -90px;
+}
+
+.name-value > dt.width-90 + dd {
+	padding-left: 90px;
+	margin-left: -90px;
+}
+
+.name-value.width-95 > dt {
+	width: 95px;
+}
+
+.name-value.width-95 > dd {
+	padding-left: 95px;
+	margin-left: -95px;
+}
+
+.name-value > dt.width-95 + dd {
+	padding-left: 95px;
+	margin-left: -95px;
+}
+
+.name-value.width-100 > dt {
+	width: 100px;
+}
+
+.name-value.width-100 > dd {
+	padding-left: 100px;
+	margin-left: -100px;
+}
+
+.name-value > dt.width-100 + dd {
+	padding-left: 100px;
+	margin-left: -100px;
+}
+
+.name-value.width-105 > dt {
+	width: 105px;
+}
+
+.name-value.width-105 > dd {
+	padding-left: 105px;
+	margin-left: -105px;
+}
+
+.name-value > dt.width-105 + dd {
+	padding-left: 105px;
+	margin-left: -105px;
+}
+
+.name-value.width-110 > dt {
+	width: 110px;
+}
+
+.name-value.width-110 > dd {
+	padding-left: 110px;
+	margin-left: -110px;
+}
+
+.name-value > dt.width-110 + dd {
+	padding-left: 110px;
+	margin-left: -110px;
+}
+
+.name-value.width-115 > dt {
+	width: 115px;
+}
+
+.name-value.width-115 > dd {
+	padding-left: 115px;
+	margin-left: -115px;
+}
+
+.name-value > dt.width-115 + dd {
+	padding-left: 115px;
+	margin-left: -115px;
+}
+
+.name-value.width-120 > dt {
+	width: 120px;
+}
+
+.name-value.width-120 > dd {
+	padding-left: 120px;
+	margin-left: -120px;
+}
+
+.name-value > dt.width-120 + dd {
+	padding-left: 120px;
+	margin-left: -120px;
+}
+
+.name-value.width-125 > dt {
+	width: 125px;
+}
+
+.name-value.width-125 > dd {
+	padding-left: 125px;
+	margin-left: -125px;
+}
+
+.name-value > dt.width-125 + dd {
+	padding-left: 125px;
+	margin-left: -125px;
+}
+
+.name-value.width-130 > dt {
+	width: 130px;
+}
+
+.name-value.width-130 > dd {
+	padding-left: 130px;
+	margin-left: -130px;
+}
+
+.name-value > dt.width-130 + dd {
+	padding-left: 130px;
+	margin-left: -130px;
+}
+
+.name-value.width-135 > dt {
+	width: 135px;
+}
+
+.name-value.width-135 > dd {
+	padding-left: 135px;
+	margin-left: -135px;
+}
+
+.name-value > dt.width-135 + dd {
+	padding-left: 135px;
+	margin-left: -135px;
+}
+
+.name-value.width-140 > dt {
+	width: 140px;
+}
+
+.name-value.width-140 > dd {
+	padding-left: 140px;
+	margin-left: -140px;
+}
+
+.name-value > dt.width-140 + dd {
+	padding-left: 140px;
+	margin-left: -140px;
+}
+
+.name-value.width-145 > dt {
+	width: 145px;
+}
+
+.name-value.width-145 > dd {
+	padding-left: 145px;
+	margin-left: -145px;
+}
+
+.name-value > dt.width-145 + dd {
+	padding-left: 145px;
+	margin-left: -145px;
+}
+
+.name-value.width-150 > dt {
+	width: 150px;
+}
+
+.name-value.width-150 > dd {
+	padding-left: 150px;
+	margin-left: -150px;
+}
+
+.name-value > dt.width-150 + dd {
+	padding-left: 150px;
+	margin-left: -150px;
+}
+
+.name-value.width-155 > dt {
+	width: 155px;
+}
+
+.name-value.width-155 > dd {
+	padding-left: 155px;
+	margin-left: -155px;
+}
+
+.name-value > dt.width-155 + dd {
+	padding-left: 155px;
+	margin-left: -155px;
+}
+
+.name-value.width-160 > dt {
+	width: 160px;
+}
+
+.name-value.width-160 > dd {
+	padding-left: 160px;
+	margin-left: -160px;
+}
+
+.name-value > dt.width-160 + dd {
+	padding-left: 160px;
+	margin-left: -160px;
+}
+
+.name-value.width-165 > dt {
+	width: 165px;
+}
+
+.name-value.width-165 > dd {
+	padding-left: 165px;
+	margin-left: -165px;
+}
+
+.name-value > dt.width-165 + dd {
+	padding-left: 165px;
+	margin-left: -165px;
+}
+
+.name-value.width-170 > dt {
+	width: 170px;
+}
+
+.name-value.width-170 > dd {
+	padding-left: 170px;
+	margin-left: -170px;
+}
+
+.name-value > dt.width-170 + dd {
+	padding-left: 170px;
+	margin-left: -170px;
+}
+
+.name-value.width-175 > dt {
+	width: 175px;
+}
+
+.name-value.width-175 > dd {
+	padding-left: 175px;
+	margin-left: -175px;
+}
+
+.name-value > dt.width-175 + dd {
+	padding-left: 175px;
+	margin-left: -175px;
+}
+
+.name-value.width-180 > dt {
+	width: 180px;
+}
+
+.name-value.width-180 > dd {
+	padding-left: 180px;
+	margin-left: -180px;
+}
+
+.name-value > dt.width-180 + dd {
+	padding-left: 180px;
+	margin-left: -180px;
+}
+
+.name-value.width-185 > dt {
+	width: 185px;
+}
+
+.name-value.width-185 > dd {
+	padding-left: 185px;
+	margin-left: -185px;
+}
+
+.name-value > dt.width-185 + dd {
+	padding-left: 185px;
+	margin-left: -185px;
+}
+
+.name-value.width-190 > dt {
+	width: 190px;
+}
+
+.name-value.width-190 > dd {
+	padding-left: 190px;
+	margin-left: -190px;
+}
+
+.name-value > dt.width-190 + dd {
+	padding-left: 190px;
+	margin-left: -190px;
+}
+
+.name-value.width-195 > dt {
+	width: 195px;
+}
+
+.name-value.width-195 > dd {
+	padding-left: 195px;
+	margin-left: -195px;
+}
+
+.name-value > dt.width-195 + dd {
+	padding-left: 195px;
+	margin-left: -195px;
+}
+
+.name-value.width-200 > dt {
+	width: 200px;
+}
+
+.name-value.width-200 > dd {
+	padding-left: 200px;
+	margin-left: -200px;
+}
+
+.name-value > dt.width-200 + dd {
+	padding-left: 200px;
+	margin-left: -200px;
+}
+
+.name-value.width-205 > dt {
+	width: 205px;
+}
+
+.name-value.width-205 > dd {
+	padding-left: 205px;
+	margin-left: -205px;
+}
+
+.name-value > dt.width-205 + dd {
+	padding-left: 205px;
+	margin-left: -205px;
+}
+
+.name-value.width-210 > dt {
+	width: 210px;
+}
+
+.name-value.width-210 > dd {
+	padding-left: 210px;
+	margin-left: -210px;
+}
+
+.name-value > dt.width-210 + dd {
+	padding-left: 210px;
+	margin-left: -210px;
+}
+
+.name-value.width-215 > dt {
+	width: 215px;
+}
+
+.name-value.width-215 > dd {
+	padding-left: 215px;
+	margin-left: -215px;
+}
+
+.name-value > dt.width-215 + dd {
+	padding-left: 215px;
+	margin-left: -215px;
+}
+
+.name-value.width-220 > dt {
+	width: 220px;
+}
+
+.name-value.width-220 > dd {
+	padding-left: 220px;
+	margin-left: -220px;
+}
+
+.name-value > dt.width-220 + dd {
+	padding-left: 220px;
+	margin-left: -220px;
+}
+
+.name-value.width-225 > dt {
+	width: 225px;
+}
+
+.name-value.width-225 > dd {
+	padding-left: 225px;
+	margin-left: -225px;
+}
+
+.name-value > dt.width-225 + dd {
+	padding-left: 225px;
+	margin-left: -225px;
+}
+
+.name-value.width-230 > dt {
+	width: 230px;
+}
+
+.name-value.width-230 > dd {
+	padding-left: 230px;
+	margin-left: -230px;
+}
+
+.name-value > dt.width-230 + dd {
+	padding-left: 230px;
+	margin-left: -230px;
+}
+
+.name-value.width-235 > dt {
+	width: 235px;
+}
+
+.name-value.width-235 > dd {
+	padding-left: 235px;
+	margin-left: -235px;
+}
+
+.name-value > dt.width-235 + dd {
+	padding-left: 235px;
+	margin-left: -235px;
+}
+
+.name-value.width-240 > dt {
+	width: 240px;
+}
+
+.name-value.width-240 > dd {
+	padding-left: 240px;
+	margin-left: -240px;
+}
+
+.name-value > dt.width-240 + dd {
+	padding-left: 240px;
+	margin-left: -240px;
+}
+
+.name-value.width-245 > dt {
+	width: 245px;
+}
+
+.name-value.width-245 > dd {
+	padding-left: 245px;
+	margin-left: -245px;
+}
+
+.name-value > dt.width-245 + dd {
+	padding-left: 245px;
+	margin-left: -245px;
+}
+
+.name-value.width-250 > dt {
+	width: 250px;
+}
+
+.name-value.width-250 > dd {
+	padding-left: 250px;
+	margin-left: -250px;
+}
+
+.name-value > dt.width-250 + dd {
+	padding-left: 250px;
+	margin-left: -250px;
+}
+
+.name-value.width-255 > dt {
+	width: 255px;
+}
+
+.name-value.width-255 > dd {
+	padding-left: 255px;
+	margin-left: -255px;
+}
+
+.name-value > dt.width-255 + dd {
+	padding-left: 255px;
+	margin-left: -255px;
+}
+
+.name-value.width-260 > dt {
+	width: 260px;
+}
+
+.name-value.width-260 > dd {
+	padding-left: 260px;
+	margin-left: -260px;
+}
+
+.name-value > dt.width-260 + dd {
+	padding-left: 260px;
+	margin-left: -260px;
+}
+
+.name-value.width-265 > dt {
+	width: 265px;
+}
+
+.name-value.width-265 > dd {
+	padding-left: 265px;
+	margin-left: -265px;
+}
+
+.name-value > dt.width-265 + dd {
+	padding-left: 265px;
+	margin-left: -265px;
+}
+
+.name-value.width-270 > dt {
+	width: 270px;
+}
+
+.name-value.width-270 > dd {
+	padding-left: 270px;
+	margin-left: -270px;
+}
+
+.name-value > dt.width-270 + dd {
+	padding-left: 270px;
+	margin-left: -270px;
+}
+
+.name-value.width-275 > dt {
+	width: 275px;
+}
+
+.name-value.width-275 > dd {
+	padding-left: 275px;
+	margin-left: -275px;
+}
+
+.name-value > dt.width-275 + dd {
+	padding-left: 275px;
+	margin-left: -275px;
+}
+
+.name-value.width-280 > dt {
+	width: 280px;
+}
+
+.name-value.width-280 > dd {
+	padding-left: 280px;
+	margin-left: -280px;
+}
+
+.name-value > dt.width-280 + dd {
+	padding-left: 280px;
+	margin-left: -280px;
+}
+
+.name-value.width-285 > dt {
+	width: 285px;
+}
+
+.name-value.width-285 > dd {
+	padding-left: 285px;
+	margin-left: -285px;
+}
+
+.name-value > dt.width-285 + dd {
+	padding-left: 285px;
+	margin-left: -285px;
+}
+
+.name-value.width-290 > dt {
+	width: 290px;
+}
+
+.name-value.width-290 > dd {
+	padding-left: 290px;
+	margin-left: -290px;
+}
+
+.name-value > dt.width-290 + dd {
+	padding-left: 290px;
+	margin-left: -290px;
+}
+
+.name-value.width-295 > dt {
+	width: 295px;
+}
+
+.name-value.width-295 > dd {
+	padding-left: 295px;
+	margin-left: -295px;
+}
+
+.name-value > dt.width-295 + dd {
+	padding-left: 295px;
+	margin-left: -295px;
+}
+
+.name-value.width-300 > dt {
+	width: 300px;
+}
+
+.name-value.width-300 > dd {
+	padding-left: 300px;
+	margin-left: -300px;
+}
+
+.name-value > dt.width-300 + dd {
+	padding-left: 300px;
+	margin-left: -300px;
+}
+
+.name-value.width-305 > dt {
+	width: 305px;
+}
+
+.name-value.width-305 > dd {
+	padding-left: 305px;
+	margin-left: -305px;
+}
+
+.name-value > dt.width-305 + dd {
+	padding-left: 305px;
+	margin-left: -305px;
+}
+
+.name-value.width-310 > dt {
+	width: 310px;
+}
+
+.name-value.width-310 > dd {
+	padding-left: 310px;
+	margin-left: -310px;
+}
+
+.name-value > dt.width-310 + dd {
+	padding-left: 310px;
+	margin-left: -310px;
+}
+
+.name-value.width-315 > dt {
+	width: 315px;
+}
+
+.name-value.width-315 > dd {
+	padding-left: 315px;
+	margin-left: -315px;
+}
+
+.name-value > dt.width-315 + dd {
+	padding-left: 315px;
+	margin-left: -315px;
+}
+
+.name-value.width-320 > dt {
+	width: 320px;
+}
+
+.name-value.width-320 > dd {
+	padding-left: 320px;
+	margin-left: -320px;
+}
+
+.name-value > dt.width-320 + dd {
+	padding-left: 320px;
+	margin-left: -320px;
+}
+
+.name-value.width-325 > dt {
+	width: 325px;
+}
+
+.name-value.width-325 > dd {
+	padding-left: 325px;
+	margin-left: -325px;
+}
+
+.name-value > dt.width-325 + dd {
+	padding-left: 325px;
+	margin-left: -325px;
+}
+
+.name-value.width-330 > dt {
+	width: 330px;
+}
+
+.name-value.width-330 > dd {
+	padding-left: 330px;
+	margin-left: -330px;
+}
+
+.name-value > dt.width-330 + dd {
+	padding-left: 330px;
+	margin-left: -330px;
+}
+
+.name-value.width-335 > dt {
+	width: 335px;
+}
+
+.name-value.width-335 > dd {
+	padding-left: 335px;
+	margin-left: -335px;
+}
+
+.name-value > dt.width-335 + dd {
+	padding-left: 335px;
+	margin-left: -335px;
+}
+
+.name-value.width-340 > dt {
+	width: 340px;
+}
+
+.name-value.width-340 > dd {
+	padding-left: 340px;
+	margin-left: -340px;
+}
+
+.name-value > dt.width-340 + dd {
+	padding-left: 340px;
+	margin-left: -340px;
+}
+
+.name-value.width-345 > dt {
+	width: 345px;
+}
+
+.name-value.width-345 > dd {
+	padding-left: 345px;
+	margin-left: -345px;
+}
+
+.name-value > dt.width-345 + dd {
+	padding-left: 345px;
+	margin-left: -345px;
+}
+
+.name-value.width-350 > dt {
+	width: 350px;
+}
+
+.name-value.width-350 > dd {
+	padding-left: 350px;
+	margin-left: -350px;
+}
+
+.name-value > dt.width-350 + dd {
+	padding-left: 350px;
+	margin-left: -350px;
+}
+
+.name-value.width-355 > dt {
+	width: 355px;
+}
+
+.name-value.width-355 > dd {
+	padding-left: 355px;
+	margin-left: -355px;
+}
+
+.name-value > dt.width-355 + dd {
+	padding-left: 355px;
+	margin-left: -355px;
+}
+
+.name-value.width-360 > dt {
+	width: 360px;
+}
+
+.name-value.width-360 > dd {
+	padding-left: 360px;
+	margin-left: -360px;
+}
+
+.name-value > dt.width-360 + dd {
+	padding-left: 360px;
+	margin-left: -360px;
+}
+
+.name-value.width-365 > dt {
+	width: 365px;
+}
+
+.name-value.width-365 > dd {
+	padding-left: 365px;
+	margin-left: -365px;
+}
+
+.name-value > dt.width-365 + dd {
+	padding-left: 365px;
+	margin-left: -365px;
+}
+
+.name-value.width-370 > dt {
+	width: 370px;
+}
+
+.name-value.width-370 > dd {
+	padding-left: 370px;
+	margin-left: -370px;
+}
+
+.name-value > dt.width-370 + dd {
+	padding-left: 370px;
+	margin-left: -370px;
+}
+
+.name-value.width-375 > dt {
+	width: 375px;
+}
+
+.name-value.width-375 > dd {
+	padding-left: 375px;
+	margin-left: -375px;
+}
+
+.name-value > dt.width-375 + dd {
+	padding-left: 375px;
+	margin-left: -375px;
+}
+
+.name-value.width-380 > dt {
+	width: 380px;
+}
+
+.name-value.width-380 > dd {
+	padding-left: 380px;
+	margin-left: -380px;
+}
+
+.name-value > dt.width-380 + dd {
+	padding-left: 380px;
+	margin-left: -380px;
+}
+
+.name-value.width-385 > dt {
+	width: 385px;
+}
+
+.name-value.width-385 > dd {
+	padding-left: 385px;
+	margin-left: -385px;
+}
+
+.name-value > dt.width-385 + dd {
+	padding-left: 385px;
+	margin-left: -385px;
+}
+
+.name-value.width-390 > dt {
+	width: 390px;
+}
+
+.name-value.width-390 > dd {
+	padding-left: 390px;
+	margin-left: -390px;
+}
+
+.name-value > dt.width-390 + dd {
+	padding-left: 390px;
+	margin-left: -390px;
+}
+
+.name-value.width-395 > dt {
+	width: 395px;
+}
+
+.name-value.width-395 > dd {
+	padding-left: 395px;
+	margin-left: -395px;
+}
+
+.name-value > dt.width-395 + dd {
+	padding-left: 395px;
+	margin-left: -395px;
+}
+
+.name-value.width-400 > dt {
+	width: 400px;
+}
+
+.name-value.width-400 > dd {
+	padding-left: 400px;
+	margin-left: -400px;
+}
+
+.name-value > dt.width-400 + dd {
+	padding-left: 400px;
+	margin-left: -400px;
+}
+
+.name-value.width-405 > dt {
+	width: 405px;
+}
+
+.name-value.width-405 > dd {
+	padding-left: 405px;
+	margin-left: -405px;
+}
+
+.name-value > dt.width-405 + dd {
+	padding-left: 405px;
+	margin-left: -405px;
+}
+
+.name-value.width-410 > dt {
+	width: 410px;
+}
+
+.name-value.width-410 > dd {
+	padding-left: 410px;
+	margin-left: -410px;
+}
+
+.name-value > dt.width-410 + dd {
+	padding-left: 410px;
+	margin-left: -410px;
+}
+
+.name-value.width-415 > dt {
+	width: 415px;
+}
+
+.name-value.width-415 > dd {
+	padding-left: 415px;
+	margin-left: -415px;
+}
+
+.name-value > dt.width-415 + dd {
+	padding-left: 415px;
+	margin-left: -415px;
+}
+
+.name-value.width-420 > dt {
+	width: 420px;
+}
+
+.name-value.width-420 > dd {
+	padding-left: 420px;
+	margin-left: -420px;
+}
+
+.name-value > dt.width-420 + dd {
+	padding-left: 420px;
+	margin-left: -420px;
+}
+
+.name-value.width-425 > dt {
+	width: 425px;
+}
+
+.name-value.width-425 > dd {
+	padding-left: 425px;
+	margin-left: -425px;
+}
+
+.name-value > dt.width-425 + dd {
+	padding-left: 425px;
+	margin-left: -425px;
+}
+
+.name-value.width-430 > dt {
+	width: 430px;
+}
+
+.name-value.width-430 > dd {
+	padding-left: 430px;
+	margin-left: -430px;
+}
+
+.name-value > dt.width-430 + dd {
+	padding-left: 430px;
+	margin-left: -430px;
+}
+
+.name-value.width-435 > dt {
+	width: 435px;
+}
+
+.name-value.width-435 > dd {
+	padding-left: 435px;
+	margin-left: -435px;
+}
+
+.name-value > dt.width-435 + dd {
+	padding-left: 435px;
+	margin-left: -435px;
+}
+
+.name-value.width-440 > dt {
+	width: 440px;
+}
+
+.name-value.width-440 > dd {
+	padding-left: 440px;
+	margin-left: -440px;
+}
+
+.name-value > dt.width-440 + dd {
+	padding-left: 440px;
+	margin-left: -440px;
+}
+
+.name-value.width-445 > dt {
+	width: 445px;
+}
+
+.name-value.width-445 > dd {
+	padding-left: 445px;
+	margin-left: -445px;
+}
+
+.name-value > dt.width-445 + dd {
+	padding-left: 445px;
+	margin-left: -445px;
+}
+
+.name-value.width-450 > dt {
+	width: 450px;
+}
+
+.name-value.width-450 > dd {
+	padding-left: 450px;
+	margin-left: -450px;
+}
+
+.name-value > dt.width-450 + dd {
+	padding-left: 450px;
+	margin-left: -450px;
+}
+
+.name-value.width-455 > dt {
+	width: 455px;
+}
+
+.name-value.width-455 > dd {
+	padding-left: 455px;
+	margin-left: -455px;
+}
+
+.name-value > dt.width-455 + dd {
+	padding-left: 455px;
+	margin-left: -455px;
+}
+
+.name-value.width-460 > dt {
+	width: 460px;
+}
+
+.name-value.width-460 > dd {
+	padding-left: 460px;
+	margin-left: -460px;
+}
+
+.name-value > dt.width-460 + dd {
+	padding-left: 460px;
+	margin-left: -460px;
+}
+
+.name-value.width-465 > dt {
+	width: 465px;
+}
+
+.name-value.width-465 > dd {
+	padding-left: 465px;
+	margin-left: -465px;
+}
+
+.name-value > dt.width-465 + dd {
+	padding-left: 465px;
+	margin-left: -465px;
+}
+
+.name-value.width-470 > dt {
+	width: 470px;
+}
+
+.name-value.width-470 > dd {
+	padding-left: 470px;
+	margin-left: -470px;
+}
+
+.name-value > dt.width-470 + dd {
+	padding-left: 470px;
+	margin-left: -470px;
+}
+
+.name-value.width-475 > dt {
+	width: 475px;
+}
+
+.name-value.width-475 > dd {
+	padding-left: 475px;
+	margin-left: -475px;
+}
+
+.name-value > dt.width-475 + dd {
+	padding-left: 475px;
+	margin-left: -475px;
+}
+
+.name-value.width-480 > dt {
+	width: 480px;
+}
+
+.name-value.width-480 > dd {
+	padding-left: 480px;
+	margin-left: -480px;
+}
+
+.name-value > dt.width-480 + dd {
+	padding-left: 480px;
+	margin-left: -480px;
+}
+
+.name-value.width-485 > dt {
+	width: 485px;
+}
+
+.name-value.width-485 > dd {
+	padding-left: 485px;
+	margin-left: -485px;
+}
+
+.name-value > dt.width-485 + dd {
+	padding-left: 485px;
+	margin-left: -485px;
+}
+
+.name-value.width-490 > dt {
+	width: 490px;
+}
+
+.name-value.width-490 > dd {
+	padding-left: 490px;
+	margin-left: -490px;
+}
+
+.name-value > dt.width-490 + dd {
+	padding-left: 490px;
+	margin-left: -490px;
+}
+
+.name-value.width-495 > dt {
+	width: 495px;
+}
+
+.name-value.width-495 > dd {
+	padding-left: 495px;
+	margin-left: -495px;
+}
+
+.name-value > dt.width-495 + dd {
+	padding-left: 495px;
+	margin-left: -495px;
+}
+
+.name-value.width-500 > dt {
+	width: 500px;
+}
+
+.name-value.width-500 > dd {
+	padding-left: 500px;
+	margin-left: -500px;
+}
+
+.name-value > dt.width-500 + dd {
+	padding-left: 500px;
+	margin-left: -500px;
+}
+
+.name-value.width-505 > dt {
+	width: 505px;
+}
+
+.name-value.width-505 > dd {
+	padding-left: 505px;
+	margin-left: -505px;
+}
+
+.name-value > dt.width-505 + dd {
+	padding-left: 505px;
+	margin-left: -505px;
+}
+
+.name-value.width-510 > dt {
+	width: 510px;
+}
+
+.name-value.width-510 > dd {
+	padding-left: 510px;
+	margin-left: -510px;
+}
+
+.name-value > dt.width-510 + dd {
+	padding-left: 510px;
+	margin-left: -510px;
+}
+
+.name-value.width-515 > dt {
+	width: 515px;
+}
+
+.name-value.width-515 > dd {
+	padding-left: 515px;
+	margin-left: -515px;
+}
+
+.name-value > dt.width-515 + dd {
+	padding-left: 515px;
+	margin-left: -515px;
+}
+
+.name-value.width-520 > dt {
+	width: 520px;
+}
+
+.name-value.width-520 > dd {
+	padding-left: 520px;
+	margin-left: -520px;
+}
+
+.name-value > dt.width-520 + dd {
+	padding-left: 520px;
+	margin-left: -520px;
+}
+
+.name-value.width-525 > dt {
+	width: 525px;
+}
+
+.name-value.width-525 > dd {
+	padding-left: 525px;
+	margin-left: -525px;
+}
+
+.name-value > dt.width-525 + dd {
+	padding-left: 525px;
+	margin-left: -525px;
+}
+
+.name-value.width-530 > dt {
+	width: 530px;
+}
+
+.name-value.width-530 > dd {
+	padding-left: 530px;
+	margin-left: -530px;
+}
+
+.name-value > dt.width-530 + dd {
+	padding-left: 530px;
+	margin-left: -530px;
+}
+
+.name-value.width-535 > dt {
+	width: 535px;
+}
+
+.name-value.width-535 > dd {
+	padding-left: 535px;
+	margin-left: -535px;
+}
+
+.name-value > dt.width-535 + dd {
+	padding-left: 535px;
+	margin-left: -535px;
+}
+
+.name-value.width-540 > dt {
+	width: 540px;
+}
+
+.name-value.width-540 > dd {
+	padding-left: 540px;
+	margin-left: -540px;
+}
+
+.name-value > dt.width-540 + dd {
+	padding-left: 540px;
+	margin-left: -540px;
+}
+
+.name-value.width-545 > dt {
+	width: 545px;
+}
+
+.name-value.width-545 > dd {
+	padding-left: 545px;
+	margin-left: -545px;
+}
+
+.name-value > dt.width-545 + dd {
+	padding-left: 545px;
+	margin-left: -545px;
+}
+
+.name-value.width-550 > dt {
+	width: 550px;
+}
+
+.name-value.width-550 > dd {
+	padding-left: 550px;
+	margin-left: -550px;
+}
+
+.name-value > dt.width-550 + dd {
+	padding-left: 550px;
+	margin-left: -550px;
+}
+
+.name-value.width-555 > dt {
+	width: 555px;
+}
+
+.name-value.width-555 > dd {
+	padding-left: 555px;
+	margin-left: -555px;
+}
+
+.name-value > dt.width-555 + dd {
+	padding-left: 555px;
+	margin-left: -555px;
+}
+
+.name-value.width-560 > dt {
+	width: 560px;
+}
+
+.name-value.width-560 > dd {
+	padding-left: 560px;
+	margin-left: -560px;
+}
+
+.name-value > dt.width-560 + dd {
+	padding-left: 560px;
+	margin-left: -560px;
+}
+
+.name-value.width-565 > dt {
+	width: 565px;
+}
+
+.name-value.width-565 > dd {
+	padding-left: 565px;
+	margin-left: -565px;
+}
+
+.name-value > dt.width-565 + dd {
+	padding-left: 565px;
+	margin-left: -565px;
+}
+
+.name-value.width-570 > dt {
+	width: 570px;
+}
+
+.name-value.width-570 > dd {
+	padding-left: 570px;
+	margin-left: -570px;
+}
+
+.name-value > dt.width-570 + dd {
+	padding-left: 570px;
+	margin-left: -570px;
+}
+
+.name-value.width-575 > dt {
+	width: 575px;
+}
+
+.name-value.width-575 > dd {
+	padding-left: 575px;
+	margin-left: -575px;
+}
+
+.name-value > dt.width-575 + dd {
+	padding-left: 575px;
+	margin-left: -575px;
+}
+
+.name-value.width-580 > dt {
+	width: 580px;
+}
+
+.name-value.width-580 > dd {
+	padding-left: 580px;
+	margin-left: -580px;
+}
+
+.name-value > dt.width-580 + dd {
+	padding-left: 580px;
+	margin-left: -580px;
+}
+
+.name-value.width-585 > dt {
+	width: 585px;
+}
+
+.name-value.width-585 > dd {
+	padding-left: 585px;
+	margin-left: -585px;
+}
+
+.name-value > dt.width-585 + dd {
+	padding-left: 585px;
+	margin-left: -585px;
+}
+
+.name-value.width-590 > dt {
+	width: 590px;
+}
+
+.name-value.width-590 > dd {
+	padding-left: 590px;
+	margin-left: -590px;
+}
+
+.name-value > dt.width-590 + dd {
+	padding-left: 590px;
+	margin-left: -590px;
+}
+
+.name-value.width-595 > dt {
+	width: 595px;
+}
+
+.name-value.width-595 > dd {
+	padding-left: 595px;
+	margin-left: -595px;
+}
+
+.name-value > dt.width-595 + dd {
+	padding-left: 595px;
+	margin-left: -595px;
+}
+
+.name-value.width-600 > dt {
+	width: 600px;
+}
+
+.name-value.width-600 > dd {
+	padding-left: 600px;
+	margin-left: -600px;
+}
+
+.name-value > dt.width-600 + dd {
+	padding-left: 600px;
+	margin-left: -600px;
+}
+
+/* name-value-list в виде списка */
+.name-value-list > dt,
+.name-value-list > dd {
+	display: block;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.ui-outputpanel .name-value-list .sys-comp-editable-section-output,
+.name-value-list .sys-comp-editable-section-output {
+	margin-left: 0;
+}
+
+/* name-value dd с ограниченной шириной в процентах */
+.title-limit-col1 {
+	.sys-comp-editable-section-output {
+		max-width: 1200px;
+	}
+}
+
+/* name-value расширен иконкой с подсказкой */
+.name-value {
+	&.name-value-tooltip {
+		padding: 4px 0;
+
+		> dd {
+			> .ui-inputfield,
+			> .ui-autocomplete,
+			> .ui-selectonemenu,
+			> .name-value-tooltip-table,
+			> .sys-comp-editable-section {
+				width: 93%;
+			}
+
+			.name-value-tooltip-table {
+				display: table;
+				float: left;
+			}
+
+			.name-value-tooltip-item {
+				display: table-cell;
+			}
+
+			span[class^='icon-help'] {
+				float: right;
+				margin: 5px 0 0 3px;
+				font-size: 20px;
+			}
+		}
+	}
+}

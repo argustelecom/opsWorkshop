@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>server-app-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>server-app-parent</name>
+
+	<properties>
+		<main.basedir>${project.parent.basedir}/..</main.basedir>
+        <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
+        <sonar.skip>true</sonar.skip>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.atlassian.commonmark</groupId>
+				<artifactId>commonmark</artifactId>
+				<version>${version.com.atlassian.commonmark}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.zxing</groupId>
+				<artifactId>core</artifactId>
+				<version>${version.com.google.zxing}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.zxing</groupId>
+				<artifactId>javase</artifactId>
+				<version>${version.com.google.zxing}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.haulmont.yarg</groupId>
+				<artifactId>yarg-api</artifactId>
+				<version>${version.com.haulmont.yarg}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.haulmont.yarg</groupId>
+				<artifactId>yarg</artifactId>
+				<version>${version.com.haulmont.yarg}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${version.com.jayway.jsonpath}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.ws</groupId>
+				<artifactId>jbossws-common</artifactId>
+				<version>${version.jbossws-common}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- в core лежат ключевые вещи, интересные всем: SystemException, ServerRuntimeProperties, CDIHelper -->
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>system-inf</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>system-inf</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- в box-core лежат ключевые вещи, интересные всем: PasswordHash, PasswordEncrypt и т.д. -->
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-core</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		
+		<!-- begin: зависимости раньше предоставляемые wildfly-jpa,
+		а теперь прописанные явно. TASK-77357.
+		Ниже подключаются зависимости используемых нами API -->
+		<dependency>
+			<groupId>org.jboss.spec.javax.transaction</groupId>
+			<artifactId>jboss-transaction-api_1.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.servlet</groupId>
+			<artifactId>jboss-servlet-api_3.1_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.el</groupId>
+			<artifactId>jboss-el-api_3.0_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.interceptor</groupId>
+			<artifactId>jboss-interceptors-api_1.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+			<artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Общие аннотации (JSR 250). Например, javax.annotation.security -->
+		<dependency>
+			<groupId>org.jboss.spec.javax.annotation</groupId>
+			<artifactId>jboss-annotations-api_1.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Используется в ManagedThreadFactory и ManagedExecutorService, пакет javax.resource.spi.work  -->
+		<dependency>
+			<groupId>org.jboss.spec.javax.resource</groupId>
+			<artifactId>jboss-connector-api_1.7_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Используется javax.xml.rpc -->
+		<dependency>
+			<groupId>org.jboss.spec.javax.xml.rpc</groupId>
+			<artifactId>jboss-jaxrpc-api_1.1_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Используется для работы с security. Например: SecurityContext -->
+		<dependency>
+			<groupId>org.wildfly</groupId>
+			<artifactId>wildfly-security</artifactId>
+			<scope>provided</scope>
+			<version>${version.wildfly}</version>
+		</dependency>
+		<!-- Используется для валидации -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!--end: зависимости раньше предоставляемые wildfly-jpa-->
+
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${version.commons-lang}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- для тестов -->
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${version.junit}</version><!--$NO-MVN-MAN-VER$ -->
+			<scope>test</scope>
+		</dependency>
+		<!-- log4j для настройки логгирования в тестах: http://stackoverflow.com/a/42700086/1341535 -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${version.log4j}</version><!--$NO-MVN-MAN-VER$-->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.protocol</groupId>
+			<artifactId>arquillian-protocol-servlet</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- позволяет быстро и легко подготовить тестовый ear, аналогичный по составу нашему полноценному -->
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-depchain</artifactId>
+			<scope>test</scope>
+			<type>pom</type>
+		</dependency>
+		<!-- обеспечивает удобную работу со специфическими дескрипторами, входящими в ear: beans.xml, persistence.xml, 
+			application.xml и др. -->
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.descriptors</groupId>
+			<artifactId>shrinkwrap-descriptors-depchain</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- kostd, TASK-79832: теперь выбсырвисы вызываются и при выполнении ui-тестов
+			из *-ui-проектов, поэтому вынес в app-parent, чтобы было доступно и в ui -->
+		<!-- нужен для веб-сервисов -->
+		<dependency>
+			<groupId>org.jboss.ws</groupId>
+			<artifactId>jbossws-common</artifactId>
+			<version>${version.jbossws-common}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- kostd, TASK-79832: зависимости ниже обеспечивают cxf-реализацию вебсервисов.
+			В compiletime эти зависимости не нужны, потому что вебсервис-клиенты используют api из jbossws-*.
+			В runtime сервера эти зависимости на classpath благодаря статическим модулям wildfly
+			(причем наша ear их напрямую не включает - видимо, включаются через зависимости других модулей)
+			Но теперь вебсервисы используются и тестами, то есть в SE-окружении, поэтому понадобились в testexecution-time. -->
+		<!-- @see https://www.google.ru/#newwindow=1&q=javax.xml.ws.WebServiceException:+WSDL+Metadata+not+available+to+create+the+proxy -->
+		<dependency>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<groupId>org.apache.cxf</groupId>
+			<version>${version.org.apache.cxf}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${version.org.apache.cxf}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.xmlschema</groupId>
+			<version>${version.org.apache.ws.xmlschema}</version>
+			<artifactId>xmlschema-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- kostd, TASK-79832: без этого свойства ловим ошибку, когда ui-тест вызывает веб-сервис для получения данных:
+		java.lang.RuntimeException: Cannot create a secure XMLInputFactory
+		v.astapkovich, TASK-79833: Через org.apache.cxf.stax.allowInsecureParser очень не рекомендуют делать, т.к. это вредит безопасности
+		В тестах по умолчанию используется версия, отличная от той, что в поставке wildFly. Поэтому укажем явно, это решает проблему -->
+		<dependency>
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>woodstox-core-asl</artifactId>
+			<version>${version.woodstox.core}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- копирование общих тестовых ресурсов из box-inf, чтобы не дублировать в каждом проекте. Нужно для arquillian не-ui тестов -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-common-test-resources</id>
+						<phase>process-test-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/test-classes/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${main.basedir}/server-app/inf-modules/box-inf/src/test/resources/</directory>
+									<includes>
+										<!-- нужен только для arquillian-тестов -->
+										<include>arquillian.xml</include>
+										<!-- настройки тестового логгирования для работы org.jboss.logging.Logger и пр., нужно в том числе для обычных ut -->
+										<include>log4j.xml</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>wildfly-managed</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.wildfly.arquillian</groupId>
+					<artifactId>wildfly-arquillian-container-managed</artifactId>
+					<version>${version.org.wildfly.arquillian.wildfly-arquillian-container}</version><!--$NO-MVN-MAN-VER$-->
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+
+		<profile>
+			<!-- запуск arquillian из eclipse -->
+			<id>wildfly-remote</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.wildfly.arquillian</groupId>
+					<artifactId>wildfly-arquillian-container-remote</artifactId>
+					<version>${version.org.wildfly.arquillian.wildfly-arquillian-container}</version><!--$NO-MVN-MAN-VER$-->
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+
+</project>

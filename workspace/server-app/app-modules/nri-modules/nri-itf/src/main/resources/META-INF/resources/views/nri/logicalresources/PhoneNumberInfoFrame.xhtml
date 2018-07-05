@@ -1,0 +1,69 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+	<f:event listener="#{phoneNumberFM.preRender(phoneNumberPool)}" type="preRenderComponent"/>
+
+	<p:outputPanel styleClass="m-container100">
+		<div class="m-container-indent">
+			<div id="phone_info_panel" class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+				<div class="ui-dashboard-header">
+					<i class="fa fa-phone"/>
+					<h:outputText id="phone_title" styleClass="card-header"
+								  value="#{phoneNumberPoolBundle['box.nri.phone.info_label']}"/>
+					<p:outputPanel id="buttons" styleClass="m-fright">
+						<p:commandLink id="create_phone_number_button" styleClass="m-mar-left10"
+									   rendered="#{p:ifGranted('Nri_PhoneNumberPoolEdit')}"
+									   update="phone_number_creation_dlg"
+									   oncomplete="PF('phoneNumberCreationDlg').show()"
+									   action="#{phoneNumberCreationDM.init(phoneNumberPool)}">
+							<i class="fa fa-edit icon-btn"/>
+							<f:setPropertyActionListener value="#{phoneNumberPoolVM.createPhoneNumber}"
+														 target="#{phoneNumberCreationDM.onCreate}"/>
+							<f:setPropertyActionListener value="#{phoneNumberPoolVM.refreshPoolInTree}"
+														 target="#{phoneNumberCreationDM.afterGenerate}"/>
+						</p:commandLink>
+						<p:commandLink id="remove_phone_button" styleClass="m-mar-left10"
+									   rendered="#{p:ifGranted('Nri_PhoneNumberPoolEdit')}"
+									   update="@form" disabled="#{empty phoneNumberFM.selectedPhones}"
+									   action="#{phoneNumberFM.removeSelectedNumbers()}">
+							<i class="fa fa-trash icon-btn"/>
+							<f:setPropertyActionListener value="#{phoneNumberPoolVM.removePhoneFromPoolDto}"
+														 target="#{phoneNumberFM.onDeleteButtonPressed}"/>
+							<p:confirm header="#{phoneNumberPoolBundle['box.nri.phone.remove_header']}"
+									   icon="ui-icon-alert"
+									   message="#{phoneNumberPoolBundle['box.nri.phone.remove_message']}?"/>
+						</p:commandLink>
+					</p:outputPanel>
+				</div>
+
+				<p:dataTable var="phone" value="#{phoneNumberFM.phoneNumbers}" rowKey="#{phone.id}"
+							 widgetVar="phoneTable" selection="#{phoneNumberFM.selectedPhones}" paginator="true"
+							 rows="15" emptyMessage="#{overallBundle['box.overall.empty']}"
+							 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+								{PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 currentPageReportTemplate="{startRecord} - {endRecord} #{phoneNumberPoolBundle['box.nri.phone.from_word']} {totalRecords}"
+							 rowsPerPageTemplate="15,25,50,100">
+
+					<p:ajax event="rowSelectCheckbox" update="phone_number_info_form-remove_phone_button"/>
+					<p:ajax event="rowUnselectCheckbox" update="phone_number_info_form-remove_phone_button"/>
+					<p:ajax event="rowSelect" update="phone_number_info_form-remove_phone_button"/>
+					<p:ajax event="rowUnselect" update="phone_number_info_form-remove_phone_button"/>
+					<p:ajax event="toggleSelect" update="phone_number_info_form-remove_phone_button"/>
+
+					<p:column selectionMode="multiple" styleClass="width-16"/>
+
+					<p:column headerText="#{phoneNumberPoolBundle['box.nri.phone.name']}">
+						<h:outputLink value="PhoneNumberView.xhtml?phoneNumber=PhoneNumber-#{phone.id}">
+							<h:outputText value="#{phone.name}"/>
+						</h:outputLink>
+					</p:column>
+
+					<p:column headerText="#{phoneNumberPoolBundle['box.nri.phone.state']}">
+						<h:outputText value="#{phone.state.name}"/>
+					</p:column>
+				</p:dataTable>
+
+			</div>
+		</div>
+	</p:outputPanel>
+</ui:composition>

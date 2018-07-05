@@ -1,0 +1,68 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:p="http://primefaces.org/ui" >
+
+    <ui:param name="viewModel" value="#{billListVm}"/>
+    <ui:param name="pageTitle" value="#{billBundle['box.bill.plural']}"/>
+    <ui:param name="resultFormId" value="bill_search_result_form"/>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="number" value="#{billListViewState.number}"/>
+            <f:viewParam name="customerType" value="#{billListViewState.customerType}"/>
+            <f:viewParam name="customer" value="#{billListViewState.customer}"/>
+            <f:viewParam name="paymentCondition" value="#{billListViewState.provider}"/>
+            <f:viewParam name="groupingMethod" value="#{billListViewState.broker}"/>
+            <f:viewParam name="billDate" value="#{billListViewState.billDate}">
+                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_FULL_PATTERN}"/>
+            </f:viewParam>
+            <f:viewParam name="billType" value="#{billListViewState.billType}"/>
+            <f:viewParam name="periodType" value="#{billListViewState.periodType}"/>
+            <f:viewParam name="periodUnit" value="#{billListViewState.periodUnit}"/>
+            <f:viewParam name="period" value="#{billListViewState.period}"/>
+            <f:viewParam name="startDate" value="#{billListViewState.startDate}">
+                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_FULL_PATTERN}"/>
+            </f:viewParam>
+            <f:viewParam name="endDate" value="#{billListViewState.endDate}">
+                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_FULL_PATTERN}"/>
+            </f:viewParam>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <f:loadBundle var="billBundle" basename="BillBundle"/>
+
+        <h:outputStylesheet name="box-env/styles/box-env.css" />
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{billBundle['box.bill.plural']}"/>
+    </ui:define>
+
+    <ui:define name="body">
+        <ui:include src="BillListFrame.xhtml">
+            <ui:param name="viewState" value="#{billListViewState}"/>
+            <ui:param name="lazyDm" value="#{billListVm.lazyDm}"/>
+            <ui:param name="page" value="BillListView.xhtml"/>
+            <ui:param name="filterFormId" value="bill_search_form"/>
+            <ui:param name="resultFormId" value="#{resultFormId}"/>
+            <ui:param name="update" value="#{filterFormId}"/>
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="BillMassCreationDialog.xhtml"/>
+
+        <ui:include src="BillCreationDialog.xhtml">
+            <ui:param name="update" value="#{resultFormId}"/>
+        </ui:include>
+        
+        <ui:include src="BillMassRecalcDialog.xhtml"/>
+
+        <ui:include src="BillMassSendDialog.xhtml"/>
+    </ui:define>
+
+</ui:composition>

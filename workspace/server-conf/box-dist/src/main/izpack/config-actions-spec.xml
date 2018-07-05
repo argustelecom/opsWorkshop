@@ -1,0 +1,15 @@
+<izpack:configurationactions version="5.0"
+                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                             xmlns:izpack="http://izpack.org/schema/configurationactions"
+                             xsi:schemaLocation="http://izpack.org/schema/configurationactions http://izpack.org/schema/5.0/izpack-configurationactions-5.0.xsd">
+
+
+    <pack name="Конфигурационный пакет Аргус">
+        <configurationaction order="afterpack">
+            <configurable type="options"
+                          tofile="$INSTALL_PATH/.config/work.properties">
+                <entry key="argus.app.version" value="novalue" operation="+"/>
+            </configurable>
+        </configurationaction>
+    </pack>
+</izpack:configurationactions>

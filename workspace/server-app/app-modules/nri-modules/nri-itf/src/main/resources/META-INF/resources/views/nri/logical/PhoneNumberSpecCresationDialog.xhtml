@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form id="phone_number_spec_creation_form">
+		<f:loadBundle basename="LogicalResourceSpecBundle" var="logResSpecBundle"/>
+		<p:dialog id="phonenumber_spec_creation_dlg" header="#{logResSpecBundle['box.nri.logicalresource.create_phonenum_dlg_header']}"
+				  width="500" styleClass="icon-creation"
+				  widgetVar="phoneNumberSpecCreationDlgVar" resizable="false" modal="true" closable="true" dynamic="true">
+			<dl class="name-value width-140">
+				<dt>
+					<p:outputLabel for="new_name" value="#{logResSpecBundle['box.nri.logicalresource.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_name" label="#{logResSpecBundle['box.nri.logicalresource.name']}"
+								 value="#{phoneNumberSpecCreationDialogModel.newName}" required="true" maxlength="64"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_description" value="#{logResSpecBundle['box.nri.logicalresource.description']}:"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="new_description" value="#{phoneNumberSpecCreationDialogModel.newDescription}" rows="3" cols="30"
+									 counter="description_display" maxlength="255" counterTemplate="#{overallBundle['box.overall.chars_left']}"
+									 autoResize="false"/>
+					<h:outputText id="description_display" styleClass="fs12"/>
+				</dd>
+				<dt>
+					<p:outputLabel for="new_mask" value="#{logResSpecBundle['box.nri.logicalresource.mask']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_mask" value="#{phoneNumberSpecCreationDialogModel.newMask}" title="#{logResSpecBundle['box.nri.logicalresource.mask_title']}" required="false" maxlength="64">
+						<f:validator validatorId="ru.argustelecom.box.nri.logicalresources.PhoneNumberMaskValidator"/>
+						<pe:keyFilter regEx="/[+\-)(\s\d\*]/"/>
+					</p:inputText>
+				</dd>
+				<dt>
+					<p:outputLabel for="new_blocked_interval" value="#{logResSpecBundle['box.nri.logicalresource.blocked_interval']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_blocked_interval" style="width: 15%;"
+								 value="#{phoneNumberSpecCreationDialogModel.newBlockedInterval}" size="3" maxlength="3"
+								 required="true">
+						<pe:keyFilter mask="pint"/>
+					</p:inputText>
+					<p:outputLabel value="#{logResSpecBundle['box.nri.logicalresource.days']}"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button"
+								 process="@this" action="#{phoneNumberSpecCreationDialogModel.cleanParams()}" onclick="PF('phoneNumberSpecCreationDlgVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('phoneNumberSpecCreationDlgVar').hide()}"
+								 action="#{logicalResourcesSpecDirectoryViewModel.onSpecCreated()}" update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

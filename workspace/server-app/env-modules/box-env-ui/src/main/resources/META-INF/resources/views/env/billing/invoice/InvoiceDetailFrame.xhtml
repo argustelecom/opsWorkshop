@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:f="http://java.sun.com/jsf/core"
+>
+
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect simple-fb">
+				<h:form id="invoice_detail_form">
+					<div class="ui-dashboard-header">
+						<i class="fa fa-indent"/>
+						<h:outputText styleClass="card-header" value="#{invoiceBundle['box.invoice.detail_header']}"/>
+					</div>
+					<div class="m-soft-gray-back" style="margin: -16px -16px -16px; padding: 11px 16px">
+						<div class="white-back m-shadow-effect" style="padding: 10px 20px 10px 20px;">
+
+							<ui:repeat value="#{invoicePlan.details()}" var="detailEntry">
+								<div id="detail_entry">
+									<h3 class="h3-header bottom-border">
+										<h:outputText styleClass="m-disp-inl-block"
+													  value="#{dateUtils.format(detailEntry.startDate(), dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)} -
+													  #{dateUtils.format(detailEntry.endDate(), dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+									</h3>
+									<table class="no-border width-100-percents" style="margin-top:-5px; margin-bottom:10px">
+										<tbody>
+											<tr>
+												<td class="width-30-percents">
+													<h:outputText styleClass="m-disp-inl-block"
+																  value="#{invoiceBundle['box.invoice.detail.provision_volume']}:"/>
+												</td>
+												<td class="width-40-percents m-tex-al-right">
+													<h:outputText styleClass="m-disp-inl-block" 
+														value="#{detailEntry.baseUnitCount()} #{invoiceBundle['box.invoice.base_unit.short']} x #{detailEntry.baseUnitCost()}"
+														title="#{detailEntry.baseUnitCount()} #{invoiceBundle['box.invoice.base_unit.short']} x #{detailEntry.baseUnitCost().amount}"/>
+												</td>
+												<td class="width-10-percents m-tex-al-right">
+													<h:outputText styleClass="m-disp-inl-block" value="="/>
+												</td>
+												<td class="width-20-percents m-tex-al-right">
+													<h:outputText 
+														value="#{detailEntry.cost()}"
+														title="#{detailEntry.cost().amount}"/>
+												</td>
+											</tr>
+											<ui:fragment rendered="#{detailEntry.modifier() ne null}">
+												<tr>
+													<td class="width-30-percents"/>
+													<td class="width-40-percents m-tex-al-right">
+														<h:outputText value="#{detailEntry.modifier().objectName}"/>
+													</td>
+													<td class="width-10-percents m-tex-al-right">
+														<h:outputText styleClass="m-disp-inl-block" value="="/>
+													</td>
+													<td class="width-20-percents m-tex-al-right">
+														<h:outputText 
+															value="#{detailEntry.deltaCost()}"
+															title="#{detailEntry.deltaCost().amount}"/>
+													</td>
+												</tr>
+												<tr>
+													<td class="width-30-percents"/>
+													<td class="width-40-percents m-tex-al-right"/>
+													<td class="width-10-percents m-tex-al-right">
+														<h:outputText styleClass="m-disp-inl-block" value="="/>
+													</td>
+													<td class="width-20-percents m-tex-al-right">
+														<h:outputText 
+															value="#{detailEntry.totalCost()}"
+															title="#{detailEntry.totalCost().amount}"/>
+													</td>
+												</tr>
+											</ui:fragment>
+										</tbody>
+									</table>
+								</div>
+							</ui:repeat>
+							<h3 class="h3-header bottom-border">
+								<h:outputText styleClass="m-disp-inl-block" value="#{invoiceBundle['box.invoice.summary']}"/>
+								<!--<h:outputText value="#{dateUtils.format(discount.startDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>-->
+								<!--<h:outputText value="#{dateUtils.format(discount.endDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>-->
+							</h3>
+							<table class="no-border width-100-percents">
+								<tbody>
+									<tr>
+										<td class="width-30-percents"/>
+										<td class="width-40-percents m-tex-al-right">
+											<h:outputText value="#{overallBundle['box.overall.total']}"/>
+										</td>
+										<td class="width-10-percents m-tex-al-right">
+											<h:outputText styleClass="m-disp-inl-block" value="="/>
+										</td>
+										<td class="width-20-percents m-tex-al-right">
+											<h:outputText 
+												value="#{invoicePlan.summary().cost()}"
+												title="#{invoicePlan.summary().cost().amount}"/>
+										</td>
+									</tr>
+									<ui:fragment rendered="#{not invoicePlan.summary().deltaCost().isZero()}">
+										<tr>
+											<td class="width-30-percents"/>
+											<td class="width-40-percents m-tex-al-right">
+												<h:outputText value="#{invoiceBundle['box.invoice.discount.total']}"/>
+											</td>
+											<td class="width-10-percents m-tex-al-right">
+												<h:outputText styleClass="m-disp-inl-block" value="="/>
+											</td>
+											<td class="width-20-percents m-tex-al-right">
+												<h:outputText 
+													value="#{invoicePlan.summary().deltaCost()}"
+													title="#{invoicePlan.summary().deltaCost().amount}"/>
+											</td>
+										</tr>
+										<tr>
+											<td class="width-30-percents"/>
+											<td class="width-40-percents m-tex-al-right">
+												<h:outputText value="#{invoiceBundle['box.invoice.amount.total']}"/>
+											</td>
+											<td class="width-10-percents m-tex-al-right">
+												<h:outputText styleClass="m-disp-inl-block" value="="/>
+											</td>
+											<td class="width-20-percents m-tex-al-right">
+												<h:outputText 
+													value="#{invoicePlan.summary().totalCost()}"
+													title="#{invoicePlan.summary().totalCost().amount}"/>
+											</td>
+										</tr>
+									</ui:fragment>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

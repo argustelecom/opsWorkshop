@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="subscriptionBundle" basename="SubscriptionBundle"/>
+    <h:form id="subscription_creation_by_contract_form">
+        <p:dialog id="subscription_creation_dlg" header="#{subscriptionBundle['box.subscription.create_dialog']}"
+                  width="600" styleClass="icon-creation sub-contract"
+                  widgetVar="subscriptionCreationByContractDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+            <dl class="name-value width-200">
+
+                <o:importConstants type="ru.argustelecom.box.env.billing.subscription.SubjectCauseType" var="scType"/>
+
+                <dt>
+                    <p:outputLabel for="subject_cause-subject_cause"
+                                   value="#{subscriptionBundle['box.subscription.cause']}:"/>
+                </dt>
+                <dd>
+                    <boxenv:selectSubscriptionSubjectCause value="#{subscriptionCreationByContractDm.subscriptionCreationDto.subjectCause}"
+                                                           id="subject_cause" customer="#{subscriptionCreationByContractDm.customer}"
+                                                           type="#{scType.CONTRACT}" required="true"
+                                                           label="#{subscriptionBundle['box.subscription.cause']}">
+
+                        <p:ajax event="change" process="@this" listener="#{subscriptionCreationByContractDm.onSubjectCauseSelected()}"
+                                update="subscription_creation_by_contract_form-product"/>
+
+                    </boxenv:selectSubscriptionSubjectCause>
+                </dd>
+                <dt>
+                    <p:outputLabel for="product" value="#{subscriptionBundle['box.subscription.product']}:"/>
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="product" value="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry}"
+                                     required="true" label="#{subscriptionBundle['box.subscription.product']}">
+
+                        <p:ajax process="@this" update="product_info"/>
+
+                        <f:selectItem itemValue=""/>
+                        <f:selectItems value="#{subscriptionCreationByContractDm.contractEntries}" var="contractEntry"
+                                       itemLabel="#{contractEntry.productOffering.productName}" itemValue="#{contractEntry}"/>
+                    </p:selectOneMenu>
+                </dd>
+            </dl>
+
+            <p:outputPanel id="product_info">
+                <dl class="name-value width-200 nv-margin-bot10">
+                    <dt>
+                        <p:outputLabel for="pricelist" value="#{subscriptionBundle['box.subscription.pricelist']}:"/>
+                    </dt>
+                    <dd>
+                        <h:outputText id="pricelist" value="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry.productOffering.pricelistName}"/>
+                    </dd>
+                    <dt>
+                        <p:outputLabel for="provistion_terms"
+                                       value="#{subscriptionBundle['box.subscription.provision.term']}:"/>
+                    </dt>
+                    <dd>
+                        <h:outputText id="provistion_terms" value="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry.productOffering.provisionTermsName}"/>
+                    </dd>
+                    <dt>
+                        <p:outputLabel for="provistion_terms_desc" value="#{overallBundle['box.overall.desc']}:"/>
+                    </dt>
+                    <dd>
+                        <h:outputText id="provistion_terms_desc" value="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry.productOffering.provisionTermsDescription}"/>
+                    </dd>
+                    <dt>
+                        <p:outputLabel for="cost" value="#{subscriptionBundle['box.subscription.amount']}:"/>
+                    </dt>
+                    <dd>
+                        <boxenv:money id="cost" value="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry.productOffering.price}" size="fs14" unicolour="true"
+                        				rendered="#{subscriptionCreationByContractDm.subscriptionCreationDto.contractEntry != null}"/>
+                    </dd>
+                    <dt>
+                        <p:outputLabel for="valid_from" value="#{overallBundle['box.overall.valid_from']}:"/>
+                    </dt>
+                    <dd>
+                        <p:calendar id="valid_from" styleClass="width-40-percents" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+                                    value="#{subscriptionCreationByContractDm.subscriptionCreationDto.validFrom}"
+                                    locale="#{languageBean.locale.language}" required="true"
+                                    label="#{overallBundle['box.overall.valid_from']}"/>
+                        <p:outputLabel for="valid_to" styleClass="m-tex-al-right width-10-percents m-pad-right10"
+                                       value="#{overallBundle['box.overall.valid_to.short']}:"/>
+                        <p:calendar id="valid_to" styleClass="m-tex-al-right width-40-percents" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+                                    value="#{subscriptionCreationByContractDm.subscriptionCreationDto.validTo}"
+                                    locale="#{languageBean.locale.language}"/>
+                    </dd>
+                </dl>
+            </p:outputPanel>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" update="subscription_creation_dlg"
+                                 process="@this" action="#{subscriptionCreationByContractDm.clean()}"
+                                 onclick="PF('subscriptionCreationByContractDlgVar').hide()"/>
+                <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('subscriptionCreationByContractDlgVar').hide()}"
+                                 action="#{subscriptionCreationByContractDm.create()}" process="subscription_creation_dlg" update="#{update}"/>
+            </div>
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

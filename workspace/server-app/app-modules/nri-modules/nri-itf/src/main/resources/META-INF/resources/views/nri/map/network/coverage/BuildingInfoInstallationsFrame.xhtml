@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+				xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<ui:param name="building" value="#{currentMapObject.valueAsBuilding}" />
+
+	<p:panel>
+		<p:dataTable value="#{buildingInfoForMapFrameModel.installations}" var="inst" styleClass="map-detail-building-installations-list">
+			<f:facet name="header">
+				Установленные ресурсы
+			</f:facet>
+			<p:column headerText="id">
+
+				<h:outputLink id="inst_address" value="../building/ResourceInstallationView.xhtml?installation=ResourceInstallation-#{inst.id}">
+				#{inst.id}
+				</h:outputLink>
+			</p:column>
+			<p:column headerText="name">
+				#{inst.resource.name}
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+</ui:composition>

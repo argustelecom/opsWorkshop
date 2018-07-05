@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="pricelistBundle" basename="PricelistBundle"/>
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+				<h:form id="pricelist_attributes_form">
+					<f:event listener="#{pricelistCardAttributesFm.preRender(pricelist)}" type="preRenderComponent"/>
+					<div class="columns">
+
+						<div class="column m-pad-0">
+							<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+								<i class="fs50 icon-library_books"/>
+								<h:outputText styleClass="fs16"
+											  value="#{overallBundle['box.overall.id']} #{pricelistCardAttributesFm.pricelist.id}" />
+							</p:panelGrid>
+						</div>
+
+						<o:importConstants type="ru.argustelecom.box.env.pricing.lifecycle.AbstractPricelistLifecycle.Behaviors" var="behavior"/>
+
+						<div class="columns ">
+							<div class="column m-container35 m-responsive30">
+								<sysinf:editableSection
+										disabled="#{(sysinf:isEntity(pricelistCardViewModel.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListEdit'))
+												or (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListEdit'))
+												or behaviorUtils.isForbidden(currentPricelist.value, behavior.editAttributes)}"
+										saveLabel="#{overallBundle['box.overall.save']}"
+										cancelLabel="#{overallBundle['box.overall.cancel']}">
+                                <p:ajax event="save" listener="#{pricelistCardAttributesFm.save()}" update="pricelist_attributes_form"/>
+								<dl class="name-value width-100">
+								<dt>
+									<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:" />
+								</dt>
+								<dd>
+									<p:inputText id="name"
+												 value="#{pricelistCardAttributesFm.pricelist.name}"
+												 maxlength="128" required="true"
+												 label="#{overallBundle['box.overall.name']}"/>
+								</dd>
+								</dl>
+								</sysinf:editableSection>
+								<dl class="name-value width-100">
+								<dt>
+									<p:outputLabel for="type" value="#{overallBundle['box.overall.type']}:" />
+								</dt>
+								<dd>
+									<h:outputText id="type" styleClass="m-mar-left-8"
+												  value="#{pricelistCardAttributesFm.getPricelistType().name}"/>
+								</dd>
+
+								<dt>
+									<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:" />
+								</dt>
+								<dd>
+									<h:outputText id="state" styleClass="m-mar-left-8"
+												  value="#{pricelistCardAttributesFm.pricelist.state.name}" />
+								</dd>
+								</dl>
+							</div>
+							<div class="column m-container65 m-responsive50">
+								<sysinf:editableSection
+										disabled="#{(sysinf:isEntity(pricelistCardViewModel.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListEdit'))
+													or (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListEdit'))
+													or behaviorUtils.isForbidden(currentPricelist.value, behavior.editAttributes)}"
+										saveLabel="#{overallBundle['box.overall.save']}"
+										cancelLabel="#{overallBundle['box.overall.cancel']}">
+                                    <p:ajax event="save" listener="#{pricelistCardAttributesFm.save()}" update="pricelist_attributes_form"/>
+								<dl class="name-value width-120">
+									<dt>
+										<p:outputLabel for="valid_from"
+													   value="#{overallBundle['box.overall.valid_from']}:" />
+									</dt>
+									<dd class="nv-composit">
+										<p:calendar id="valid_from"
+													value="#{pricelistCardAttributesFm.pricelist.validFrom}"
+													pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+													locale="#{languageBean.locale.language}"
+													required="true" label="#{overallBundle['box.overall.valid_from']}"/>
+
+										<p:outputLabel for="valid_to"
+													   value="#{overallBundle['box.overall.valid_to.short']}:"
+													   styleClass="m-mar-left10" />
+										<p:calendar id="valid_to"
+													value="#{pricelistCardAttributesFm.pricelist.validTo}"
+													pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+													locale="#{languageBean.locale.language}"
+													mindate="#{pricelistCardAttributesFm.pricelist.validFrom}"
+                                                    label="#{overallBundle['box.overall.valid_to.short']}"/>
+									</dd>
+
+                                    <ui:fragment rendered="#{pricelistCardAttributesFm.renderOwner}">
+									<dt>
+										<p:outputLabel for="owners"
+													   value="#{pricelistBundle['box.pricelist.owner']}:"/>
+									</dt>
+									<dd>
+										<p:selectOneMenu id="owners" value="#{pricelistCardAttributesFm.pricelist.owner}"
+                                                         process="@this" disabled="#{!(pricelistCardAttributesFm.owners.size() > 1)}">
+											<f:selectItems value="#{pricelistCardAttributesFm.owners}"
+														   var="owner" itemLabel="#{owner.objectName}"
+														   itemValue="#{owner}"/>
+										</p:selectOneMenu>
+									</dd>
+                                    </ui:fragment>
+									</dl>
+									</sysinf:editableSection>
+
+									<dl class="name-value width-120">
+									<dt>
+										<p:outputLabel for="tax_rate"
+													   value="#{pricelistBundle['box.pricelist.tax_rate']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="tax_rate" styleClass="m-mar-left-8"
+													  value="#{bigDecimalBeautifier.toBeauty(pricelistCardAttributesFm.pricelist.owner.taxRate)} %"/>
+									</dd>
+								</dl>
+							</div>
+						</div>
+
+						<div class="column m-tex-al-right m-pad-0">
+							<div class="width-180">
+								<ui:include src="/views/env/lifecycle/LifecycleFrame.xhtml">
+									<ui:param name="businessObject" value="#{currentPricelist.value}"/>
+									<ui:param name="styleClass" value="splitbutton-width-142 m-mar-bot10"/>
+									<ui:param name="update" value="pricelist_attributes_form activity_form pricelist_products_form pricelist_segments_form"/>
+									<ui:param name="readonly" value="#{    (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListStatusEdit'))
+																		or (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListStatusEdit'))}" />
+								</ui:include>
+								<o:importFunctions type="ru.argustelecom.box.env.pricing.model.PricelistState" var="state"/>
+
+								<p:commandButton value="#{overallBundle['box.overall.delete']}"
+												 styleClass="width-100-percents" action="#{pricelistCardViewModel.removePriceList()}"
+												 rendered="#{!behaviorUtils.isForbidden(currentPricelist.value, behavior.remove)}"
+												 disabled="#{   (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListDelete'))
+												 			 or (sysinf:isEntity(pricelistCardViewModel.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListDelete'))}"/>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

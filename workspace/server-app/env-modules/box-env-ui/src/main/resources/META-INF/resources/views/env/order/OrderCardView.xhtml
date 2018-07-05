@@ -1,0 +1,125 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena">
+
+    <ui:param name="viewModel" value="#{orderCardViewModel}"/>
+    <ui:param name="pageTitle" value="#{orderBundle['box.order']}"/>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="order" value="#{currentOrder.value}" required="#{!facesContext.postback}"
+                         requiredMessage="Order param required" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css"/>
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+        <f:loadBundle var="orderBundle" basename="OrderBundle"/>
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{orderBundle['box.order.plural']}" url="/views/env/order/OrderListView.xhtml" disabled="#{!p:ifGranted('CRM_OrderView')}"/>
+        <p:menuitem value="#{orderCardViewModel.order.number}"/>
+    </ui:define>
+
+    <ui:define name="body">
+
+        <ui:include src="OrderAttributesFrame.xhtml"/>
+
+        <div class="m-container100 m-responsive100">
+            <div class="m-container50 m-responsive100">
+                <ui:include src="/views/env/customer/CustomerAttributesBlockFrame.xhtml">
+                    <ui:param name="customer" value="#{orderCardViewModel.order.customer}"/>
+                </ui:include>
+
+                <!--FIXME Вместо этого фрейма должен быть AddressFrame.xhtml -->
+                <ui:include src="OrderConnectionAddressFrame.xhtml">
+                    <ui:param name="containerClass" value="m-container100"/>
+                    <ui:param name="height" value="250"/>
+                    <ui:param name="order" value="#{orderCardViewModel.order}"/>
+                </ui:include>
+
+				<ui:fragment rendered="#{sysinf:isEntity(orderCardViewModel.order.customer.party, 'Company')}">
+                	<ui:include src="/views/env/contactperson/ContactPersonsFrame.xhtml">
+                		<ui:param name="company" value="#{orderCardViewModel.order.customer.party}"/>
+                    	<ui:param name="canEdit" value="true"/>
+                    	<ui:param name="containerClass" value="m-container100"/>
+                	</ui:include>
+                </ui:fragment>
+
+                <ui:include src="/views/env/contact/ContactFunctionalBlock.xhtml">
+                	<ui:param name="party" value="#{orderCardViewModel.order.customer.party}"/>
+                    <ui:param name="containerClass" value="m-container100"/>
+                    <ui:param name="canEdit" value="#{p:ifGranted('CRM_OrderEdit')}"/>
+                </ui:include>
+
+                <ui:include src="OrderContractsFrame.xhtml">
+                    <ui:param name="order" value="#{orderCardViewModel.order}"/>
+                    <ui:param name="contracts" value="#{orderCardViewModel.order.contracts}"/>
+                </ui:include>
+            </div>
+
+            <div class="m-container50 m-responsive100">
+                <ui:include src="OrderRequirementsFrameModel.xhtml">
+                    <ui:param name="containerClass" value="m-container100"/>
+                    <ui:param name="update" value="order_offers_form"/>
+                </ui:include>
+
+                <ui:include src="OrderOffersFrame.xhtml">
+                    <ui:param name="containerClass" value="m-container100"/>
+                </ui:include>
+            </div>
+
+            <div class="m-container100 m-responsive100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+                        <ui:include src="/views/env/activity/ActivityFrame.xhtml">
+                            <ui:param name="contextObject" value="#{orderCardViewModel.order}"/>
+                        </ui:include>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="/views/env/contact/ContactCreationDialog.xhtml">
+			<ui:param name="update" value="contacts_form"/>
+		</ui:include>
+		
+		<ui:include src="/views/env/lifecycle/LifecycleRoutingDialog.xhtml">
+			<ui:param name="update" value="order_attributes_form activity_form"/>
+		</ui:include>
+		
+        <ui:include src="OrderSelectOffersDialog.xhtml">
+            <ui:param name="update" value="order_offers_form"/>
+        </ui:include>
+
+		<ui:include src="ChangeOrderConnectionAddressDialog.xhtml"/>
+
+        <ui:include src="/views/env/activity/comment/CommentEditDialog.xhtml"/>
+
+		<ui:include src="/views/env/contract/ContractCreationDialog.xhtml">
+            <ui:param name="update" value="order_contracts_form"/>
+        </ui:include>
+
+		<ui:include src="/views/env/contract/ContractExtensionCreationDialog.xhtml">
+            <ui:param name="canSelectContract" value="true"/>
+            <ui:param name="update" value="order_contracts_form"/>
+        </ui:include>
+
+		<ui:fragment rendered="#{sysinf:isEntity(customerCardViewModel.customer.party, 'Company')}">
+			<ui:include src="/views/env/contactperson/ContactPersonEditDialog.xhtml">
+				<ui:param name="update" value="contact_persons_form"/>
+			</ui:include>
+
+			<ui:include src="/views/env/contactperson/ContactPersonViewDialog.xhtml"/>
+		</ui:fragment>
+    </ui:define>
+
+</ui:composition>

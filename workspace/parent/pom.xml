@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>grandparent</artifactId>
+		<groupId>ru.argustelecom.argus</groupId>
+		<version>3.20.0.4-SHARE-SNAPSHOT</version>
+		<relativePath></relativePath>
+	</parent>
+
+	<groupId>ru.argustelecom.box</groupId>
+	<artifactId>parent</artifactId>
+	<version>0.15.0</version>
+
+	<packaging>pom</packaging>
+	<name>parent</name>
+
+	<properties>
+		<main.basedir>${project.basedir}/..</main.basedir>
+
+		<apt.processor.static-metamodel>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</apt.processor.static-metamodel>
+		<apt.processor.lombok>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</apt.processor.lombok>
+		<apt.processor.nls>org.jboss.logging.processor.apt.LoggingToolsProcessor</apt.processor.nls>
+
+		<nls.translation-files.path.search>${project.build.resources[0].directory}</nls.translation-files.path.search>
+		<nls.translation-files.path.output>${project.basedir}/target/generated-translation-files</nls.translation-files.path.output>
+		<!-- TASK-86992, v.semchenko: параметр используется в проекте webui. TODO с появление профилей Заказчиков параметр должен указывать в профилях -->
+		<!-- kostd, 24.10.2017: профили у box уже есть, но специфичных Заказчику пока нет. Поэтому ear во всех профилях пока называется одинаково -->
+		<box.ear.final-name>box-enterprise-${project.version}</box.ear.final-name>
+
+
+		
+		<!-- 
+			Версия инфраструктуры ARGUS должна быть объявлена здесь, потому что на нее завязаны зависимости. 
+			Важно! Требуется согласованность версий в свойствах: 
+			* version.ru.argustelecom.argus   - используется в pom если необходимо знать версию платформы
+			* argus.app.version               - описана в work.properties, попадает в standalone.xml, используется в 
+			                                    runtime
+			* project.parent.version          - не может быть описана в виде свойства, поэтому указана литерально
+			
+			Таким образом, если ты меняешь версию платформы, то это необходимо сделать в двух местах:
+			здесь и в work.properties.
+			
+			Нигде более указывать версию инфраструктуры ARGUS в литеральном виде не допускается!!!
+		-->
+		<version.ru.argustelecom.argus>3.20.0.4-SHARE-SNAPSHOT</version.ru.argustelecom.argus>
+		
+		<!-- FIXME [BOX-561] -->
+		<version.com.googlecode.libphonenumber>8.3.3</version.com.googlecode.libphonenumber>
+		<version.com.haulmont.yarg>2.0.11</version.com.haulmont.yarg>
+		<version.com.jayway.jsonpath>2.1.0</version.com.jayway.jsonpath>
+		<version.com.fasterxml.jackson.core>2.9.2</version.com.fasterxml.jackson.core>
+		<version.org.docx4j>3.3.6</version.org.docx4j>
+		<version.org.docx4j.export-fo>3.3.6</version.org.docx4j.export-fo>
+		<version.org.xhtmlrenderer>9.1.7</version.org.xhtmlrenderer>
+		<version.com.ibm.icu>60.2</version.com.ibm.icu>
+		<version.org.apache.poi>3.15</version.org.apache.poi>
+
+        <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
+        <sonar.skip>true</sonar.skip>
+
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>core</artifactId>
+				<version>${version.ru.argustelecom.argus}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>jboss-conf</artifactId>
+				<version>${version.ru.argustelecom.argus}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>system-inf</artifactId>
+				<version>${version.ru.argustelecom.argus}</version>
+				
+				<!--
+					FIXME JasperReports тянет за собой большую часть springframework, поэтому нужно его исключить из Box
+					
+					Однако, просто так его исключить не получится, потому что при старте сервера Wildfly 
+					выполняет сканирование классов и кидается многочисленными WARNING вида
+					Failed to define class ru.argustelecom.system.inf.reportengine2.* in Module "system-inf-*.jar:main"
+					Поэтому более правильным решением будет согласовать перенос reportengine из system-inf в system-env
+					
+					В качестве альтернативы можно поробовать поставить аннотацию Vetoed над всеми классами reportengine2 
+				-->
+				
+				<!--	
+				<exclusions>
+					<exclusion>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports-fonts</artifactId>
+					</exclusion>
+				</exclusions>
+				-->
+			</dependency>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>system-inf</artifactId>
+				<type>test-jar</type>
+				<version>${version.ru.argustelecom.argus}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>system-inf-ui</artifactId>
+				<version>${version.ru.argustelecom.argus}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.argustelecom.argus</groupId>
+				<artifactId>system-inf-ui</artifactId>
+				<type>test-jar</type>
+				<version>${version.ru.argustelecom.argus}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>${version.org.bouncycastle}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${version.org.postgresql.jdbc}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.picketbox</groupId>
+				<artifactId>picketbox</artifactId>
+				<version>${version.org.picketbox}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${version.org.projectlombok}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.libphonenumber</groupId>
+				<artifactId>libphonenumber</artifactId>
+				<version>${version.com.googlecode.libphonenumber}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j</artifactId>
+				<version>${version.org.docx4j}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.docx4j</groupId>
+				<artifactId>docx4j-export-fo</artifactId>
+				<version>${version.org.docx4j.export-fo}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${version.com.fasterxml.jackson.core}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${version.com.fasterxml.jackson.core}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${version.com.fasterxml.jackson.core}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.xhtmlrenderer</groupId>
+				<artifactId>flying-saucer-core</artifactId>
+				<version>${version.org.xhtmlrenderer}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xhtmlrenderer</groupId>
+				<artifactId>flying-saucer-pdf</artifactId>
+				<version>${version.org.xhtmlrenderer}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.ibm.icu</groupId>
+				<artifactId>icu4j</artifactId>
+				<version>${version.com.ibm.icu}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>${version.org.apache.poi}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${version.org.apache.poi}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml-schemas</artifactId>
+				<version>${version.org.apache.poi}</version>
+			</dependency>
+			
+			<!-- FIXME отломались сборки после перехода на новый Artifactory -->
+			<dependency>
+				<groupId>com.lowagie</groupId>
+				<artifactId>itext</artifactId>
+				<version>2.1.7</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>initialize-main-basedir-absolute-path</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								def absolutePath = new File(project.properties['main.basedir']).getAbsolutePath();
+								project.properties.setProperty('main.basedir.absolutepath', absolutePath);
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- 
+				Любой дочерний проект может активировать профиль и включить процессор аннотаций 
+				поэтому за собой, по возможности, нужно почистить и недопустить падения при 
+				попытке повторно обработать аннотации
+			-->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>clean-apt</id>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<phase>initialize</phase>
+						<configuration>
+							<excludeDefaultDirectories>true</excludeDefaultDirectories>
+							<filesets>
+								<fileset>
+									<directory>target/generated-sources/annotations/</directory>
+									<includes>
+										<include>**/*</include>
+									</includes>
+								</fileset>
+							</filesets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<header>Документация разработчика ARGUS BOX</header>
+					<windowtitle>ARGUS BOX JavaDoc</windowtitle>
+					<version>false</version>
+					<docfilessubdirs>true</docfilessubdirs>
+					<locale>RU</locale>
+
+					<groups>
+						<group>
+							<title>Infrastructure</title>
+							<packages>ru.argustelecom.box.inf*</packages>
+						</group>
+						<group>
+							<title>Shared domain</title>
+							<packages>ru.argustelecom.box.env*</packages>
+						</group>
+						<group>
+							<title>Product Directory</title>
+							<packages>ru.argustelecom.box.productdir*</packages>
+						</group>
+						<group>
+							<title>CRM</title>
+							<packages>ru.argustelecom.box.crm*</packages>
+						</group>
+						<group>
+							<title>Billing</title>
+							<packages>ru.argustelecom.box.billing*</packages>
+						</group>
+						<group>
+							<title>Network Resource Inventory</title>
+							<packages>ru.argustelecom.box.nri*</packages>
+						</group>
+						<group>
+							<title>Elsis Gate</title>
+							<packages>ru.argustelecom.box.elsis*</packages>
+						</group>
+					</groups>
+					<dependencySourceIncludes>
+						<dependencySourceInclude>ru.argustelecom.*</dependencySourceInclude>
+					</dependencySourceIncludes>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>extra-enforcer-rules</artifactId>
+							<version>1.0-beta-6</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>properties-maven-plugin</artifactId>
+					<version>1.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>com.google.code.maven-replacer-plugin</groupId>
+					<artifactId>replacer</artifactId>
+					<version>1.5.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.lesscss</groupId>
+					<artifactId>lesscss-maven-plugin</artifactId>
+					<version>1.7.0.1.1</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-clean-plugin</artifactId>
+										<versionRange>[2.4.1,)</versionRange>
+										<goals>
+											<goal>clean</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<!-- 
+		==========================================================================================================
+		>>>  ПРОФИЛИ УПРАВЛЕНИЯ СОСТАВОМ СБОРКИ 
+		==========================================================================================================
+		Профили этой секции предназначены для включения определенного модуля или его фичи в состав ear. Важно 
+		понимать, что фича зависит от модуля или от другой фичи, модули и фичи представляют собой дерево. Если 
+		включается один из листовых элементов, то должны включаться также и все его предки.
+		
+		Правила именования свойства для исключения модуля или фичи. Пример: exclude.crm.core
+			* exclude - описывает действие "исключить"
+			* crm     - наименование продукта, в данном случае "crm"
+			* core    - наименование фичи продукта, в данном случае "core", т.е. главный модуль без которого 
+			            продукт CRM не имеет смысла. Вместо "core" здесь может быть что-то другое, например, 
+						contract-management - фича, позволяющая автоматизировать документооборот
+		========================================================================================================== 
+		-->
+
+		<!-- Профиль по умолчанию, содержит максимально полную поставку -->
+		<profile>
+			<id>ear-composition-full</id>
+			<activation>
+				<property>
+					<name>!box.dist.composition</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- "Product Directory" module & features -->
+				<exclude.product-dir.core>false</exclude.product-dir.core>
+
+				<!-- "CRM" module & features -->
+				<exclude.crm.core>false</exclude.crm.core>
+
+				<!-- "Billing" module & features -->
+				<exclude.billing.core>false</exclude.billing.core>
+
+				<!-- "Network Resource Inventory" module & features -->
+				<exclude.nri.core>false</exclude.nri.core>
+
+				<!-- FIXME [elsis-gate]-->
+				<exclude.elsis-gate>false</exclude.elsis-gate>
+			</properties>
+		</profile>
+
+		<!-- FIXME [Modularity] Исправить после рефакторинга зависимостей и разбиения продукта на модули -->
+		<!-- 
+			Профиль содержит только те модули, которые имеют смысл на текущий момент. Доджен быть удален 
+			после выполнения рефакторинга по разбиению системы на модули. Он включается, когда мы собираем
+			дистрибутив через make dist
+		-->
+		<profile>
+			<id>ear-composition-modularity-fall</id>
+			<activation>
+				<property>
+					<name>box.dist.composition</name>
+					<value>modularity-fall</value>
+				</property>
+			</activation>
+			<properties>
+				<!-- "Product Directory" module & features -->
+				<exclude.product-dir.core>true</exclude.product-dir.core>
+
+				<!-- "CRM" module & features -->
+				<exclude.crm.core>true</exclude.crm.core>
+
+				<!-- "Billing" module & features -->
+				<exclude.billing.core>true</exclude.billing.core>
+
+				<!-- "Network Resource Inventory" module & features -->
+				<exclude.nri.core>true</exclude.nri.core>
+
+				<!-- FIXME [elsis-gate]-->
+				<exclude.elsis-gate>false</exclude.elsis-gate>
+			</properties>
+		</profile>
+
+		<!-- 
+		==========================================================================================================
+		<<<  ПРОФИЛИ УПРАВЛЕНИЯ СОСТАВОМ СБОРКИ 
+		==========================================================================================================
+		-->
+
+
+
+		<!-- 
+		==========================================================================================================
+		>>>  ПРОФИЛИ ПРОЦЕССИНГА АННОТАЦИЙ 
+		==========================================================================================================
+		Профили этой секции предназначены для включения возможности процессинга аннотаций в разных проектах. Кроме 
+		настройки maven-compiler-plugin, выполняется также настройка зависимостей и свойств, если в этом есть 
+		необходимость.
+		
+		ВАЖНО! В один момент времени должен быть активным только один такой профиль, т.к. следующий профиль может 
+		частично перетереть настройки плагинов и зависимостей, в результате процессинг будет выполнен некорректно, 
+		если вообще будет выполнен.
+			 
+		Для активации профиля в своем проекте необходимо рядом с pom положить один из маркерных файлов, на наличие 
+		которых завязана активация профилей. Помни! Каждый из активных профилей должен исключать все остальные
+		процессорные профили.
+ 		  
+ 		  .apt-static-metamodel-only     - Включает генерацию статической метамодели.
+		  .apt-lombok-only               - Включает процессинг аннотаций Lombok.
+		  .apt-nls-only                  - Включает генерацию реализации для интерфейсов локализации.
+		  .apt-lombok-n-metamodel        - Включает процессинг аннотаций Lombok и генератор статической метамодели.
+		  .apt-lombok-n-nls              - Включает процессинг аннотаций Lombok и генератор файлов локализации.
+		  .apt-full                      - Включает все процессоры аннотаций.  
+		========================================================================================================== 
+		-->
+
+		<!-- .apt-static-metamodel-only - Включает генерацию статической метамодели. -->
+		<profile>
+			<id>apt-static-metamodel-only</id>
+			<activation>
+				<file>
+					<exists>.apt-static-metamodel-only</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-jpamodelgen</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.static-metamodel}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- .apt-lombok-only - Включает процессинг аннотаций Lombok. -->
+		<profile>
+			<id>apt-lombok-only</id>
+			<activation>
+				<file>
+					<exists>.apt-lombok-only</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.lombok}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- .apt-nls-only - Включает генерацию реализации для интерфейсов локализации. -->
+		<profile>
+			<id>apt-nls-only</id>
+			<activation>
+				<file>
+					<exists>.apt-nls-only</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-annotations</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-processor</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+								<arg>-AtranslationFilesPath=${nls.translation-files.path.search}/</arg>
+								<arg>-AgeneratedTranslationFilesPath=${nls.translation-files.path.output}</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.nls}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- .apt-lombok-n-metamodel - Включает процессинг аннотаций Lombok и генератор статической метамодели. -->
+		<profile>
+			<id>apt-lombok-n-metamodel</id>
+			<activation>
+				<file>
+					<exists>.apt-lombok-n-metamodel</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-jpamodelgen</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.static-metamodel}</annotationProcessor>
+								<annotationProcessor>${apt.processor.lombok}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- .apt-lombok-n-nls - Включает процессинг аннотаций Lombok и генератор файлов локализации. -->
+		<profile>
+			<id>apt-lombok-n-nls</id>
+			<activation>
+				<file>
+					<exists>.apt-lombok-n-nls</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-annotations</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-processor</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+								<arg>-AtranslationFilesPath=${nls.translation-files.path.search}/</arg>
+								<arg>-AgeneratedTranslationFilesPath=${nls.translation-files.path.output}</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.lombok}</annotationProcessor>
+								<annotationProcessor>${apt.processor.nls}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- .apt-full - Включает все процессоры аннотаций. -->
+		<profile>
+			<id>apt-full</id>
+			<activation>
+				<file>
+					<exists>.apt-full</exists>
+				</file>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-jpamodelgen</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-annotations</artifactId>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging-processor</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+							<compilerArgs>
+								<arg>-Aencoding=UTF-8</arg>
+								<arg>-AtranslationFilesPath=${nls.translation-files.path.search}/</arg>
+								<arg>-AgeneratedTranslationFilesPath=${nls.translation-files.path.output}</arg>
+							</compilerArgs>
+							<annotationProcessors>
+								<annotationProcessor>${apt.processor.static-metamodel}</annotationProcessor>
+								<annotationProcessor>${apt.processor.lombok}</annotationProcessor>
+								<annotationProcessor>${apt.processor.nls}</annotationProcessor>
+							</annotationProcessors>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- 
+		==========================================================================================================
+		<<<  ПРОФИЛИ ПРОЦЕССИНГА АННОТАЦИЙ 
+		==========================================================================================================
+		-->
+
+	</profiles>
+
+	<!-- Без этого не получается скачать grandparent из корпоративного репозитория -->
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>argus-internal</name>
+			<url>http://git:8081/artifactory/repo</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<name>argus-internal</name>
+			<url>http://git:8081/artifactory/repo</url>
+		</pluginRepository>
+	</pluginRepositories>
+</project>

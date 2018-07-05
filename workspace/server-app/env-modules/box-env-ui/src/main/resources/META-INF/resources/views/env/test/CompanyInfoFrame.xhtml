@@ -1,0 +1,27 @@
+<ui:composition template="IndividualInfoFrame.xhtml" 
+				xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+				
+	<ui:define name="fbHeader">
+		<i class="fa fa-group"/>
+		<h:outputText value="Клиент"/>
+	</ui:define>
+	
+	<ui:define name="clientInfo">
+		<dl class="name-value width-110">
+			<dt>Название: </dt>
+			<dd>
+				<!-- <h:link id="company_name" value="#{companyInfoFB.companyName}" outcome="" /> -->
+				<h:outputText id="company_name" value="#{companyInfoFB.companyName}"/>
+			</dd>
+			
+			<dt>Менеджеры: </dt>
+			<dd>
+				<h:outputText id="managers" value="#{companyInfoFB.managers}"/>
+			</dd>
+		</dl>
+	</ui:define>
+</ui:composition>

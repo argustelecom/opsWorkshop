@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<f:event listener="#{resourceLifecycleFrameModel.preRender(resource)}"
+			 type="preRenderComponent"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<p:outputPanel id="lifecycle_panel" styleClass="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb"
+					rendered="#{resourceLifecycleFrameModel.hasLifecycle}">
+				<div class="ui-dashboard-header">
+					<i class="fa fa-exchange"/>
+					<h:outputText styleClass="card-header"
+								  value="Жизненный цикл"/>
+				</div>
+
+				<div class="columns">
+					<div class="column">
+						<dl class="name-value width-200">
+							<dt>
+								<p:outputLabel for="currentPhaseName"
+											   value="Текущее состояние:"/>
+							</dt>
+							<dd>
+								<p:outputLabel id="currentPhaseName" value="#{resourceLifecycleFrameModel.currentPhase.phaseName}"
+											   rendered="#{resourceLifecycleFrameModel.currentPhase ne null}"/>
+								<p:outputLabel id="currentPhaseNameNA" value="N/A"
+											   rendered="#{resourceLifecycleFrameModel.currentPhase eq null}"/>
+							</dd>
+						</dl>
+					</div>
+					<div class="column width-25-percents">
+						<p:outputPanel id="multiRoutesPanel" styleClass="m-fright" rendered="#{resourceLifecycleFrameModel.currentPhase ne null}">
+							<p:commandButton id="transitionSelectBtn" value="Действие над ресурсом" type="button" icon="ui-icon-arrowthickstop-1-e"/>
+							<p:menu overlay="true" trigger="transitionSelectBtn" my="left top" at="left bottom">
+								<c:forEach var="route" items="#{resourceLifecycleFrameModel.getRoutes(resource)}">
+									<p:menuitem value="#{route.comment}"
+												update="@form"
+												icon="ui-icon-arrowthickstop-1-e"
+										action="#{resourceLifecycleFrameModel.changePhase(route)}"/>
+								</c:forEach>
+							</p:menu>
+						</p:outputPanel>
+
+						<p:outputPanel id="initRoutePanel" styleClass="m-fright" rendered="#{resourceLifecycleFrameModel.currentPhase eq null}">
+							<p:commandButton id="phaseSelectBtn" value="Выбрать статус" type="button" icon="ui-icon-arrowthickstop-1-e"/>
+							<p:menu overlay="true" trigger="phaseSelectBtn" my="left top" at="left bottom">
+								<c:forEach var="route" items="#{resourceLifecycleFrameModel.getRoutes(resource)}">
+									<p:menuitem value="#{route.comment}"
+												update="@form"
+												icon="ui-icon-arrowthickstop-1-e"
+												action="#{resourceLifecycleFrameModel.changePhase(route)}"/>
+								</c:forEach>
+							</p:menu>
+						</p:outputPanel>
+					</div>
+				</div>
+			</p:outputPanel>
+		</div>
+	</div>
+
+</ui:composition>

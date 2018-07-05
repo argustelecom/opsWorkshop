@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+	<div class="m-container-indent">
+		<div id="resource_info_panel" class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+			<h:form id="resource_info">
+				<div class="ui-dashboard-header">
+					<i class="fa fa-info-circle"/>
+					<h:outputText id="phone_resource_title" styleClass="card-header"
+								  value="#{phoneNumberPoolBundle['box.nri.phone.resource.info_label']}"/>
+				</div>
+				<dl class="name-value width-250 m-font-roboto-regular">
+					<dt>
+						<p:outputLabel value="#{phoneNumberPoolBundle['box.nri.phone.resource.resource_label']}"/>
+					</dt>
+					<dd>
+						<h:outputLink id="resource"
+									  value="../resources/ResourceView.xhtml?resource=ResourceInstance-#{phoneNumberVM.phoneNumber.resource.id}">
+							<h:outputText value="#{phoneNumberVM.phoneNumber.resource.name}"/>
+						</h:outputLink>
+					</dd>
+				</dl>
+			</h:form>
+		</div>
+	</div>
+</ui:composition>

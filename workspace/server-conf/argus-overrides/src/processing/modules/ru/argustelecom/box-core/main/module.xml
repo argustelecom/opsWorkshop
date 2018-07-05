@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="ru.argustelecom.box-core">
+	<resources>	
+		<resource-root path="box-core.jar"/>
+	</resources>
+	<dependencies>
+		<module name="com.google.guava"/>
+		
+		<module name="org.postgresql.pgjdbc"/>
+		
+		<module name="javax.api"/>
+		<module name="javax.annotation.api"/>
+		<module name="javax.ejb.api"/>
+		<module name="javax.enterprise.api"/>
+		<module name="javax.interceptor.api" export="true" />
+		<module name="javax.persistence.api"/>
+		<module name="javax.resource.api"/>
+		<module name="javax.security.jacc.api"/>
+		<module name="javax.transaction.api"/>
+		
+		<module name="org.hibernate"/>
+		
+		<module name="org.jboss.as.jmx"/>
+		<module name="org.jboss.logging"/>
+		<module name="org.jboss.weld.core"/>
+		<module name="org.jboss.jts.integration"/>
+		<module name="org.jboss.jboss-transaction-spi"/>
+		
+		<module name="org.picketbox"/>
+
+		<!-- для ru.argustelecom.system.inf.logging.SessionLogsHandler -->
+		<module name="org.jboss.logmanager" />
+		<module name="io.undertow.core" />
+		<!--Для Log4JSpyLogDelegator -->
+		
+		<module name="org.bgee.log4jdbc" />
+
+		<module name="org.jboss.as.controller" />
+		<module name="org.jboss.staxmapper" />
+		<module name="org.jboss.as.server" />
+		<module name="org.jboss.xnio" />
+		<module name="org.jboss.weld.core"/>
+		<module name="org.jboss.weld.spi"/>
+		
+		<module name="ru.argustelecom.core" />
+
+		<module name="org.bouncycastle"/>
+	</dependencies>
+</module>

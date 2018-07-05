@@ -1,0 +1,145 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{buildingStructureVM}"/>
+	<ui:param name="pageTitle"
+			  value="#{buildingElementBundle['box.nri.building.page_header']} - #{buildingStructureVM.buildingLocation.fullName}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="location" value="#{buildingStructureViewState.location}"/>
+			<f:viewParam name="buildingElement" value="#{buildingStructureViewState.buildingElement}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<sysinf:lmapDeps />
+		<h:outputStylesheet name="/resources/system/styles/map.css"/>
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="BuildingElementBundle" var="buildingElementBundle"/>
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="LocationBundle" var="addressDirectory"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml" />
+		<p:menuitem value="#{addressDirectory['box.location.dir']}"
+					url="/views/env/address/AddressDirectoryView.xhtml?selectedNode="/>
+		<p:menuitem value="#{buildingStructureVM.buildingLocation.fullName}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+
+						<h:form id="building_elem_tree_form">
+							<div class="ui-dashboard-header">
+								#{buildingElementBundle['box.nri.building.elem_tree_header']}
+								<p:outputPanel styleClass="m-fright">
+									<p:commandLink id="init_structure_with_lodgings" styleClass="m-mar-left10"
+												   oncomplete="PF('buildingElementsSetTypeDlg').show()"
+												   rendered="#{buildingStructureVM.rootElement eq null and p:ifGranted('Nri_BuildingStructureEdit')}"
+												   update="@widgetVar(buildingElementsSetTypeDlg)">
+										<i class="fa fa-magic icon-btn"/>
+									</p:commandLink>
+									<p:commandLink id="create_element" styleClass="m-mar-left10"
+												   oncomplete="PF('buildingElementCreationDlg').show()"
+												   disabled="#{buildingStructureVM.selectedNode eq null}"
+												   rendered="#{buildingStructureVM.rootElement ne null and p:ifGranted('Nri_BuildingStructureEdit')}"
+												   update="@widgetVar(buildingElementCreationDlg)">
+										<i class="fa fa-plus icon-btn"/>
+									</p:commandLink>
+									<p:commandLink styleClass="m-mar-left10" action="#{buildingStructureVM.delete}"
+												   rendered="#{buildingStructureVM.selectedNode ne null and p:ifGranted('Nri_BuildingStructureEdit') }"
+												   oncomplete="Argus.System.AutoHeight.compute('building_elem_tree_form-building_elem_tree', 35);"
+												   update="building_elem_tree_form element_attributes_form">
+										<i class="fa fa-trash icon-btn"/>
+
+										<p:confirm header="#{buildingElementBundle['box.nri.building.remove_header']}"
+												   message="#{buildingElementBundle['box.nri.building.remove_message']}"/>
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<p:outputPanel id="building_elem_tree_panel" styleClass="fs14">
+								<p:tree id="building_elem_tree" value="#{buildingStructureVM.elementsTree}" var="node"
+										styleClass="width-100-percents m-ov-auto tree-no-border" selectionMode="single"
+										draggable="#{p:ifGranted('Nri_BuildingStructureEdit')}" droppable="#{p:ifGranted('Nri_BuildingStructureEdit')}" dragdropScope="structure"
+										selection="#{buildingStructureVM.selectedNode}" style="overflow-x: hidden"
+										propagateSelectionDown="false" propagateSelectionUp="false">
+
+									<p:ajax event="select"
+											update="-element_attributes_form building_elem_tree_form-create_element"
+											listener="#{buildingStructureVM.onNodeSelect}"/>
+
+									<p:ajax event="dragdrop" listener="#{buildingStructureVM.onNodeParentChange}"
+											update="building_elem_tree_form-building_elem_tree"
+											oncomplete="Argus.System.AutoHeight.compute('building_elem_tree_form', 40);
+                                						Argus.System.AutoHeight.compute('building_elem_tree_form-building_elem_tree', 35);"/>
+
+									<p:ajax event="expand" listener="#{buildingStructureVM.onNodeExpand}"/>
+									<p:ajax event="collapse" listener="#{buildingStructureVM.onNodeCollapse}"/>
+
+									<p:treeNode>
+										<i class="#{node.type.icon.faName}"/>
+										<h:outputText value="#{node.name}" style="padding-left: 5px;"/>
+									</p:treeNode>
+
+								</p:tree>
+							</p:outputPanel>
+						</h:form>
+
+						<script>
+                            $(document).ready(function () {
+                                Argus.System.AutoHeight.compute('building_elem_tree_form', 40);
+                                Argus.System.AutoHeight.compute('building_elem_tree_form-building_elem_tree', 35);
+                            });
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="m-container65 m-responsive100">
+			<h:form id="element_attributes_form">
+				<p:outputPanel styleClass="m-container100" rendered="#{buildingStructureVM.selectedNode ne null}">
+					<div class="m-container-indent">
+						<div class="m-card m-shadow-effect simple-fb">
+							<p:outputPanel id="building_elem_attrib_panel" styleClass="fs14">
+								<ui:include src="BuildingElementAttributesFrame.xhtml">
+									<ui:param name="element" value="#{buildingStructureVM.selectedNode.data}"/>
+									<ui:param name="rootElement" value="#{buildingStructureVM.rootElement}"/>
+								</ui:include>
+							</p:outputPanel>
+						</div>
+					</div>
+				</p:outputPanel>
+				<ui:include src="BuildingResourceInstallationFrame.xhtml">
+					<ui:param name="element" value="#{buildingStructureVM.selectedNode.data}"/>
+				</ui:include>
+				<ui:fragment rendered="#{buildingResInstallationFM.element.isRoot}">
+					<ui:include src="BuildingResourceLocationFrame.xhtml">
+						<ui:param name="location" value="#{buildingStructureVM.buildingLocation}"/>
+					</ui:include>
+				</ui:fragment>
+			</h:form>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="BuildingStructureAddElementDialog.xhtml">
+			<ui:param name="update" value="building_elem_tree_form-building_elem_tree new_name"/>
+		</ui:include>
+		<ui:include src="BuildingStructureSetLodgingsTypes.xhtml">
+			<ui:param name="update" value="building_elem_tree_form element_attributes_form"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<f:event listener="#{resourceInstallationInfoFM.preRender(resourceInstance)}"
+			 type="preRenderComponent"/>
+
+	<f:loadBundle basename="ResourceInstallationBundle" var="installationBundle"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<p:outputPanel styleClass="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+
+				<div class="ui-dashboard-header">
+					<i class="fa fa-info-circle"/>
+					<h:outputText styleClass="card-header"
+								  value="#{resourceBundle['box.nri.resource.installation_header']}"/>
+					<p:outputPanel id="installation_buttons_panel" styleClass="m-fright">
+
+					</p:outputPanel>
+
+					<p:outputPanel styleClass="m-fright"
+								   rendered="#{resourceInstallationInfoFM.resource.specification.isIndependent and p:ifGranted('Nri_ResourceInstallationEdit')}">
+						<p:commandLink id="create_installation_button" styleClass="m-mar-left10"
+									   rendered="#{resourceInstallationInfoFM.installation eq null}"
+									   oncomplete="PF('installationCreationDlg').show()">
+							<i class="fa fa-edit icon-btn"/>
+						</p:commandLink>
+						<p:commandLink id="remove_button" styleClass="m-mar-left10"
+									   update="resource_isntallation_info_form"
+									   actionListener="#{resourceInstallationInfoFM.removeInstallation}"
+									   rendered="#{resourceInstallationInfoFM.installation ne null}">
+							<i class="fa fa-trash icon-btn"/>
+
+							<p:confirm header="#{installationBundle['box.nri.installation.remove_header']}"
+									   message="#{installationBundle['box.nri.installation.remove_message']}"/>
+						</p:commandLink>
+					</p:outputPanel>
+				</div>
+
+				<p:outputPanel rendered="#{resourceInstallationInfoFM.installation ne null}">
+					<dl class="name-value width-250 m-font-roboto-regular">
+						<dt>
+							<p:outputLabel value="#{installationBundle['box.nri.installation.address_label']}"
+										   id="inst_address_lbl" for="inst_address"/>
+						</dt>
+						<dd>
+							<h:outputLink id="inst_address"
+										  value="../building/ResourceInstallationView.xhtml?installation=ResourceInstallation-#{resourceInstallationInfoFM.installation.id}">
+								#{resourceInstallationInfoFM.location.fullName}
+							</h:outputLink>
+						</dd>
+						<dt>
+							<p:outputLabel value="#{installationBundle['box.nri.installation.building_element_label']}"
+										   id="inst_loging_lbl" for="inst_lodging"/>
+						</dt>
+						<dd>
+							<h:outputLink id="inst_lodging"
+										  value="../building/BuildingStructureView.xhtml?buildingElement=BuildingElement-#{resourceInstallationInfoFM.installation.installedAt.id}">
+								#{resourceInstallationInfoFM.installation.installedAt.name} (#{resourceInstallationInfoFM.installation.installedAt.type.name})
+							</h:outputLink>
+						</dd>
+						<dt>
+							<p:outputLabel value="#{installationBundle['box.nri.installation.comment_label']}"
+										   id="inst_comment_lbl" for="inst_comment"/>
+						</dt>
+						<dd>
+							<h:outputText id="inst_comment"
+										  value="#{resourceInstallationInfoFM.installation.comment}"/>
+						</dd>
+					</dl>
+				</p:outputPanel>
+			</p:outputPanel>
+		</div>
+	</div>
+</ui:composition>

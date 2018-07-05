@@ -1,0 +1,237 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{usageInvoiceSettingsVm}"/>
+	<ui:param name="pageTitle" value="#{invoiceBundle['box.invoice.usage_settings']}"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle" />
+		<f:loadBundle basename="InvoiceBundle" var="invoiceBundle" />
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml" />
+		<p:menuitem value="#{invoiceBundle['box.invoice.usage_settings']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<o:importConstants type="ru.argustelecom.box.env.billing.invoice.model.UsageInvoiceSettings"/>
+		<o:importFunctions type="ru.argustelecom.box.env.billing.invoice.model.InvoicePeriodEnd"/>
+
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect simple-fb">
+					<h:form id="usage_invoice_settings">
+
+						<div class="ui-dashboard-header">
+							<i class="fa fa-gears fs20"/>
+							<h:outputText value="#{invoiceBundle['box.invoice.usage_settings']}" styleClass="card-header"/>
+						</div>
+
+
+						<div class="m-container100 m-responsive100">
+							<div class="message fs14">
+								<div class="message-info message-icon message-icon-info">
+									<p>#{invoiceBundle['box.invoice.usage_settings.general.hint']}</p>
+								</div>
+							</div>
+						</div>
+
+						<div class="clearfix">
+							<div class="m-container100 m-responsive100 m-mar-bot10">
+								<div class="m-container48 m-responsive100 mar-right-4-percents">
+									<h3 class="h3-header bottom-border">
+										<h:outputText value="#{invoiceBundle['box.invoice.usage_settings.schedule.header']}"/>
+									</h3>
+
+									<sysinf:editableSection disabled="#{not p:ifGranted('Billing_UsageInvoiceSettingsEdit')}"
+															saveLabel="#{overallBundle['box.overall.save']}"
+															cancelLabel="#{overallBundle['box.overall.cancel']}"
+															id="schedule">
+
+										<p:ajax event="save" listener="#{usageInvoiceSettingsVm.onSave}" />
+										<p:ajax event="cancel" listener="#{usageInvoiceSettingsVm.onCancel}"/>
+
+										<dl class="name-value width-190">
+											<dt>
+												<p:outputLabel for="schedule_amount" value="#{invoiceBundle['box.invoice.usage_settings.schedule.amount.label']}:"/>
+											</dt>
+											<dd>
+												<p:inputText id="schedule_amount" value="#{usageInvoiceSettingsVm.settings.scheduleUnitAmount}"
+															 label="#{invoiceBundle['box.invoice.usage_settings.schedule.amount.label']}" required="true">
+													<f:validateLongRange minimum="1"/>
+												</p:inputText>
+											</dd>
+											<dt>
+												<p:outputLabel for="schedule_unit"
+															   value="#{invoiceBundle['box.invoice.usage_settings.schedule.unit.label']}:"/>
+											</dt>
+											<dd>
+												<p:selectOneMenu id="schedule_unit" value="#{usageInvoiceSettingsVm.settings.scheduleUnit}"
+																 required="true" label="#{invoiceBundle['box.invoice.usage_settings.schedule.unit.label']}">
+
+													<f:selectItem itemValue=""/>
+													<f:selectItems value="#{UsageInvoiceSettings.VALID_PERIODS}" var="periodUnit"
+																   itemLabel="#{periodUnit.toString()}" itemValue="#{periodUnit}"/>
+												</p:selectOneMenu>
+											</dd>
+											<dt>
+												<p:outputLabel for="schedule_start_time" value="#{invoiceBundle['box.invoice.usage_settings.schedule.start_time.label']}:"/>
+											</dt>
+											<dd>
+												<p:calendar id="schedule_start_time" value="#{usageInvoiceSettingsVm.settings.scheduleStartTime}" timeOnly="true"
+															pattern="#{dateUtils.TIME_DEFAULT_PATTERN}" locale="#{languageBean.locale.language}"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+								</div>
+
+								<div class="m-container48 m-responsive100">
+									<div class="message-corner fs14">
+										<div class="message-info message-icon message-icon-info">
+											<p>#{invoiceBundle['box.invoice.usage_settings.schedule.hint']}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="m-container100 m-responsive100 m-mar-bot10">
+								<div class="m-container48 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+									<h3 class="h3-header bottom-border">
+										<h:outputText value="#{invoiceBundle['box.invoice.usage_settings.close_invoice.header']}"/>
+									</h3>
+
+									<sysinf:editableSection disabled="#{not p:ifGranted('Billing_UsageInvoiceSettingsEdit')}">
+
+										<p:ajax event="save" listener="#{usageInvoiceSettingsVm.onSave}" />
+										<p:ajax event="cancel" listener="#{usageInvoiceSettingsVm.onCancel}"/>
+
+										<dl class="name-value width-190">
+
+											<dt>
+												<p:outputLabel for="close_invoice_unit_amount"
+															   value="#{invoiceBundle['box.invoice.usage_settings.close_invoice.amount.label']}:"/>
+											</dt>
+											<dd>
+												<p:inputText id="close_invoice_unit_amount" value="#{usageInvoiceSettingsVm.settings.scheduleUnitAmount}"
+															 label="#{invoiceBundle['box.invoice.usage_settings.close_invoice.amount.label']}" required="true">
+													<f:validateLongRange minimum="0"/>
+												</p:inputText>
+											</dd>
+											<dt>
+											</dt>
+											<dd>
+												<p:selectOneMenu id="close_invoice_unit" value="#{usageInvoiceSettingsVm.settings.closeInvoiceUnit}"
+																 required="true" label="#{invoiceBundle['box.invoice.usage_settings.schedule.unit.label']}">
+
+													<f:selectItem itemValue=""/>
+													<f:selectItems value="#{UsageInvoiceSettings.VALID_PERIODS}" var="periodUnit"
+																   itemLabel="#{periodUnit.toString()}" itemValue="#{periodUnit}"/>
+												</p:selectOneMenu>
+											</dd>
+											<dt>
+												<p:outputLabel for="invoice_period_end"
+															   value="#{invoiceBundle['box.invoice.usage_settings.close_invoice.from.label']}:"/>
+											</dt>
+											<dd>
+												<p:selectOneMenu id="invoice_period_end" value="#{usageInvoiceSettingsVm.settings.invoicePeriodEnd}"
+																 required="true">
+
+													<f:selectItem itemValue=""/>
+													<f:selectItems value="#{InvoicePeriodEnd:values()}" var="invoicePeriodEnd"
+																   itemLabel="#{invoicePeriodEnd.toString()}"
+																   itemValue="#{invoicePeriodEnd}"/>
+												</p:selectOneMenu>
+											</dd>
+
+
+										</dl>
+									</sysinf:editableSection>
+								</div>
+
+								<div class="m-container48 m-responsive100">
+									<div class="message-corner fs14">
+										<div class="message-info message-icon message-icon-info">
+											<p>#{invoiceBundle['box.invoice.usage_settings.close_invoice.hint']}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="m-container100 m-responsive100 m-mar-bot10">
+								<div class="m-container48 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+									<sysinf:editableSection disabled="#{not p:ifGranted('Billing_UsageInvoiceSettingsEdit')}">
+
+										<p:ajax event="save" listener="#{usageInvoiceSettingsVm.onSave}" />
+										<p:ajax event="cancel" listener="#{usageInvoiceSettingsVm.onCancel}"/>
+
+										<dl class="name-value width-270">
+											<dt>
+												<p:outputLabel for="reserve_funds" value="#{invoiceBundle['box.invoice.usage_settings.reserve.label']}:"/>
+											</dt>
+											<dd>
+												<p:selectBooleanCheckbox id="reserve_funds" value="#{usageInvoiceSettingsVm.settings.reserveFunds}"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+								</div>
+
+								<div class="m-container48 m-responsive100">
+									<div class="message-corner fs14">
+										<div class="message-info message-icon message-icon-info">
+											<p>#{invoiceBundle['box.invoice.usage_settings.reserve.hint']}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="m-container100 m-responsive100 m-mar-bot10">
+								<div class="m-container48 m-responsive100 m-pos-relative debit-period mar-right-4-percents">
+									<sysinf:editableSection disabled="#{not p:ifGranted('Billing_UsageInvoiceSettingsEdit')}">
+
+										<p:ajax event="save" listener="#{usageInvoiceSettingsVm.onSave}" />
+										<p:ajax event="cancel" listener="#{usageInvoiceSettingsVm.onCancel}"/>
+
+										<dl class="name-value width-370">
+											<dt>
+												<p:outputLabel for="default_option_type" value="#{invoiceBundle['box.invoice.usage_settings.default_option_type.label']}:"/>
+											</dt>
+											<dd>
+
+												<p:selectOneMenu id="default_option_type" value="#{usageInvoiceSettingsVm.settings.optionType}">
+
+													<f:selectItem itemValue=""/>
+													<f:selectItems value="#{usageInvoiceSettingsVm.optionTypes}" var="optionType"
+																   itemLabel="#{optionType.objectName}"
+																   itemValue="#{optionType}"/>
+												</p:selectOneMenu>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+								</div>
+
+								<div class="m-container48 m-responsive100">
+									<div class="message-corner fs14">
+										<div class="message-info message-icon message-icon-info">
+											<p>#{invoiceBundle['box.invoice.usage_settings.default_option_type.hint']}</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+
+</ui:composition>

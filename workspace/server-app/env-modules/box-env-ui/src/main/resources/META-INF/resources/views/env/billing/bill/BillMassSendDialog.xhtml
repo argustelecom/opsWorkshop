@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form id="bill_mass_send_form">
+		<f:loadBundle var="billBundle" basename="BillBundle"/>
+
+		<p:dialog id="bill_mass_send_dlg" styleClass="icon-edit-dialog"
+				  header="#{billBundle['box.bill.send.dialog']}" width="500"
+				  widgetVar="billMassSendDlgVar" resizable="false" modal="true" closable="false">
+
+			<dl class="name-value width-160">
+				<dt>
+					<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:" />
+				</dt>
+				<dd>
+					<p:inputText id="name" value="#{billSendDm.senderName}" required="true"
+								 label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="batch_size" value="#{billBundle['box.bill.send.dispatch_quota']}:" />
+				</dt>
+				<dd>
+					<p:inputText id="batch_size" value="#{billSendDm.batchSize}" styleClass="width-30-percents">
+						<f:validateLongRange minimum="1" />
+					</p:inputText>
+					<p:outputLabel for="interval" value="#{billBundle['box.bill.send.mail_count']}"/>
+					<p:inputText id="interval" value="#{billSendDm.interval}" styleClass="width-30-percents">
+						<f:validateLongRange minimum="1" />
+					</p:inputText>
+					<h:outputText value="#{billBundle['box.bill.send.minutes']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="send_date" value="#{billBundle['box.bill.send.start_date_sending']}"/>
+				</dt>
+				<dd>
+					<p:calendar id="send_date" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" styleClass="width-100-percents"
+								value="#{billSendDm.sendDate}" locale="#{languageBean.locale.language}">
+						<f:validator validatorId="billMassSendDateValidator"/>
+					</p:calendar>
+				</dd>
+			</dl>
+
+			<div class="message message-icon message-icon-info">
+				<p>#{billBundle['box.bill.send.info_msg']} #{billSendDm.billsToSentNumber}</p>
+			</div>
+
+			<ui:fragment rendered="#{not empty billSendDm.unsentBillReportDtos}">
+				<div class="message message-icon message-icon-warn">
+					<p>#{billBundle['box.bill.plural.send.without_email_msg']} - #{billSendDm.billsWithoutEmailNumber}</p>
+				</div>
+				<div class="message message-icon message-icon-warn">
+					<p>#{billBundle['box.bill.plural.send.without_template_msg']} - #{billSendDm.billsWithoutTemplateNumber}</p>
+					<p:commandLink title="#{billBundle['box.bill.plural.send.download_text']}" immediate="true" ajax="false"
+								   icon="fa fa-download" styleClass="bill-send-download">
+						<i class="icon-get_app fs20"/>
+						<p:fileDownload value="#{billSendDm.onDownload()}"/>
+						<h:outputText styleClass="bill-send-download-text" value="#{billBundle['box.bill.plural.send.download_text']}"/>
+					</p:commandLink>
+				</div>
+
+			</ui:fragment>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="bill_cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" onclick="PF('billMassSendDlgVar').hide()"
+								 action="#{billSendDm.onCancel()}" process="@this"/>
+				<p:commandButton id="bill_analytic_types_submit_button" value="#{billBundle['box.bill.send']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('billMassSendDlgVar').hide()}"
+								 action="#{billSendDm.onMassSend()}" disabled="#{empty billSendDm.unsentBillIds}">
+				</p:commandButton>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+	<f:loadBundle var="personalAccountBundle" basename="PersonalAccountBundle"/>
+
+	<h:form id="personal_account_creation_form">
+		<p:dialog id="personal_account_creation_dlg"
+                  header="#{personalAccountBundle['box.personal_account.create_dialog.name']}" width="600"
+                  widgetVar="personalAccountCreationVar" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+			<dl class="name-value width-110">
+				<dt>
+					<p:outputLabel for="number" value="#{overallBundle['box.overall.number']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="number" value="#{personalAccountCreationDialogModel.number}"
+								 placeholder="#{overallBundle['box.overall.numeration.hint']}"
+								 styleClass="width-100-percents"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="personal_account_creation_dlg"
+								 process="@this" action="#{personalAccountCreationDialogModel.cancel()}"
+								 onclick="PF('personalAccountCreationVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('personalAccountCreationVar').hide()}"
+								 action="#{personalAccountCreationDialogModel.confirm()}" update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

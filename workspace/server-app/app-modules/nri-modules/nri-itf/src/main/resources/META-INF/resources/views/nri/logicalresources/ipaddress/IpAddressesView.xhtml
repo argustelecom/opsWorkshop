@@ -1,0 +1,46 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{ipaddressesVM}"/>
+	<ui:param name="pageTitle" value="#{ipBundle['box.nri.logicalresource.ip.ip_addresses_word']}"/>
+	<ui:param name="resultFormId" value="ip_addresses_search_result_form"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+
+		<f:loadBundle basename="NriIPBundle" var="ipBundle"/>
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="ip_addr" value="#{ipAddressesViewState.name}" required="false"/>
+			<f:viewParam name="ip_state" value="#{ipAddressesViewState.state}" required="false"/>
+			<f:viewParam name="ip_isPrivate" value="#{ipAddressesViewState.isPrivate}" required="false"/>
+			<f:viewParam name="ip_isStatic" value="#{ipAddressesViewState.isStatic}" required="false"/>
+			<f:viewParam name="ip_transferType" value="#{ipAddressesViewState.transferType}" required="false"/>
+			<f:viewParam name="ip_subnet" value="#{ipAddressesViewState.subnet}" required="false"/>
+			<f:viewParam name="ip_purpose" value="#{ipAddressesViewState.purpose}" required="false"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{ipBundle['box.nri.logicalresource.ip.ip_addresses_word']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="IpAddressesViewBodyFrame.xhtml">
+			<ui:param name="viewState" value="#{ipAddressesViewState}"/>
+			<ui:param name="lazyDm" value="#{ipaddressesVM.lazyIPAddresses}"/>
+			<ui:param name="page" value="IpAddressesView.xhtml"/>
+			<ui:param name="filterFormId" value="ip_addresses_search_form"/>
+			<ui:param name="resultFormId" value="#{resultFormId}"/>
+			<ui:param name="update" value="#{filterFormId}"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

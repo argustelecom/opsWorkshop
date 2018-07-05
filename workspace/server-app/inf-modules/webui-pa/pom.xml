@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	JBIDE ругается на вычисляемые значения в optional, причем еррорами.
+	Создал https://issues.apache.org/jira/browse/MNG-5864, т.к. похоже на ошибку в схеме.
+	Убрал здесь схему, тогда есть просто ворнинг про отсутствие схемы. И нет валидации само собой.
+-->
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../../../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>webui-pa</artifactId>
+	<packaging>war</packaging>
+	<name>webui-pa</name>
+
+	<properties>
+		<main.basedir>${project.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<!-- для ru.argustelecom.system.inf.application.WebAppCtxProviderPersonalArea -->
+		<dependency>
+			<groupId>io.undertow</groupId>
+			<artifactId>undertow-servlet</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ################################# -->
+		<!-- НАЧАЛО вебфрагментов (project-ui) -->
+		<!-- ################################# -->
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-inf-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-env-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>product-dir-itf</artifactId>
+			<version>${project.version}</version>
+			<optional>${exclude.product-dir.core}</optional>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>crm-itf</artifactId>
+			<version>${project.version}</version>
+			<optional>${exclude.crm.core}</optional>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>billing-itf</artifactId>
+			<version>${project.version}</version>
+			<optional>${exclude.billing.core}</optional>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>nri-itf</artifactId>
+			<version>${project.version}</version>
+			<optional>${exclude.nri.core}</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>personal-area-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- FIXME [elsis-gate]-->
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>elsis-gate-ui</artifactId>
+			<version>${project.version}</version>
+			<optional>${exclude.elsis-gate}</optional>
+		</dependency>
+
+		<!-- ################################ -->
+		<!-- КОНЕЦ вебфрагментов (project-ui) -->
+		<!-- ################################ -->
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>                        
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

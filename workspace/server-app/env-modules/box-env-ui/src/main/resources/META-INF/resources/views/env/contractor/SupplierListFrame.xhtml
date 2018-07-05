@@ -1,0 +1,101 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="contractorBundle" basename="ContractorBundle"/>
+	<ui:define name="completeFilterFields">
+		<ul>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="legal_name"
+									   value="#{contractorBundle['box.contractor.name']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="legal_name" value="#{supplierListVs.legalName}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="brand_name" value="#{contractorBundle['box.contractor.brand_name']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="brand_name" value="#{supplierListVs.brandName}"/>
+					</span>
+				</div>
+			</li>
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{supplierListVs.brandName ne null}">
+				<li>
+					<p:outputLabel for="brand_name_short"
+								   value="#{contractorBundle['box.contractor.brand_name']}:"/>
+					<h:outputText id="brand_name_short" value="#{supplierListVs.brandName};"/>
+
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{supplierListVs.legalName ne null}">
+				<li>
+					<p:outputLabel for="legal_name_short"
+								   value="#{contractorBundle['box.contractor.name']}:"/>
+					<h:outputText id="legal_name_short" value="#{supplierListVs.legalName};"/>
+
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+
+		<h:form id="#{resultFormId}">
+			<f:loadBundle var="contractorBundle" basename="ContractorBundle"/>
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+				<p:outputPanel styleClass="m-fright">
+					<p:commandButton id="create_supplier_button"
+									 value="#{contractorBundle['box.contractor.create_supplier']}"
+									 disabled="#{!p:ifGranted('PartnerManagement_SuppliersEdit')}"
+									 action="#{supplierCreationDm.onCreationDialogOpen()}"/>
+
+				</p:outputPanel>
+			</div>
+
+			<p:dataTable id="suppliers_table" value="#{supplierListVm.lazyDm}" var="supplier" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{SupplierSort.id}" sortOrder="descending" selectionMode="single">
+
+				<p:column headerText="#{overallBundle['box.overall.id']}"
+						  sortBy="#{SupplierSort.id}">
+					<boxenv:linkToCard value="#{supplier.getIdentifiable()}" text="#{supplier.id}"/>
+				</p:column>
+
+				<p:column headerText="#{contractorBundle['box.contractor.name']}"
+						  sortBy="#{SupplierSort.legalName}">
+					<h:outputText value="#{supplier.legalName}"/>
+				</p:column>
+
+				<p:column headerText="#{contractorBundle['box.contractor.brand_name']}"
+						  sortBy="#{SupplierSort.brandName}">
+					<h:outputText value="#{supplier.brandName}"/>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

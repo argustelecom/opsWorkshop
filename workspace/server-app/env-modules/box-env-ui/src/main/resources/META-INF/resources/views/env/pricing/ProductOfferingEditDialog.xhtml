@@ -1,0 +1,163 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="pricelistBundle" basename="PricelistBundle"/>
+	<f:loadBundle var="currencyBundle" basename="CurrencyBundle"/>
+	<h:form id="product_offering_edit_form">
+		<p:dialog id="product_offering_edit_dlg"
+				  header="#{pricelistBundle[productOfferingEditDm.editableMode ? 'box.pricelist.offering.edit_dialog' : 'box.pricelist.offering.create_dialog']}"
+				  widgetVar="productOfferingEditDlgVar"
+				  width="600" resizable="false" modal="true" closable="false" dynamic="true" styleClass="icon-creation">
+
+			<o:importConstants type="ru.argustelecom.box.env.billing.provision.ProvisionTermsDto.ProvisionTermsType" var="type"/>
+
+			<dl class="name-value width-180">
+				<dt>
+					<p:outputLabel for="new_product_type" value="#{pricelistBundle['box.pricelist.product']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_product_type" value="#{productOfferingEditDm.productOfferingEditDto.product}"
+									 required="true" filter="true" filterMatchMode="startsWith"
+									 label="#{pricelistBundle['box.pricelist.product']}">
+						<f:selectItems value="#{productOfferingEditDm.possibleProducts}" var="productType"
+									   itemValue="#{productType}" itemLabel="#{productType.name}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="provision_terms" value="#{pricelistBundle['box.pricelist.offering.provision_terms']}"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="provision_terms" value="#{productOfferingEditDm.productOfferingEditDto.provisionTerms}" required="true"
+									 filter="true" filterMatchMode="startsWith"
+                                     label="#{pricelistBundle['box.pricelist.offering.provision_terms']}">
+						<p:ajax event="change" listener="#{productOfferingEditDm.onProvisionTermsChanged()}" update="amount units privilege_params"/>
+						<f:selectItem itemLabel=""/>
+						<f:selectItems value="#{productOfferingEditDm.provisionTermsList}" var="pt"
+									   itemValue="#{pt}" itemLabel="#{pt.name}"/>
+					</p:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel for="amount" value="#{pricelistBundle['box.pricelist.offering.quantity']}"/>
+				</dt>
+				<dd>
+					<p:inputText id="amount" value="#{productOfferingEditDm.productOfferingEditDto.amount}" required="true"
+								 disabled="#{productOfferingEditDm.selectedCalendarPeriod}"
+								 label="#{pricelistBundle['box.pricelist.offering.quantity']}">
+						<f:validateLongRange minimum="1" maximum="2147483647"/>
+					</p:inputText>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="measure_unit"
+								   value="#{pricelistBundle['box.pricelist.offering.measurement_unit']}"/>
+				</dt>
+				<dd>
+					<p:outputPanel id="units">
+						<p:selectOneMenu id="measure_unit" value="#{productOfferingEditDm.productOfferingEditDto.measureUnit}"
+										 disabled="#{productOfferingEditDm.productOfferingEditDto.provisionTerms.type eq null}"
+										 label="#{pricelistBundle['box.pricelist.offering.measurement_unit']}"
+										 filter="true" filterMatchMode="startsWith" required="true" styleClass="width-100-percents"
+										 rendered="#{productOfferingEditDm.productOfferingEditDto.provisionTerms.type eq type.NON_RECURRENT or productOfferingEditDm.productOfferingEditDto.provisionTerms.type eq null}">
+								<f:selectItem itemLabel=""/>
+								<f:selectItems value="#{productOfferingEditDm.measureUnits}" var="mu" itemValue="#{mu}" itemLabel="#{mu.name}"/>
+						</p:selectOneMenu>
+
+						<p:selectOneMenu id="period_unit" value="#{productOfferingEditDm.productOfferingEditDto.periodUnit}"
+										 label="#{pricelistBundle['box.pricelist.offering.measurement_unit']}"
+										 filter="true" filterMatchMode="startsWith" required="true" styleClass="width-100-percents"
+										 rendered="#{productOfferingEditDm.productOfferingEditDto.provisionTerms.type eq type.RECURRENT}">
+										<f:selectItem itemLabel=""/>
+										<f:selectItems value="#{productOfferingEditDm.periodUnits}" var="pu"
+													   itemValue="#{pu}" itemLabel="#{pu}"/>
+						</p:selectOneMenu>
+					</p:outputPanel>
+				</dd>
+
+				<dt>
+                    <p:outputLabel for="new_price"
+                                   value="#{pricelistBundle['box.pricelist.offering.amount.include_vat']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_price" value="#{productOfferingEditDm.productOfferingEditDto.price}"
+								 required="true"
+								 label="#{pricelistBundle['box.pricelist.offering.amount.include_vat']}">
+						<f:converter converterId="moneyConverter"/>
+						<f:validateDoubleRange minimum="0.01" maximum="9999999.99"/>
+					</p:inputText>
+				</dd>
+				<dt>
+					<p:outputLabel for="currency" value="#{currencyBundle['box.currency']}"
+								   styleClass="m-pad-top-14"/>
+				</dt>
+				<dd>
+					<h:outputText styleClass="m-disp-inl-block m-pad-top-16" id="currency"
+								  value="#{moneyBeautifier.defaultCurrency.name}"/>
+				</dd>
+			</dl>
+
+			<p:outputPanel id="privilege_params">
+				<ui:fragment rendered="#{productOfferingEditDm.productOfferingEditDto.canHavePrivilege()}">
+					<p:outputPanel styleClass="bottom-border m-mar-bot10">
+						<h3 class="h3-header m-disp-inl-block">#{pricelistBundle['box.pricelist.privilege']}</h3>
+					</p:outputPanel>
+
+					<dl class="name-value width-180 name-value-tooltip">
+						<dt>
+							<p:outputLabel value="#{pricelistBundle['box.pricelist.privilege.type']}:"/>
+						</dt>
+						<dd>
+							<div class="name-value-tooltip-table">
+
+								<o:importConstants type="ru.argustelecom.box.env.privilege.model.PrivilegeType" var="privilegeType"/>
+
+								<p:selectOneMenu id="privilege_type" value="#{productOfferingEditDm.productOfferingEditDto.privilegeType}">
+
+									<p:ajax event="change" update="privilege_amount privilege_unit"/>
+
+									<f:selectItem itemLabel=""/>
+									<f:selectItems value="#{privilegeType.values()}" var="pt" itemValue="#{pt}" itemLabel="#{pt.name}"/>
+								</p:selectOneMenu>
+							</div>
+							<h:outputText id="http" class="icon-help_outline tooltip-help-15" title="#{pricelistBundle['box.pricelist.privilege.trust_period.tooltip']}"/>
+							<p:tooltip id="history_ttp" for="http" />
+						</dd>
+
+						<dt>
+							<p:outputLabel value="#{pricelistBundle['box.pricelist.privilege.duration']}:"/>
+						</dt>
+						<dd>
+							<div class="name-value-tooltip-table">
+								<p:inputText id="privilege_amount" value="#{productOfferingEditDm.productOfferingEditDto.privilegeAmount}" styleClass="name-value-tooltip-item"
+											 required="#{productOfferingEditDm.productOfferingEditDto.privilegeType ne null}" label="#{pricelistBundle['box.pricelist.privilege.duration.amount']}">
+									<f:validateLongRange minimum="1"/>
+								</p:inputText>
+
+								<p:selectOneMenu id="privilege_unit" value="#{productOfferingEditDm.productOfferingEditDto.privilegeUnit}" styleClass="name-value-tooltip-item"
+												 required="#{productOfferingEditDm.productOfferingEditDto.privilegeType ne null}" label="#{pricelistBundle['box.pricelist.privilege.duration.unit']}">
+									<f:selectItem itemLabel=""/>
+									<f:selectItems value="#{productOfferingEditDm.productOfferingEditDto.provisionTerms.periodType.chargingPeriodUnits}" var="pu"
+												   itemValue="#{pu}" itemLabel="#{pu}"/>
+								</p:selectOneMenu>
+							</div>
+							<h:outputText id="pdttp" class="icon-help_outline tooltip-help-15" title="#{pricelistBundle['box.pricelist.privilege.tooltip']}"/>
+							<p:tooltip id="pdttp_ttp" for="pdttp" />
+						</dd>
+					</dl>
+				</ui:fragment>
+			</p:outputPanel>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}" styleClass="m-blue-text-button" update="product_offering_edit_dlg"
+                                 process="@this" action="#{productOfferingEditDm.cancel()}" onclick="PF('productOfferingEditDlgVar').hide()"/>
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('productOfferingEditDlgVar').hide()}"
+								 action="#{productOfferingEditDm.submit()}" process="product_offering_edit_dlg" update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="provisionTermsBundle" basename="ProvisionTermsBundle"/>
+    <h:form id="recurrent_terms_creation_form">
+        <p:dialog id="recurrent_terms_creation_dlg" header="#{provisionTermsBundle['box.provision_terms.create_dialog']}" width="650"
+                  widgetVar="recurrentTermsCreationDlgVar" resizable="false" styleClass="icon-creation"
+                  modal="true" closable="false" dynamic="true">
+            <dl class="name-value width-200">
+                <dt>
+                    <p:outputLabel for="new_name" value="#{overallBundle['box.overall.name']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="new_name" value="#{recurrentTermsCreationDm.creationDto.name}" maxlength="64" required="true"
+                                 label="#{overallBundle['box.overall.name']}"/>
+                </dd>
+
+                <dt class="m-mar-bot20">
+                    <p:outputLabel for="new_description" value="#{overallBundle['box.overall.desc']}:"/>
+                </dt>
+                <dd class="width-100-percents">
+                    <p:inputTextarea id="new_description" value="#{recurrentTermsCreationDm.creationDto.description}" maxlength="512"
+                                     rows="3" counter="description_counter" counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+                    <h:outputText id="description_counter" styleClass="fs12"/>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}" styleClass="m-blue-text-button" update="recurrent_terms_creation_dlg"
+                                 process="@this" action="#{recurrentTermsCreationDm.cancel()}" resetValues="true" onclick="PF('recurrentTermsCreationDlgVar').hide()"/>
+                <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('recurrentTermsCreationDlgVar').hide()}"
+                                 action="#{recurrentTermsCreationDm.create()}" process="recurrent_terms_creation_dlg" update="#{update}"/>
+            </div>
+        </p:dialog>
+
+    </h:form>
+
+</ui:composition>

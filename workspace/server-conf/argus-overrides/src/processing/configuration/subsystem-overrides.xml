@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<server xmlns="urn:jboss:domain:4.0">
+	<!--Добавь сюда нужные тебе расширения, отсутствующие в базовой конфигурации Аргус-->
+	<extensions>
+	</extensions>
+
+	<!--Добавь сюда настроенные или перенастроенные под твои нужнды подмодули из базовой конфигурации Аргус-->
+	<profile>
+		<subsystem xmlns="urn:jboss:domain:datasources:4.0">
+			<datasources>
+				<datasource enabled="true" jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" use-java-context="true">
+					<connection-url>jdbc:log4jdbc:h2:file:~/argus/exampledsdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=create schema IF NOT EXISTS arg3_sandbox;</connection-url>
+					<driver>DriverSpy</driver>
+					<security>
+						<user-name>developer_</user-name>
+						<password>developer</password>
+					</security>
+				</datasource>
+				<datasource jndi-name="java:jboss/datasources/ArgusDS" pool-name="ArgusDS" enabled="true" use-java-context="true" statistics-enabled="true">
+					<connection-url>jdbc:log4jdbc:postgresql://${argus.db.address}:${argus.db.port}/${argus.db.name}</connection-url>
+					<driver>DriverSpy</driver>
+					<pool>
+						<min-pool-size>${argus.system.ds.min-pool-size}</min-pool-size>
+						<max-pool-size>${argus.system.ds.max-pool-size}</max-pool-size>
+					</pool>
+					<security>
+						<user-name>${argus.db.user}</user-name>
+						<password>${argus.db.pass}</password>
+					</security>
+					<validation>
+						<exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+						<valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+						<validate-on-match>false</validate-on-match>
+						<background-validation>true</background-validation>
+						<background-validation-millis>600000</background-validation-millis>
+					</validation>
+					<timeout>
+						<set-tx-query-timeout>true</set-tx-query-timeout>
+						<blocking-timeout-millis>5000</blocking-timeout-millis>
+						<idle-timeout-minutes>60</idle-timeout-minutes>
+					</timeout>
+					<statement>
+						<track-statements>true</track-statements>
+					</statement>
+				</datasource>
+				<datasource jndi-name="java:jboss/datasources/BoxReportDS" pool-name="BoxReportDS" enabled="true" use-java-context="true" statistics-enabled="true">
+					<connection-url>jdbc:log4jdbc:postgresql://${argus.db.address}:${argus.db.port}/${argus.db.name}</connection-url>
+					<driver>DriverSpy</driver>
+					<pool>
+						<min-pool-size>${box.report.ds.min-pool-size}</min-pool-size>
+						<max-pool-size>${box.report.ds.max-pool-size}</max-pool-size>
+					</pool>
+					<security>
+						<user-name>${box.report.user}</user-name>
+						<password>${box.report.pass}</password>
+					</security>
+					<validation>
+						<exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+						<valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+						<validate-on-match>false</validate-on-match>
+						<background-validation>true</background-validation>
+						<background-validation-millis>600000</background-validation-millis>
+					</validation>
+					<timeout>
+						<set-tx-query-timeout>true</set-tx-query-timeout>
+						<blocking-timeout-millis>5000</blocking-timeout-millis>
+						<idle-timeout-minutes>60</idle-timeout-minutes>
+					</timeout>
+					<statement>
+						<track-statements>true</track-statements>
+					</statement>
+				</datasource>
+				<drivers>
+					<driver module="com.h2database.h2" name="h2">
+						<xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+					</driver>
+					<driver name="postgresql" module="org.postgresql.pgjdbc">
+						<driver-class>org.postgresql.Driver</driver-class>
+					</driver>
+					<driver name="DriverSpy" module="org.bgee.log4jdbc">
+                        <driver-class>net.sf.log4jdbc.sql.jdbcapi.DriverSpy</driver-class>
+                    </driver>
+				</drivers>
+			</datasources>
+		</subsystem>
+
+		<subsystem xmlns="urn:jboss:domain:security:1.2">
+			<security-domains>
+				<security-domain name="other" cache-type="default">
+					<authentication>
+						<login-module code="Remoting" flag="optional">
+							<module-option name="password-stacking" value="useFirstPass"/>
+						</login-module>
+						<login-module code="RealmDirect" flag="required">
+							<module-option name="password-stacking" value="useFirstPass"/>
+						</login-module>
+					</authentication>
+				</security-domain>
+				<security-domain name="jboss-web-policy" cache-type="default">
+					<authorization>
+						<policy-module code="Delegating" flag="required"/>
+					</authorization>
+				</security-domain>
+				<security-domain name="jboss-ejb-policy" cache-type="default">
+					<authorization>
+						<policy-module code="Delegating" flag="required"/>
+					</authorization>
+				</security-domain>
+				<security-domain name="argus-security-domain" cache-type="default">
+					<authentication>
+						<login-module code="ru.argustelecom.box.inf.login.EmployeeLoginModule" flag="required" module="ru.argustelecom.box-core">
+							<module-option name="hashAlgorithm" value="SHA-512"/>
+						</login-module>
+					</authentication>
+				</security-domain>
+				<!--l.vaksman TASK-57129 взято с http://stackoverflow.com/questions/10520997/jboss-as-7-1-datasource-how-to-encrypt-password -->
+				<security-domain name="EncryptedPassword" cache-type="default">
+					<authentication>
+						<login-module code="org.picketbox.datasource.security.SecureIdentityLoginModule" flag="required">
+							<module-option name="username" value="${argus.db.user}"/>
+							<module-option name="password" value="${argus.db.pass}"/>
+						</login-module>
+					</authentication>
+				</security-domain>
+			</security-domains>
+		</subsystem>
+		
+		<subsystem xmlns="urn:jboss:domain:ee:4.0">
+			<spec-descriptor-property-replacement>true</spec-descriptor-property-replacement>
+			<concurrent>
+				<context-services>
+					<context-service name="default" jndi-name="java:jboss/ee/concurrency/context/default" 
+						use-transaction-setup-provider="true"/>
+				</context-services>
+				<managed-executor-services>
+					<managed-executor-service name="default" jndi-name="java:jboss/ee/concurrency/executor/default" 
+						context-service="default" core-threads="5" max-threads="25" hung-task-threshold="60000" 
+						keepalive-time="5000"/>
+					
+					<!-- v.semchenko, TASK-83788: добавляем новый пул потоков с низким приоритетом (настравивается argus.export.thread-priority), выполняющих экспорт отчетов. -->
+                    <managed-executor-service name="export" jndi-name="java:jboss/ee/concurrency/executor/export" 
+						context-service="default" hung-task-threshold="60000" keepalive-time="5000"
+						core-threads="${argus.export.pool-size:5}" max-threads="${argus.export.pool-size:5}" queue-length="${argus.export.queue-length:5}" 
+						thread-factory="export"/>	
+					
+					<managed-executor-service name="QueueHandler" jndi-name="java:jboss/ee/concurrency/executor/QueueHandler" 
+						context-service="default" hung-task-threshold="0" keepalive-time="15000" 
+						core-threads="1" max-threads="${box.queue.max-threads:10}" queue-length="${box.queue.max-threads:10}"
+						reject-policy="ABORT"/>	
+				</managed-executor-services>
+				<managed-scheduled-executor-services>
+					<managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" 
+						context-service="default" core-threads="2" hung-task-threshold="60000" keepalive-time="3000"/>
+				</managed-scheduled-executor-services>
+				<managed-thread-factories>
+					<managed-thread-factory context-service="default" jndi-name="java:jboss/ee/concurrency/factory/default" name="default"/>
+					<managed-thread-factory context-service="default" jndi-name="java:jboss/ee/concurrency/factory/export" name="export" 
+						priority="${argus.export.thread-priority:3}"/>
+				</managed-thread-factories>
+			</concurrent>
+			<default-bindings 
+				context-service="java:jboss/ee/concurrency/context/default" 
+				datasource="java:jboss/datasources/ExampleDS" 
+				jms-connection-factory="java:jboss/DefaultJMSConnectionFactory" 
+				managed-executor-service="java:jboss/ee/concurrency/executor/default" 
+				managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default" 
+				managed-thread-factory="java:jboss/ee/concurrency/factory/default"/>
+		</subsystem>
+	</profile>
+</server>

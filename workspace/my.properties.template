@@ -1,0 +1,8 @@
+# Необходимый набор свойств, которые обязательно задаются.
+# Смысл настроек смотрите в work.properties.
+# Нужно скопировать файл в my.properties и задать настройки. 
+INSTALL_PATH=
+argus.db.address=192.168.100.40
+argus.db.name=
+jboss.bind.address=
+argus.app.version=

@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:o="http://omnifaces.org/ui"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="invoiceBundle" basename="InvoiceBundle"/>
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect simple-fb">
+                <h:form id="invoice_entries_frame_form">
+                    <div class="ui-dashboard-header">
+                        <i class="icon-receipt"/>
+                        <h:outputText value="#{invoiceBundle['box.invoice.plural']}" styleClass="card-header"/>
+                    </div>
+
+                    <p:dataTable id="invoices_table" value="#{invoices}" var="invoice" paginator="true" tableStyle="table-layout: auto;"
+                                 rowsPerPageTemplate="5,10,15" rows="5" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 emptyMessage="#{overallBundle['box.overall.empty']}"
+                                 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+                                 styleClass="paginator-top-hidden">
+
+                        <p:column headerText="#{overallBundle['box.overall.id']}">
+                            <boxenv:linkToCard value="#{invoice.getIdentifiable()}" text="#{invoice.id}"/>
+                        </p:column>
+
+                        <p:column headerText="#{overallBundle['box.overall.state']}">
+                            <h:outputText value="#{invoice.state.name}"/>
+                        </p:column>
+
+                        <p:column headerText="#{invoiceBundle['box.invoice.amount']}">
+                            <boxenv:money value="#{invoice.price}" size="fs14" positiveColorClass="" negativeColorClass=""/>
+                        </p:column>
+
+                        <p:column headerText="#{overallBundle['box.overall.valid_from']}" sortBy="#{invoice.startDate}">
+                            <h:outputText value="#{dateUtils.format(invoice.startDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+                        </p:column>
+
+                        <p:column headerText="#{overallBundle['box.overall.valid_to']}" sortBy="#{invoice.endDate}">
+                            <h:outputText value="#{dateUtils.format(invoice.endDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+                            <ui:fragment rendered="#{invoice.privilegeName ne null}">
+                                <i class="fa fa-hourglass-half m-mar-left10 m-orange" title="#{invoice.privilegeName}"/>
+                            </ui:fragment>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

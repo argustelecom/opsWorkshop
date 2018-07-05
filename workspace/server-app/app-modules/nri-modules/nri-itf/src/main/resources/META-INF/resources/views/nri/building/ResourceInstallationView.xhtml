@@ -1,0 +1,112 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{buildingElementTypeVM}"/>
+	<ui:param name="pageTitle" value="#{installationBundle['box.nri.installation.page_header']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="installation" value="#{resourceInstallationViewState.installation}"
+						 required="#{!facesContext.postback}"
+						 requiredMessage="#{installationBundle['box.nri.installation.location_required_message']}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="NriCommonBundle" var="nriBundle"/>
+		<f:loadBundle basename="ResourceInstallationBundle" var="installationBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{nriBundle['box.nri.common.nri']}" />
+		<p:menuitem value="#{installationBundle['box.nri.installation.page_header']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+					<h:form id="installation_attributes_form">
+						<div class="column width-100-percents">
+							<div class="columns">
+								<div class="column m-vertical-al-middle m-pad-0">
+									<p:panelGrid id="contract_id_grid" columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+										<p:outputLabel styleClass="resource-installation-image"/>
+										<h:outputText styleClass="fs16" value="ID #{resourceInstallationVM.installation.id}" />
+									</p:panelGrid>
+								</div>
+
+								<div class="column m-container50 m-responsive100">
+									<dl class="name-value width-250 m-font-roboto-regular">
+										<dt>
+											<p:outputLabel value="#{installationBundle['box.nri.installation.resource_label']}"
+														   id="elem_name_lbl"/>
+										</dt>
+										<dd>
+											<h:outputLink id="inst_resource" value="../resources/ResourceView.xhtml?resource=ResourceInstance-#{resourceInstallationVM.installation.resource.id}">
+												#{resourceInstallationVM.installation.resource.name}
+											</h:outputLink>
+										</dd>
+										<dt>
+											<p:outputLabel value="#{installationBundle['box.nri.installation.address_label']}"
+														   id="inst_address_lbl" for="inst_address"/>
+										</dt>
+										<dd>
+											<h:outputLink id="inst_address" value="BuildingStructureView.xhtml?location=Building-#{resourceInstallationVM.building.location.id}">
+												#{resourceInstallationVM.building.location.fullName}
+											</h:outputLink>
+										</dd>
+										<dt>
+											<p:outputLabel value="#{installationBundle['box.nri.installation.building_element_label']}"
+														   id="inst_loging_lbl" for="inst_lodging"/>
+										</dt>
+										<dd>
+											<h:outputLink id="inst_lodging"
+													value="BuildingStructureView.xhtml?buildingElement=BuildingElement-#{resourceInstallationVM.installation.installedAt.id}">
+												#{resourceInstallationVM.installation.installedAt.name} (#{resourceInstallationVM.installation.installedAt.type.name})
+											</h:outputLink>
+										</dd>
+									</dl>
+								</div>
+
+								<div class="column m-container50 m-responsive100">
+									<sysinf:editableSection disabled="#{!p:ifGranted('Nri_ResourceInstallationEdit')}">
+										<p:ajax event="save" process="@this"
+												update="@form"
+												listener="#{resourceInstallationVM.changedComment()}"/>
+										<dl class="name-value width-250 m-font-roboto-regular">
+											<dt class="width-27-percents">
+												<p:outputLabel value="#{overallBundle['box.overall.comment']}" id="inst_comment_lbl" />
+											</dt>
+											<dd style="min-height: min-content">
+												<p:inputTextarea value="#{resourceInstallationVM.installation.comment}"
+															   maxlength="128" styleClass="m-mar-left-8" id="inst_comment"/>
+											</dd>
+										</dl>
+									</sysinf:editableSection>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+
+		<h:form id="coverage_table_form" rendered="#{resourceInstallationVM.building ne null}">
+			<ui:include src="BuildingCoverageTableFrame.xhtml">
+				<ui:param name="update" value="installation_attributes_form-inst_lodging"/>
+				<ui:param name="installation" value="#{resourceInstallationVM.installation}"/>
+			</ui:include>
+		</h:form>
+	</ui:define>
+</ui:composition>

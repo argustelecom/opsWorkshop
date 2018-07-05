@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="ContactBundle" basename="ContactBundle"/>
+    <f:event type="preRenderComponent" listener="#{individualDataFM.preRender(individual)}"/>
+
+        <div class="columns ">
+
+            <div class="column m-container50 m-responsive100">
+                <sysinf:editableSection disabled="#{!p:ifGranted('CRM_CustomerEdit')}"
+                                        saveLabel="#{overallBundle['box.overall.save']}"
+                                        cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+                    <p:ajax event="save" listener="#{individualDataFM.handleSave()}"/>
+                    <dl class="name-value width-150">
+                        <dt>
+                            <p:outputLabel for="type" value="#{overallBundle['box.overall.type']}:"/>
+                        </dt>
+                        <dd>
+                            <h:outputText styleClass="m-disp-block m-mar-left-8" id="type"
+                                          value="#{individualDataFM.idDto.typeName}"/>
+                        </dd>
+
+                        <dt>
+                            <p:outputLabel for="last_name" value="#{personnelBundle['box.personnel.name.last']}"/>
+                        </dt>
+                        <dd>
+                            <p:inputText styleClass="m-disp-block fs20" id="last_name" required="true"
+                                         value="#{individualDataFM.idDto.personData.lastName}"
+                                         label="#{personnelBundle['box.personnel.name.last']}"/>
+                        </dd>
+
+                        <dt>
+                            <p:outputLabel for="first_name" value="#{personnelBundle['box.personnel.name.first']}"/>
+                        </dt>
+                        <dd>
+                            <p:inputText styleClass="m-disp-inl-block fs18 m-mar-right10" id="first_name" required="true"
+                                         value="#{individualDataFM.idDto.personData.firstName}"
+                                         label="#{personnelBundle['box.personnel.name.first']}"/>
+                        </dd>
+
+                        <dt>
+                            <p:outputLabel for="second_name" value="#{personnelBundle['box.personnel.name.second']}"/>
+                        </dt>
+                        <dd>
+                            <p:inputText styleClass="m-disp-inl-block fs18 m-mar-right10" id="second_name"
+                                         value="#{individualDataFM.idDto.personData.secondName}"/>
+                        </dd>
+
+                    </dl>
+                </sysinf:editableSection>
+            </div>
+
+            <div class="column m-container50 m-responsive100">
+                <sysinf:editableSection disabled="#{!p:ifGranted('CRM_CustomerEdit')}"
+                                        saveLabel="#{overallBundle['box.overall.save']}"
+                                        cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+                <p:ajax event="save" listener="#{individualDataFM.handleSave()}"/>
+                    <dl class="name-value width-220">
+                        <dt>
+                            <p:outputLabel for="main_email" value="#{contactBundle['box.contact.primary.name']}:"/>
+                        </dt>
+                        <dd>
+                            <p:selectOneMenu id="main_email" value="#{individualDataFM.idDto.mainEmail}" converter="omnifaces.SelectItemsConverter"
+                                             rendered="#{not empty individualDataFM.emails}">
+                                <f:selectItem itemLabel=""/>
+                                <f:selectItems value="#{individualDataFM.emails}" var="email" itemValue="#{email}"
+                                               itemLabel="#{email.value}"/>
+                            </p:selectOneMenu>
+                            <p:outputPanel rendered="#{empty individualDataFM.emails}">
+                                <h:outputText title="#{ContactBundle['box.contact.primary.hint']}"
+                                              styleClass="width-65-percents m-font-roboto-regular"
+                                              value="#{ContactBundle['box.contact.primary.hint']}"/>
+                            </p:outputPanel>
+                        </dd>
+                    </dl>
+                </sysinf:editableSection>
+            </div>
+        </div>
+
+</ui:composition>

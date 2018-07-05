@@ -1,0 +1,477 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui"
+				xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<o:importConstants type="ru.argustelecom.box.nri.resources.model.ResourceState" var="state"/>
+	<h:outputScript>
+		//<![CDATA[
+		'use strict';
+		if (typeof window.b2cAccessPortsLayerOptions === 'undefined') {
+			(function (nameSpace) {
+				var showPortsTotalCount;
+
+				nameSpace.setShowPortsTotalCount = function (value) {
+					showPortsTotalCount = value;
+				};
+
+				var AccessPortMarkerSubstarste = L.MapMarker.extend({
+					_getPoints: function (point, inner, options) {
+						var maxDegrees = !inner ? 240 : 360;
+						var angleSize = !inner ? maxDegrees / 50 : maxDegrees / Math.max(options.numberOfSides, 3);
+						var degrees = !inner ? maxDegrees : maxDegrees + options.rotation;
+						var angle = !inner ? -60 : options.rotation;
+						var points = [];
+						var newPoint;
+						var angleRadians;
+						var radius = options.radius;
+						/*
+						 var multiplierX = 0.5 //Math.sin(30*Math.PI / 180);
+						 var multiplierY = 2 / (3 * Math.sqrt(3));
+						 */
+						var toRad = function (number) {
+							return number * L.LatLng.DEG_TO_RAD;
+						};
+
+						var startPoint = options.position ? point.add(new L.Point(options.position.x, options.position.y)) : point;
+
+
+						if (!inner) {
+							points.push(startPoint);
+							//points.push(new L.Point(startPoint.x + multiplierX * radius, startPoint.y - multiplierY * radius));
+						}
+
+						while (angle < degrees) {
+							angleRadians = toRad(angle);
+							newPoint = this._getPoint(startPoint, angleRadians, radius, inner, options);
+							points.push(newPoint);
+							angle += angleSize;
+						}
+						/*if (!inner) {
+						 points.push(new L.Point(startPoint.x - multiplierX * radius, startPoint.y - multiplierY * radius));
+						 }*/
+
+						return points;
+					},
+
+					_getPoint: function (point, angle, radius, inner, options) {
+						var markerRadius = radius;
+
+						radius = !inner ? radius : options.innerRadius;
+
+						return new L.Point(point.x + radius * Math.cos(angle), point.y - 2 * markerRadius / Math.sqrt(3) - radius * Math.sin(angle));
+					}
+				});
+
+				nameSpace.markerClass = L.PieChartMarker.extend({
+					buildingStatesStyles: {
+						normal: {
+							color: '#236A8D',
+							fillColor: '#FFF'
+						},
+
+						selected: {
+							color: '#F60',
+							fillColor: '#FFF'
+						},
+
+						visited: {
+							color: '#999',
+							fillColor: '#CCC'
+						}
+					},
+
+					options: {
+						stroke: false,
+						radius: 25,
+						fillOpacity: 1,
+						position: {
+							x: 0,
+							y: -29 //this.mapMarkerOptions.radius / Math.cos(30 deg)
+						},
+						offset: 0,
+						rotation: 90,
+						barThickness: 10,
+						tooltipOptions: {
+							iconSize: {x: 100, y: 50}
+						},
+
+						chartOptions: {
+							// 'Активен': {
+							// 	fillColor: '#007900'
+							// },
+							// 'Неактивен': {
+							// 	fillColor: '#0067AE'
+							// },
+							// 'Зарезервирован': {
+							// 	fillColor: '#821B7E'
+							// },
+							// 'Неизвестно': {
+							// 	fillColor: '#F63'
+							// }
+							// "#{status.ACTIVE.name}": {
+							// 	fillColor: '#007900'
+							// },
+							// "#{status.DISABLED.name}": {
+							// 	fillColor: '#0067AE'
+							// },
+							// "#{status.RESERVED.name}": {
+							// 	fillColor: '#821B7E'
+							// },
+							// "#{status.UNKNOWN.name}": {
+							// 	fillColor: '#F63'
+							// }
+						},
+
+						visited: false
+					},
+
+					mapMarkerOptions: {
+						radius: 25,
+						gradient: false,
+						color: '#236A8D',
+						fillColor: '#FFF',
+						// Stroke width in pixels
+						weight: 4,
+						innerRadius: 0
+					},
+
+					initialize: function (latlng, options) {
+						//Делаю здесь для локализации
+						this.options.chartOptions["#{state.FREE.name}"] = { fillColor : '#007900' };
+						this.options.chartOptions["#{state.LOADED.name}"] = { fillColor : '#0067AE' };
+						this.options.chartOptions["#{state.BOOKED.name}"] = { fillColor : '#821B7E' };
+
+						this.mapMarkerOptions.hint = {
+							address: options.title,
+							portsTotal: options.clientData.portsTotal,
+							portsAvailable: options.clientData.free
+						};
+
+						// title выводится в хинте каждого сектора пирога.
+						options.title = '';
+
+						this.mapMarkerOptions.text = {
+							style: {
+								'font-weight': '700',
+								'font-size': '13px'
+							},
+							text: options.clientData.portsTotal,
+							attr: {
+								transform: 'translate(0, 16)',
+								visibility: 'hidden'
+							}
+						};
+
+						options.text = {
+							style: {
+								'font-weight': '700',
+								'font-size': '13px'
+							},
+							text: options.clientData.free,
+							attr: {
+								transform: showPortsTotalCount ? 'translate(0, -22)' : 'translate(0, -30)'
+							}
+						};
+
+						if (showPortsTotalCount) {
+							this.mapMarkerOptions.text.attr.visibility = 'visible';
+							options.text.style = {
+								'font-weight': 'normal',
+								'font-size': '10px'
+							}
+						}
+
+						options.data = {
+							"#{state.FREE.name}": options.clientData.free,
+							"#{state.LOADED.name}": options.clientData.loaded,
+							"#{state.BOOKED.name}": options.clientData.booked
+						};
+
+						L.PieChartMarker.prototype.initialize.call(this, L.latLng(latlng), options);
+
+					},
+
+					setLatLng: function (latlng) {
+						this.mapMarker._latLng = latlng;
+						return L.PieChartMarker.prototype.setLatLng.call(this, latlng);
+					},
+
+					bringToBack: function () {
+						this.mapMarker.bringToBack();
+						L.GridLayer.prototype.bringToBack.call(this);
+					},
+
+					_loadComponents: function () {
+						if (!this.mapMarker) {
+							//this.mapMarker = new L.MapMarker(this._latlng, this.mapMarkerOptions);
+							this.mapMarker = new AccessPortMarkerSubstarste(this._latlng, this.mapMarkerOptions);
+							/*this.mapMarker.bindPopup("<div><b>" + this.mapMarker.options.hint.address + "</b><br/>"
+							 + this.mapMarker.options.hint.portsAvailable + " Свободно <br/>"
+							 + this.mapMarker.options.hint.portsTotal + " Всего</div>");*/
+							var tooltipText = "<div><b>" + this.mapMarker.options.hint.address + "</b><br/>";
+							if (showPortsTotalCount) {
+								tooltipText += this.mapMarker.options.hint.portsTotal + " Всего ресурсов <br/>"
+							}
+							// tooltipText+= this.mapMarker.options.hint.portsAvailable + " Свободных портов </div>";
+							this.mapMarker.bindTooltip(tooltipText);
+						}
+						this.addLayer(this.mapMarker);
+						L.PieChartMarker.prototype._loadComponents.call(this);
+
+					},
+
+					select: function () {
+						this.selected = true;
+						this.mapMarker.setStyle(this.buildingStatesStyles.selected);
+						this.options.visited = true;
+					},
+
+					deselect: function () {
+						this.selected = false;
+						this.mapMarker.setStyle(this._getMarkerStyle());
+					},
+
+					isSelected: function () {
+						return this.selected;
+					},
+
+					_getMarkerStyle: function () {
+						if (this.options.visited) {
+							return this.buildingStatesStyles.visited;
+						}
+						return this.buildingStatesStyles.normal;
+					}
+				});
+
+
+				nameSpace.layerOptions = {
+					pointToLayer: function (feature, latLng) {
+						return new nameSpace.markerClass(latLng, feature.properties);
+					},
+					onEachFeature: function (feature, layer) {
+						nameSpace.onMarkerClick(layer);
+					},
+					minZoom: 14
+				};
+//Вот этот кусок отвечает за генерализацию
+				function accessPortsClusterIcon(cluster) {
+					cluster.setZIndexOffset(10000);
+
+					var markers = cluster.getAllChildMarkers();
+
+					var minimizeNumberMetric = function (value) {
+						var result = value.toString();
+						if (result.length > 6) {
+							result = result.slice(0, -6) + ' млн';
+						}
+						return result;
+					};
+
+					//var portsAvailableSum = 0;
+					var portsTotalSum = 0;
+					/*					for (var i = 0; i < markers.length; i++) {
+											portsAvailableSum += markers[i].feature.properties.clientData.portsAvailable;
+										}*/
+
+					if (showPortsTotalCount) {
+						for (var i = 0; i < markers.length; i++) {
+							portsTotalSum += markers[i].feature.properties.clientData.portsTotal;
+						}
+					}
+
+					var markerContent = '<div><span>';
+					if (showPortsTotalCount) {
+						markerContent += minimizeNumberMetric(portsTotalSum)
+								+ '<br/><span class="secondary-param">' /*+ minimizeNumberMetric(portsAvailableSum)*/ + '</span>';
+					} else {
+						//markerContent += minimizeNumberMetric(portsAvailableSum);
+					}
+					markerContent += '</span> </div> <div class="building-count"><span>' + markers.length + '</span></div>';
+
+					var tooltipText = "<div><b>" + markers.length + " Зданий</b><br/>";
+					if (showPortsTotalCount) {
+						tooltipText += minimizeNumberMetric(portsTotalSum) + " Всего портов<br/>"
+					}
+					//tooltipText+=minimizeNumberMetric(portsAvailableSum) + " Свободных портов</div>";
+
+					cluster.bindTooltip(tooltipText);
+
+					var initClusterSizeParams = function (value) {
+						var point;
+						var markerClass = 'marker-cluster-access-ports marker-cluster-';
+						if (value < 100) {
+							markerClass += 'small';
+							point = new L.Point(40, 40);
+						} else if (value < 1000) {
+							markerClass += 'medium';
+							point = new L.Point(50, 50);
+						} else if (value < 10000) {
+							markerClass += 'large';
+							point = new L.Point(60, 60);
+						} else {
+							markerClass += 'xlarge';
+							point = new L.Point(70, 70);
+						}
+
+						return {
+							markerClass: markerClass,
+							point: point
+						};
+					};
+
+					var markerSizeParams;
+					if (showPortsTotalCount) {
+						markerSizeParams = initClusterSizeParams(portsTotalSum);
+					} else {
+						//markerSizeParams = initClusterSizeParams(portsAvailableSum);
+					}
+
+					return new L.DivIcon({
+						html: markerContent,
+						className: markerSizeParams.markerClass,
+						iconSize: markerSizeParams.point
+					});
+				};
+
+				nameSpace.clusterLayerOptions = {
+					iconCreateFunction: accessPortsClusterIcon,
+					spiderfyDistanceMultiplier: 3
+				}
+			})(window.b2cAccessPortsLayerOptions = window.b2cAccessPortsLayerOptions || {});
+		}
+
+		b2cAccessPortsLayerOptions.setShowPortsTotalCount(true);
+
+		if (typeof window.b2cInstallationConnectionPointLayerOptions === 'undefined') {
+			(function (nameSpace) {
+				nameSpace.markerClass = L.RegularPolygonMarker.extend({
+					buildingStatesStyles: {
+						normal: {
+							color: '#236A8D',
+							fillColor: '#FFF'
+						},
+
+						selected: {
+							color: '#F60',
+							fillColor: '#FFF'
+						},
+
+						visited: {
+							color: '#999',
+							fillColor: '#CCC'
+						}
+					},
+
+					options: {
+						numberOfSides: 4,
+						radius: 20,
+						color: '#236A8D',
+						fillColor: '#FFF',
+						fillOpacity: 1,
+						position: {
+							x: 0,
+							y: -20
+						}
+					},
+
+					initialize: function (latlng, options) {
+						options.text = {
+							style: {
+								'font-weight': '700'
+							},
+							text: options.clientData,
+							attr: {
+								transform: 'translate(0, -20)'
+							}
+						};
+						L.RegularPolygonMarker.prototype.initialize.call(this, L.latLng(latlng), options);
+						//this.bindPopup("<div><b>" + options.title + "</b><br/>" + options.clientData + " Свободно</div>");
+						this.bindTooltip("<div><b>" + options.title + "</b><br/>" + options.clientData + " Свободных точек подключения</div>");
+					},
+
+					select: function () {
+						this.selected = true;
+						this.setStyle(this.buildingStatesStyles.selected);
+						this.options.visited = true;
+					},
+
+					deselect: function () {
+						this.selected = false;
+						this.setStyle(this._getMarkerStyle());
+					},
+
+					isSelected: function () {
+						return this.selected;
+					},
+
+					_getMarkerStyle: function () {
+						if (this.options.visited) {
+							return this.buildingStatesStyles.visited;
+						}
+						return this.buildingStatesStyles.normal;
+					}
+				});
+
+				nameSpace.layerOptions = {
+					pointToLayer: function (feature, latLng) {
+						return new nameSpace.markerClass(latLng, feature.properties);
+					},
+					onEachFeature: function (feature, layer) {
+						nameSpace.onMarkerClick(layer);
+					},
+					minZoom: 14
+				};
+
+				function installationConnectionPointClusterIcon(cluster) {
+					var markers = cluster.getAllChildMarkers();
+
+					var availableSum = 0;
+					for (var i = 0; i < markers.length; i++) {
+						availableSum += markers[i].feature.properties.clientData;
+					}
+
+					var point;
+					var markerClass = ' marker-cluster-';
+					if (availableSum < 100) {
+						markerClass += 'small';
+						point = new L.Point(40, 40);
+					} else if (availableSum < 1000) {
+						markerClass += 'medium';
+						point = new L.Point(50, 50);
+					} else if (availableSum < 10000) {
+						markerClass += 'large';
+						point = new L.Point(60, 60);
+					} else {
+						markerClass += 'xlarge';
+						point = new L.Point(70, 70);
+					}
+
+					var minimizeNumberMetric = function (value) {
+						var result = value.toString();
+						if (result.length > 6) {
+							result = result.slice(0, -6) + ' млн';
+						}
+						return result;
+					};
+
+					cluster.bindTooltip("<div><b> Зданий " + markers.length + "</b><br/>Свободных точек подключения " + minimizeNumberMetric(availableSum) + "</div>");
+
+					return new L.DivIcon({
+						html: '<div><span>' + minimizeNumberMetric(availableSum) + '</span> </div> ' +
+						'<div class="building-count"><span>' + markers.length + '</span></div>',
+						className: markerClass + ' marker-cluster-installation-connection-pPoint',
+						iconSize: point
+					});
+				};
+
+				nameSpace.clusterLayerOptions = {
+					iconCreateFunction: installationConnectionPointClusterIcon
+				}
+			})(window.b2cInstallationConnectionPointLayerOptions = window.b2cInstallationConnectionPointLayerOptions || {});
+		}
+		//]]>
+	</h:outputScript>
+</ui:composition>

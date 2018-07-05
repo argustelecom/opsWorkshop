@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="measuremetBundle" basename="MeasureBundle"/>
+    <h:form id="measure_unit_creation_form">
+
+        <p:dialog id="create_measure_dlg" header="#{measuremetBundle['box.measure.unit.create_dialog']}"
+                  width="600" styleClass="icon-creation"
+                  widgetVar="createMeasureDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+            <dl class="name-value width-250">
+                <dt>
+                    <p:outputLabel for="code" value="#{measuremetBundle['box.measure.unit.code']}: " />
+                </dt>
+                <dd>
+                    <p:inputText id="code" required="true" value="#{measureUnitCreationDM.code}"
+                                 label="#{measuremetBundle['box.measure.unit.code']}"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="value" value="#{overallBundle['box.overall.name']}: " />
+                </dt>
+                <dd>
+                    <p:inputText id="value" required="true" value="#{measureUnitCreationDM.name}"
+                                 label="#{overallBundle['box.overall.name']}"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="symbol" value="#{measuremetBundle['box.measure.unit.symbol']}: " />
+                </dt>
+                <dd>
+                    <p:inputText id="symbol" required="true" value="#{measureUnitCreationDM.symbol}"
+                                 validator="#{measureUnitCreationDM.validateSymbol}" label="#{measuremetBundle['box.measure.unit.symbol']}">
+                        <f:validateLength maximum="8"/>
+                    </p:inputText>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="factor" value="#{measuremetBundle['box.measure.unit.conversion.coefficient']}: " />
+                </dt>
+                <dd>
+                    <p:inputText id="factor" required="true" value="#{measureUnitCreationDM.factor}"
+                                 label="#{measuremetBundle['box.measure.unit.conversion.coefficient']}"
+                                 converterMessage="#{measuremetBundle['box.measure.unit.conversion.msg']}">
+                        <f:validateLongRange minimum="1"/>
+                    </p:inputText>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="measure_group_1" value="#{measuremetBundle['box.measure.unit.group']}: " />
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="measure_group_1" required="true" value="#{measureUnitCreationDM.group}"
+                                     label="#{measuremetBundle['box.measure.unit.group']}">
+                        <p:ajax update="group_base_measure_symbol" />
+                        <f:selectItems value="#{selectItems.nullItem(false)}" />
+                        <f:selectItems value="#{measureUnitCreationDM.groups}" var="measure"
+                                       itemLabel="#{measure.groupName}" itemValue="#{measure}"/>
+                    </p:selectOneMenu>
+                </dd>
+
+                <dt>
+                    <h:outputText value="#{measuremetBundle['box.measure.unit.group.basic']}: " />
+                </dt>
+                <dd>
+                    <h:outputText id="group_base_measure_symbol" value="#{measureUnitCreationDM.group.name}" />
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="create_measure_cancel" value="#{overallBundle['box.overall.cancel']}" onclick="PF('createMeasureDlgVar').hide()"
+                                 styleClass="m-blue-text-button" update="create_measure_dlg" resetValues="true"
+                                 process="@this" action="#{measureUnitCreationDM.cancel()}"/>
+                <p:commandButton id="create_measure_confirm" value="#{overallBundle['box.overall.create']}" action="#{measureUnitCreationDM.create()}"
+                                 update="-measure_filter -tree_buttons_form -measure_list_form code value factor symbol measure_group_1"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('createMeasureDlgVar').hide()}" process="@form" />
+            </div>
+
+        </p:dialog>
+
+    </h:form>
+
+</ui:composition>

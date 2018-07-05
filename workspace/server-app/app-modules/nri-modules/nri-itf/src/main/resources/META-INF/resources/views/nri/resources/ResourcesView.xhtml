@@ -1,0 +1,50 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<ui:param name="viewModel" value="#{resourcesVM}"/>
+	<ui:param name="pageTitle" value="#{resourcesBundle['box.nri.resources.resources_header']}"/>
+	<ui:param name="resultFormId" value="pricelist_search_result_form"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css" />
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+		<f:loadBundle basename="ResourcesBundle" var="resourcesBundle"/>
+		<f:loadBundle basename="ResourceBundle" var="resourceBundle"/>
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="res_name" value="#{resourcesViewState.name}" required="false"/>
+			<f:viewParam name="spec_name" value="#{resourcesViewState.specificationName}" required="false"/>
+			<f:viewParam name="status" value="#{resourcesViewState.resourceStatus}" required="false"/>
+			<f:viewParam name="address" value="#{resourcesViewState.locationString}" required="false"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{resourcesBundle['box.nri.resources.resources_header']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="ResourcesViewBodyFrame.xhtml">
+			<ui:param name="viewState" value="#{resourcesViewState}"/>
+			<ui:param name="lazyDm" value="#{resourcesVM.lazyResources}"/>
+			<ui:param name="page" value="ResourcesView.xhtml"/>
+			<ui:param name="filterFormId" value="resources_search_form"/>
+			<ui:param name="resultFormId" value="resources_search_result_form"/>
+			<ui:param name="update" value="#{filterFormId}"/>
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="ResourcesViewAddResourceDialog.xhtml">
+			<ui:param name="update" value="resources_search_result_form"/>
+		</ui:include>
+	</ui:define>
+</ui:composition>

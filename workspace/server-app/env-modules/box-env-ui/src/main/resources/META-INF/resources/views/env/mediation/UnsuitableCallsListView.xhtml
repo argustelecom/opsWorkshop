@@ -1,0 +1,54 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+
+<ui:param name="viewModel" value="#{unsuitableCallsListVm}"/>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css"/>
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+        <f:loadBundle var="mediationBundle" basename="MediationBundle"/>
+    </ui:define>
+
+    <ui:define name="metadata">
+        <f:metadata>
+			<ui:insert name="stage_metadata"/>
+			<f:viewParam name="foreignId" value="#{unsuitableCallsListVs.foreignId}"/>
+			<f:viewParam name="dateFrom" value="#{unsuitableCallsListVs.dateFrom}" required="false">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"/>
+			</f:viewParam>
+			<f:viewParam name="dateTo" value="#{unsuitableCallsListVs.dateTo}" required="false">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"/>
+			</f:viewParam>
+			<f:viewParam name="sourceResource" value="#{unsuitableCallsListVs.calledNumber}"/>
+			<f:viewParam name="sourceChannel" value="#{unsuitableCallsListVs.incomingChannel}"/>
+			<f:viewParam name="destTrunk" value="#{unsuitableCallsListVs.outgoingTrunk}"/>
+			<f:viewParam name="destResource" value="#{unsuitableCallsListVs.callingNumber}"/>
+			<f:viewParam name="destChannel" value="#{unsuitableCallsListVs.outgoingChannel}"/>
+        </f:metadata>
+    </ui:define>
+
+
+    <ui:define name="body">
+        <ui:include src="UnsuitableCallsListFrame.xhtml">
+            <ui:param name="viewState" value="#{unsuitableCallsListVs}"/>
+            <ui:param name="lazyDm" value="#{unsuitableCallsListVm.lazyDm}"/>
+            <ui:param name="page" value="#{page}"/>
+            <ui:param name="filterFormId" value="#{filterFormId}"/>
+            <ui:param name="resultFormId" value="#{resultFormId}"/>
+            <ui:param name="update" value="#{filterFormId}"/>
+			<ui:param name="context" value="#{unsuitableCallsListVs.unsuitableCallsContext}"/>
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="dialogs">
+		<ui:include src="UnsuitableCallsEditDialog.xhtml">
+			<ui:param name="context" value="#{unsuitableCallsListVs.unsuitableCallsContext}"/>
+			<ui:param name="update" value="#{filterFormId} #{resultFormId}"/>
+		</ui:include>
+		<ui:include src="UnsuitableCallsRecycleDialog.xhtml"/>
+    </ui:define>
+
+</ui:composition>

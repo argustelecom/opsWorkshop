@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect simple-fb">
+				<h:form id="tariff_entry_history_form">
+					<f:event type="preRenderComponent"
+							 listener="#{tariffEntryHistoryFm.preRender(tariffCardVs.tariffEntryDto)}"/>
+
+					<div class="ui-dashboard-header">
+						<i class="icon-restore"/>
+						<h:outputText styleClass="card-header"
+									  value="#{tariffBundle['box.telephony.tariff.entry.history']}"/>
+						<h:outputText id="plpottp" class="icon-help_outline tooltip-help-15" position="top"
+									  title="#{tariffBundle['box.telephony.tariff.entry.history.hint']}"/>
+						<p:tooltip id="plpo_ttp" for="plpottp"/>
+
+					</div>
+
+
+					<p:dataTable id="tariff_entry_history_table" var="change" value="#{tariffEntryHistoryFm.history}"
+								 paginator="true" rows="5"
+								 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+								 rowsPerPageTemplate="5,10,15"
+								 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.history.change.date']}">
+							<p:calendar id="date"
+										value="#{change.modifiedDate}"
+										pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+										locale="#{languageBean.locale.language}"
+										disabled="true"/>
+						</p:column>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.history.user']}">
+							<h:outputText value="#{change.employee.objectName}"/>
+						</p:column>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.history.change']}">
+							<p:commandLink styleClass="ui-button-text-only"
+										   value="#{tariffBundle['box.telephony.tariff.entry.history.change']}"
+										   update="tariff_entry_history_form-tariff_entry_history_expand_panel"
+										   oncomplete="PF('tariffEntryHistoryPanelVar').show('#{component.clientId}')">
+								<f:setPropertyActionListener value="#{change}" target="#{tariffEntryHistoryFm.selectedEntryHistory}"/>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+
+					<p:overlayPanel id="tariff_entry_history_expand_panel" widgetVar="tariffEntryHistoryPanelVar" hideEffect="fade" styleClass="panel">
+						<p:panelGrid styleClass="ui-grid" id="grid" style="font-size: 14px">
+							<p:row>
+								<p:column colspan="8">#{tariffBundle['box.telephony.tariff.entry.history.before']}</p:column>
+								<p:column colspan="8">#{tariffBundle['box.telephony.tariff.entry.history.after']}</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.route']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.prefix']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.cost']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.zone']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.route']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.prefix']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.cost']}</p:column>
+								<p:column colspan="2">#{tariffBundle['box.telephony.tariff.entry.zone']}</p:column>
+							</p:row>
+							<p:row>
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.name, tariffEntryHistoryFm.entryHistoryAfterChange.name) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.selectedEntryHistory.name}
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.prefixes, tariffEntryHistoryFm.entryHistoryAfterChange.prefixes) ? 'background-color: #f0c20c' : ''}">
+									<h:outputText id="tariff_history_before_prefix" value="#{tariffEntryHistoryFm.selectedEntryHistory.prefixes.get(0)} #{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() > 1 ? ', ' : ''}
+							#{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() > 1 ? tariffEntryHistoryFm.selectedEntryHistory.prefixes.get(1) : ''} #{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() > 2 ? ',' : ''}
+							#{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() > 2 ? tariffEntryHistoryFm.selectedEntryHistory.prefixes.get(2) : ''} #{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() > 3 ? '...' : ''}"/>
+									<p:outputPanel id="tariff_history_before_prefix_panel" styleClass="auto-height" rendered="#{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size() gt 3}">
+										<p:commandLink id="before_prefix_popup"
+													   value="#{tariffBundle['box.telephony.tariff.entry.prefix.total']} #{tariffEntryHistoryFm.selectedEntryHistory.prefixes.size()}"/>
+
+										<p:overlayPanel id="before_prefix_expand_panel" appendToBody="true" widgetVar="tariffEntryBeforePrefixPanelVar" hideEffect="fade"
+														for="before_prefix_popup" styleClass="panel" style="position: fixed; top: 50%; left: 70%;">
+											<p:dataGrid id="prefixes_before_grid" var="beforePrefix" value="#{tariffEntryHistoryFm.selectedEntryHistory.prefixes}"
+														columns="6">
+												<h:outputText value="#{beforePrefix}, "/>
+											</p:dataGrid>
+										</p:overlayPanel>
+									</p:outputPanel>
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.chargePerUnit.toString(), tariffEntryHistoryFm.entryHistoryAfterChange.chargePerUnit.toString()) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.selectedEntryHistory.chargePerUnit}
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.zone.objectName, tariffEntryHistoryFm.entryHistoryAfterChange.zone.objectName) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.selectedEntryHistory.zone.objectName}
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.name, tariffEntryHistoryFm.entryHistoryAfterChange.name) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.entryHistoryAfterChange.name}
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.prefixes, tariffEntryHistoryFm.entryHistoryAfterChange.prefixes) ? 'background-color: #f0c20c' : ''}">
+									<h:outputText id="tariff_history_after_prefix" value="#{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.get(0)} #{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() > 1 ? ', ' : ''}
+							#{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() > 1 ? tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.get(1) : ''} #{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() > 2 ? ',' : ''}
+							#{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() > 2 ? tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.get(2) : ''} #{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() > 3 ? '...' : ''}"/>
+									<p:outputPanel id="tariff_history_after_prefix_panel" styleClass="auto-height" rendered="#{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size() gt 3}">
+										<p:commandLink id="after_prefix_popup"
+													   value="#{tariffBundle['box.telephony.tariff.entry.prefix.total']} #{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes.size()}"/>
+
+										<p:overlayPanel id="after_prefix_expand_panel" appendToBody="true" widgetVar="tariffEntryAfterPrefixPanelVar" hideEffect="fade"
+														for="after_prefix_popup" styleClass="panel" style="position: fixed; top: 50%; left: 70%;">
+											<p:dataGrid id="prefixes_after_grid" var="afterPrefix" value="#{tariffEntryHistoryFm.entryHistoryAfterChange.prefixes}"
+														columns="6">
+												<h:outputText value="#{afterPrefix}, "/>
+											</p:dataGrid>
+										</p:overlayPanel>
+									</p:outputPanel>
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.chargePerUnit.toString(), tariffEntryHistoryFm.entryHistoryAfterChange.chargePerUnit.toString()) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.entryHistoryAfterChange.chargePerUnit}
+								</p:column>
+
+								<p:column colspan="2" style="#{tariffEntryHistoryFm.isValuesNotEquals(tariffEntryHistoryFm.selectedEntryHistory.zone.objectName, tariffEntryHistoryFm.entryHistoryAfterChange.zone.objectName) ? 'background-color: #f0c20c' : ''}">
+								#{tariffEntryHistoryFm.entryHistoryAfterChange.zone.objectName}
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+					</p:overlayPanel>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

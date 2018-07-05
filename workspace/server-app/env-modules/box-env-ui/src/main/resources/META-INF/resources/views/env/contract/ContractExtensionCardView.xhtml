@@ -1,0 +1,112 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{contractExtensionCardViewModel}"/>
+	<ui:param name="pageTitle" value="#{contractBundle['box.contract.extension']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="contractExtension" value="#{currentContractExtension.value}" required="#{!facesContext.postback}"
+						 requiredMessage="ContractExtension param required"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+
+		<f:loadBundle var="contractBundle" basename="ContractBundle"/>
+		<f:loadBundle var="serviceBundle" basename="ServiceBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<o:importConstants type="ru.argustelecom.box.env.page.navigation.CardType" var="cardType"/>
+		<p:menuitem value="#{contractBundle['box.contract.plural']}" url="/views/env/contract/ContractListView.xhtml"/>
+		<p:menuitem value="#{contractBundle['box.contract']} #{contractExtensionCardViewModel.contractExtension.contract.documentNumber}"
+					disabled="#{!p:ifGranted(cardType.CONTRACT.permissionId)}" 
+					url="#{cardNavigator.getOutcome(contractExtensionCardViewModel.contractExtension.contract)}"/>
+		<p:menuitem value="#{contractBundle['box.contract.extension']} #{contractExtensionCardViewModel.contractExtension.documentNumber}"/>
+	</ui:define>
+
+	<ui:define name="body">
+
+		<o:importConstants type="ru.argustelecom.box.env.contract.lifecycle.ContractExtensionLifecycle.Behaviors" var="behavior"/>
+
+		<ui:include src="ContractExtensionAttributesFrame.xhtml">
+			<ui:param name="contractExtension" value="#{contractExtensionCardViewModel.contractExtension}"/>
+		</ui:include>
+
+		<div class="m-container100 m-responsive100">
+			<ui:include src="ContractEntriesFrame.xhtml">
+				<ui:param name="form_id" value="cotract_entries_form"/>
+				<ui:param name="attributes_form_id" value="contract_extension_attributes_form" />
+				<ui:param name="icon" value="icon-file-add"/>
+				<ui:param name="canEditEntry" value="#{p:ifGranted('CRM_ContractExtensionEdit') and !behaviorUtils.isForbidden(contractExtensionCardViewModel.contractExtension, behavior.editEntry)}"/>
+				<ui:param name="abstractFm" value="#{contractEntriesFm}"/>
+				<ui:param name="contract" value="#{contractExtensionCardViewModel.contractExtension}"/>
+				<ui:param name="containerClass" value="m-container100"/>
+				<ui:param name="isIncludedEntries" value="true"/>
+			</ui:include>
+
+			<ui:include src="ContractEntriesFrame.xhtml">
+				<ui:param name="form_id" value="cotract_excluded_entries_form"/>
+				<ui:param name="icon" value="icon-file-subtract"/>
+				<ui:param name="isExcludedEntries" value="true"/>
+				<ui:param name="canEditExcludeEntry" value="#{p:ifGranted('CRM_ContractExtensionEdit') and !behaviorUtils.isForbidden(contractExtensionCardViewModel.contractExtension, behavior.editEntry)}"/>
+				<ui:param name="abstractFm" value="#{contractExcludedEntriesFm}"/>
+				<ui:param name="contract" value="#{contractExtensionCardViewModel.contractExtension}"/>
+				<ui:param name="containerClass" value="m-container100"/>
+			</ui:include>
+
+			<div class="m-container40 m-responsive100">
+				<ui:include src="/views/env/customer/CustomerAttributesBlockFrame.xhtml">
+					<ui:param name="customer" value="#{contractExtensionCardViewModel.contractExtension.customer}"/>
+				</ui:include>
+			</div>
+
+			<div class="m-container60 m-responsive100">
+				<div class="m-container100 m-responsive100">
+					<div class="m-container-indent">
+						<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+							<ui:include src="/views/env/activity/ActivityFrame.xhtml">
+								<ui:param name="contextObject" value="#{contractExtensionCardViewModel.contractExtension}"/>
+							</ui:include>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/activity/comment/CommentEditDialog.xhtml"/>
+
+		<ui:include src="ServiceSpecEditDialog.xhtml">
+			<ui:param name="update" value="cotract_entries_form"/>
+		</ui:include>
+
+		<ui:include src="ContractEntryCreationDialog.xhtml">
+			<ui:param name="update" value="cotract_entries_form"/>
+		</ui:include>
+
+		<ui:include src="OptionContractEntryCreationDialog.xhtml">
+			<ui:param name="update" value="cotract_entries_form"/>
+		</ui:include>
+
+		<ui:include src="ContractAddExcludedEntryDialog.xhtml">
+			<ui:param name="update" value="cotract_excluded_entries_form"/>
+		</ui:include>
+
+		<ui:include src="ContractLifecycleRoutingDialog.xhtml">
+			<ui:param name="bundle" value="#{contractBundle}"/>
+			<ui:param name="update" value="contract_extension_attributes_form activity_form cotract_entries_form cotract_excluded_entries_form"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

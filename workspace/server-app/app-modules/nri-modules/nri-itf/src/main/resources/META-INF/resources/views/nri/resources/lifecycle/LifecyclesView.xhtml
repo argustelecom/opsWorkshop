@@ -1,0 +1,95 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{lifecyclesVM}"/>
+	<ui:param name="pageTitle" value="Жизненные циклы"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="resource" value="#{resourceViewState.resource}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="ResourceBundle" var="resourceBundle"/>
+		<f:loadBundle basename="ResourcesBundle" var="resourcesBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}"
+					url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+		<p:menuitem value="Жизненные циклы"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+						<h:form id="lifecycle_list_form">
+							<div class="ui-dashboard-header">
+								<h:outputText value="Жизненные циклы"/>
+							</div>
+
+							<p:outputPanel id="lifecycle_list_panel" styleClass="fs14">
+								<p:tree id="lifecycle_list" value="#{lifecyclesVM.lifecycles}" var="lifecycle"
+										styleClass="width-100-percents m-ov-auto tree-no-border" selectionMode="single"
+										selection="#{lifecyclesVM.selectedNode}" style="overflow-x: hidden"
+										propagateSelectionDown="false" propagateSelectionUp="false">
+
+									<p:ajax event="select" update="lifecycle_info_form"/>
+
+									<p:treeNode>
+										<h:outputText value="#{lifecycle.name}" style="padding-left: 5px;"/>
+									</p:treeNode>
+
+								</p:tree>
+							</p:outputPanel>
+						</h:form>
+						<script>
+                            $(document).ready(function () {
+                                Argus.System.AutoHeight.compute('lifecycle_list_form', 40);
+                                Argus.System.AutoHeight.compute('lifecycle_list_form-lifecycle_list', 35);
+                            });
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container65 m-responsive100">
+			<h:form id="lifecycle_info_form">
+				<p:tabView style="height: 100%;" rendered="#{lifecyclesVM.selectedLifecycle ne null}">
+					<p:tab title="Граф состояний" id="resource_info_panel">
+							<ui:include src="LifecycleInfoFrame.xhtml">
+								<ui:param name="lifecycle" value="#{lifecyclesVM.selectedLifecycle}"/>
+							</ui:include>
+					</p:tab>
+					<p:tab title="Типы ресурсов с заданным ЖЦ">
+						<ui:include src="LifecycleSpecificationsInfoFrame.xhtml">
+							<ui:param name="lifecycle" value="#{lifecyclesVM.selectedLifecycle}"/>
+						</ui:include>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="LifecyclePhaseAddDialog.xhtml">
+			<ui:param name="update" value="lifecycle_info_form"/>
+		</ui:include>
+		<ui:include src="LifecyclePhaseViewDialog.xhtml">
+			<ui:param name="update" value="lifecycle_info_form"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

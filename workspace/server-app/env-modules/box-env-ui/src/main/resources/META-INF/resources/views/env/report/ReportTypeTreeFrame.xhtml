@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle basename="ReportBundle" var="reportBundle" />
+    <f:attribute name="updateEvent" value="#{currentType.changedEvent}"/>
+	<f:event listener="#{reportTypeTreeFm.preRender()}" type="preRenderComponent"/>
+
+	<o:importConstants type="ru.argustelecom.box.env.report.ReportTypeCategory" var="category"/>
+    <h:form id="report_type_tree_form">
+        <script>
+            $( document ).ready(function() {
+                Argus.System.AutoHeight.compute('report_type_tree_form', 40);
+                Argus.System.AutoHeight.compute('report_type_tree_form-report_type_tree', 50);
+            });
+        </script>
+
+        <div class="ui-dashboard-header">
+            <p:inputText styleClass="m-wid50 m-wid-auto-on-mobile m-mar-right10" />
+            <i class="fa fa-search"/>
+
+            <p:outputPanel id="report_type_controls" styleClass="m-tex-al-right m-fright">
+                <p:commandLink id="report_type_create_button" styleClass="m-mar-left10"
+                               title="#{overallBundle['box.overall.add']}">
+                    <i class="icon-playlist_add icon-btn"/>
+                </p:commandLink>
+
+                <p:overlayPanel id="report_type_categories_panel" widgetVar="reportCategoriesPanelVar"
+                                for="report_type_create_button" styleClass="select-one-item-overlay-panel">
+                    <ul class="directory-creation-list">
+                        <li>
+                            <p:commandLink value="#{overallBundle['box.overall.group']}" onclick="PF('reportCategoriesPanelVar').hide();PF('reportTypeGroupCreationDlgVar').show()">
+								<f:setPropertyActionListener value="#{reportTypeTreeFm.reportTypeGroupCallback}"
+															 target="#{reportTypeGroupCreationDm.reportTypeGroupCallback}"/>
+                            </p:commandLink>
+                        </li>
+                        <li>
+                            <p:commandLink value="#{reportBundle['box.report.type']}" actionListener="#{reportTypeTreeFm.onCreateReportType()}">
+								<f:setPropertyActionListener value="#{reportTypeTreeFm.reportTypeCreatingCallback}"
+															 target="#{reportTypeCreationDm.reportTypeCallback}"/>
+								<f:setPropertyActionListener value="#{reportTypeTreeFm.reportTypeGroupDto}"
+															 target="#{reportTypeCreationDm.group}"/>
+                            </p:commandLink>
+                        </li>
+                    </ul>
+                </p:overlayPanel>
+
+                <p:commandLink id="remove_btn" styleClass="m-mar-left10" title="#{overallBundle['box.overall.delete']}" actionListener="#{reportTypeTreeFm.remove()}"
+							   disabled="#{reportTypeTreeFm.selectedNode eq null or reportTypeTreeFm.selectedNode.childCount ne 0}"
+							   update="report_type_controls report_type_tree report_attributes_form report_type_tab_view remove_btn">
+                    <i class="fa fa-trash icon-btn"/>
+                    <p:confirm header="#{reportBundle['box.report.type.delete_dialog']}"
+                               message="#{reportBundle['box.report.type.delete_dialog.details']} #{reportTypeTreeFm.selectedNode.data.name}?"/>
+                </p:commandLink>
+            </p:outputPanel>
+        </div>
+
+        <p:outputPanel id="tree_panel">
+            <p:tree id="report_type_tree" styleClass="tree-no-border width-100-percents m-ov-auto" value="#{reportTypeTreeFm.root}"
+                    var="node" lazy="true" dynamic="true" selectionMode="single" selection="#{reportTypeTreeFm.selectedNode}"
+                    highlight="true" cashe="false" propagateSelectionUp="false" propagateSelectionDown="false">
+
+                <p:ajax event="select" update="report_attributes_form report_type_tree_form-remove_btn
+												report_type_tab_view-report_band_tree_form"/>
+
+                <p:treeNode type="#{category.GROUP}">
+                    <i class="#{category.GROUP.icon} m-fleft m-mar-right3 m-mar-top3"/>
+                    <h:outputText value="#{node.name}" title="#{node.name}"/>
+                </p:treeNode>
+
+                <p:treeNode type="#{category.TYPE}">
+                    <i class="#{category.TYPE.icon} m-fleft m-mar-right3 m-mar-top3"/>
+                    <h:outputText value="#{node.name}" title="#{node.name}"/>
+                </p:treeNode>
+            </p:tree>
+        </p:outputPanel>
+    </h:form>
+
+</ui:composition>

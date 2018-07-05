@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="documentTypeTemplateBundle" basename="DocumentTypeTemplateBundle"/>
+	<h:form id="doctype_templates_edit_form">
+
+		<p:dialog id="doctype_templates_edit_dlg" styleClass="icon-creation"
+				  header="#{reportTemplatesDm.newTemplate ?
+				  documentTypeTemplateBundle['box.doc.type.template.create_dialog'] :
+				  documentTypeTemplateBundle['box.doc.type.template.edit_dialog']}" width="600"
+				  widgetVar="doctypeTemplatesDlgVar" resizable="false" modal="true" closable="false">
+
+			<ui:fragment rendered="#{reportTemplatesDm.newTemplate}">
+				<p:fileUpload fileUploadListener="#{reportTemplatesDm.handleFileUpload}" mode="advanced" auto="true"
+							  sizeLimit="30728640" onstart="Argus.System.BlockUI.block();" oncomplete="Argus.System.BlockUI.unblock();"
+                              label="#{overallBundle['box.overall.upload']}" allowTypes="/(\.|\/)(docx|xlsx|html)$/" widgetVar="doctypeTemplateUploaderVar" required="true"
+							  update="template_filename submit_button" />
+
+				<h:outputScript>
+					$(function () {
+						PF('doctypeTemplateUploaderVar').jq.data().blueimpFileupload.options.sequentialUploads = true;
+					});
+				</h:outputScript>
+			</ui:fragment>
+
+			<dl class="name-value width-130 fs14">
+				<dt>
+					<p:outputLabel for="template_filename" value="#{overallBundle['box.overall.name']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="template_filename" value="#{reportTemplatesDm.templateFileName}" readonly="true"
+								 required="true" />
+				</dd>
+
+				<dt>
+					<p:outputLabel for="template_desc" value="#{overallBundle['box.overall.desc']}: " />
+				</dt>
+				<dd>
+					<p:inputTextarea id="template_desc" rows="2" value="#{reportTemplatesDm.templateDesc}" maxlength="256"
+									 counter="template_desc_counter" counterTemplate="#{overallBundle['box.overall.chars_left']}" autoResize="false" />
+					<h:outputText id="template_desc_counter" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" onclick="PF('doctypeTemplatesDlgVar').hide()"
+								 action="#{reportTemplatesDm.cancel()}" process="@this" />
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('doctypeTemplatesDlgVar').hide()}"
+								 action="#{reportTemplatesDm.submit()}" disabled="#{not reportTemplatesDm.canSubmit()}"
+								 update="#{update}" />
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

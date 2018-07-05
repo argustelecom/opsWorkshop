@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pm="http://primefaces.org/modena">
+
+	<!--
+		Главное меню по умолчанию не пропагатит контексты view и conversation (обеспечивается скриптом, следующим за ней).
+		POST'ы главного меню делаются в специальный MenuStatelessActionView. Чтобы action'ы работали, нужно явно задавать
+		id элементов - не должно быть сгенерированных id, в т.ч. в родительских контейнерах. Т.е. весь clientId должен
+		состоять из заданных id, для совпадения между произвольным View и MenuStatelessActionView.
+		
+		ВНИМАНИЕ! Не нужно задавать id простым ссылкам p:menuitem. Суммарно эти ненужные id существенно раздувают объем
+		траффика, т.к. попадают на все страницы приложения (TASK-64886).
+		id нужно задавать только тому, что делает сабмит.
+		
+		Пропагация conversation не действует, т.к. это важно для:
+		- пунктов меню, создающих новые сущности в текущем UnitOfWork и делающих UoW длинным - UoW не должен содержать
+		ничего лишнего; 
+		- кнопок "обновить" и "выход".
+		
+		Пропагация view не действует, т.к.:
+		- если создавать сущность из меню без пропагации conversation, но в том же view, то сложно обеспечить, чтобы
+		не инициализировались лишние ViewModel, FrameModel (TASK-46176);
+		- лишние Current* могут нежелательно повлиять на значения параметров includeViewParams.
+	-->
+
+	<!-- Наличие компонента с id layout_menu_cover обязательно по требованию структуры modena-layout -->
+	<div id="layout_menu_cover" class="m-animated05" >
+		<!-- mmf = main_menu_form - это экономит примерно 1,3 КБ на каждом GET -->
+		<h:form id="mmf">
+			<pm:menu id="main_menu_bar">
+				<!-- За наполнение меню отвечает Среда, в т.ч. добавляет инфраструктурные страницы -->
+				<ui:include src="/views/env/page/MenuContentFrame.xhtml" />
+			</pm:menu>
+		</h:form>
+	</div>
+
+	<!--
+		Сделать главное меню stateless.
+	-->
+	<script>
+		Argus.System.Fn.makeFormStateless('#mmf', '#{request.contextPath}/views/inf/page/MenuStatelessActionView.xhtml');
+	</script>
+
+</ui:composition>

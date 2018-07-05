@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<p:dataScroller var="contract" scrollHeight="#{empty contracts ? 130 : 200 }" chunkSize="10" mode="inline" value="#{contracts}" styleClass="#{empty contracts ? 'empty-card custom-empty-card' : ''}">
+		<div class="m-card m-shadow-effect component-tile">
+			<div class="ct-header">
+				<ul>
+					<li>
+						<h:outputText styleClass="m-mar-right30 fs12" value="#{overallBundle['box.overall.number']}:"/>
+						<boxenv:linkToCard value="#{contract}" styleClass="fs14"
+										   title="#{overallBundle['box.overall.open']}"
+										   text="#{contract.documentNumber}"/>
+					</li>
+					<li>
+						<h:outputText styleClass="m-mar-right10 fs12" value="#{overallBundle['box.overall.state']}:"/>
+						<h:outputText  size="fs14" styleClass="m-disp-inl-block m-font-roboto-regular"
+									   value="#{contract.state.name}"/>
+					</li>
+				</ul>
+			</div>
+			<div class="ct-header">
+				<ul>
+					<li>
+						<p:outputLabel for="extension_type" styleClass="m-mar-right30 fs12"  value="#{overallBundle['box.overall.type']}:"/>
+						<h:outputText id="extension_type" value="#{contract.type.objectName}"/>
+					</li>
+					<ui:fragment rendered="#{contract['class'].simpleName eq 'ContractExtension'}">
+						<li>
+							<p:outputLabel for="document_date" styleClass="m-mar-right30 fs12" value="#{overallBundle['box.overall.valid_from']}:"/>
+							<h:outputText id="document_date" value="#{contract.documentDate}"/>
+						</li>
+					</ui:fragment>
+					<ui:fragment rendered="#{contract['class'].simpleName eq 'Contract'}">
+						<li>
+							<p:outputLabel for="valid_from" styleClass="m-mar-right30 fs12" value="#{overallBundle['box.overall.valid_from']}:"/>
+							<h:outputText id="valid_from" value="#{contract.validFrom}" styleClass="m-mar-right30"/>
+							<div>
+								<p:outputLabel for="valid_to" value="#{overallBundle['box.overall.valid_to']}:" styleClass="m-mar-right30 fs12" />
+								<h:outputText id="valid_to" value="#{contract.validTo}"/>
+							</div>
+						</li>
+					</ui:fragment>
+
+				</ul>
+			</div>
+		</div>
+	</p:dataScroller>
+
+
+</ui:composition>

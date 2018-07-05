@@ -1,0 +1,16 @@
+В system-inf (используется как dependency) лежат сообщения валидации двух видов:
+- локализация сообщений для констрэйнтов, вводимых сторонними библиотеками;
+- сообщения для констрэйнтов, вводимых system-inf.
+
+Сообщения для констрэйнтов, вводимых другими нашими проектами, должны лежать в ресурсах вводящих проектов. Файлы должны
+называться ContributorValidationMessages_ru.properties (для русской локали).
+
+Используется механизм Hibernate Validator, позволяющий разделять бандлы:
+
+	This mechanism is also helpful when creating large multi-module applications: Instead of putting all the constraint
+	messages into one single bundle, you can have one resource bundle per module containing only those messages of that
+	module.
+
+© https://docs.jboss.org/hibernate/validator/5.2/reference/en-US/html/ch11.html#_constraint_definitions_via_literal_serviceloader_literal
+
+TASK-75601

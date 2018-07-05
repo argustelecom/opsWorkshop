@@ -1,0 +1,17 @@
+<langpack>
+	<str id="UserInputPanel.dir.nodirectory.message" txt="You must select a valid directory."/>
+    <str id="UserInputPanel.dir.nodirectory.caption" txt="No Directory Selected"/>
+    <str id="UserInputPanel.dir.notdirectory.message"
+         txt="The directory you have chosen either does not exist or is not valid."/>
+    <str id="UserInputPanel.dir.notdirectory.caption" txt="Invalid Directory"/>
+    <str id="ConsolePrompt.yesNo" txt="Yes/No"/>
+    <str id="ConsoleInstaller.continueQuitRedisplay" txt="Continue(1)/Quit(2)/Redisplay(3)"/>
+    <str id="ConsoleInstaller.inputSelection" txt="Select option"/>
+    <str id="data.validation.error.title" txt="Validation error" />
+    <str id="TargetPanel.info" txt="Select the folder install (path must not contain white spaces)"/>
+	<str id="SecurityWarningPanel.warning" txt="Warning"/>
+	<str id="SecurityWarningPanel.logfilecreation" txt="Log file of install process created"/>
+	<str id="SecurityWarningPanel.propertywarn" txt="In this file listed all property of application server installation."/>
+	<str id="SecurityWarningPanel.recomendation" txt="It is recommended to remove this file from application server folder for security reasons."/>
+	<str id="installer.Message" txt="Message"/>
+</langpack>

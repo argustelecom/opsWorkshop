@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+	<f:loadBundle basename="PersonnelBundle" var="personnelBundle"/>
+	
+	<div class="m-card m-shadow-effect simple-fb">
+		<div class="ui-dashboard-header">
+			<ui:insert name="fbHeader">
+				<i class="fa fa-male"/>
+				<h:outputText value="Клиент" styleClass="card-header"/>
+			</ui:insert>
+		</div>
+		
+		<div class="m-container50">
+		<ui:insert name="clientInfo">
+			<dl class="name-value width-110">
+				<dt>#{personnelBundle['box.personnel.name.last']}:  </dt>
+				<dd>
+					<p:link id="last_name" value="#{individualInfoFB.lastName}" href="http://ckhej0.axshare.com/#g=1&amp;p=карточка_фл" />
+				</dd>
+			
+				<dt>#{personnelBundle['box.personnel.name.first']}:  </dt>
+				<dd>
+					<h:outputText value="#{individualInfoFB.name}"/>
+				</dd>
+				
+				<dt>#{personnelBundle['box.personnel.name.second']}: </dt>
+				<dd>
+					<h:outputText value="#{individualInfoFB.middleName}"/>
+				</dd>
+			</dl>
+		</ui:insert>
+		</div>
+		
+		<div class="m-container50">
+			<dl class="name-value width-110">
+    			<dt>Статус: </dt>
+    			<dd>
+    				<h:outputText value="#{individualInfoFB.state}"/>
+    			</dd>
+				
+    			<dt>Тип лица: </dt>
+    			<dd>
+    				<h:outputText value="#{individualInfoFB.clientType}"/>
+    			</dd>
+				
+    			<dt>Сегмент: </dt>
+    			<dd>
+    				<h:outputText value="#{individualInfoFB.segment}"/>
+    			</dd>
+			</dl>
+		</div>
+	</div>				
+</ui:composition>

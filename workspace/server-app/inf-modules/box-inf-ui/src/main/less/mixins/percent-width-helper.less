@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+@class-prefix: width; /* Префикс класса ширин*/
+@class-postfix: percents; /* Постфикс класса ширин*/
+@class-count: 100;  /* Количество классов*/
+
+.generate-percent-width(@i: 1) when (@i =< @class-count) {
+  .@{class-prefix}-@{i}-@{class-postfix} {
+    width: @i * 1% !important;
+  }
+
+  .generate-percent-width(@i + 1);
+}
+
+.generate-percent-width();

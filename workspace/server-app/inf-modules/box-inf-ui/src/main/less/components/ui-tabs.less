@@ -1,0 +1,81 @@
+/* ui-tabs */
+
+.ui-tabs {
+	&.ui-tabs-top {
+
+		.ui-tabs-nav li a {
+			font-size: 14px;
+			text-decoration: none !important;
+		}
+
+		.ui-tabs-navscroller {
+
+			.ui-tabs-navscroller-btn {
+				height: 50px;
+				padding: 0px 1px;
+			}
+			.ui-tabs-navscroller-btn-left,
+			.ui-tabs-navscroller-btn-right {
+				border: none;
+			}
+			.ui-tabs-navscroller-btn-left{
+				border-bottom: 1px solid #e0e0e0;
+			}
+
+		}
+		.ui-tabs-panels {
+			&:after, &:before {
+				content: " ";
+				display: table;
+				height: 0;
+				clear: both;
+				visibility: hidden;
+			}
+		}
+	}
+	&.ui-tabs-left {
+		.ui-tabs-nav {
+				height: auto;
+
+			li {
+				&.ui-state-default{
+					border-right: solid 3px transparent !important;
+				}
+
+				&.ui-tabs-selected,
+				&.ui-tabs-active {
+					border-right: solid 3px #0288d1 !important;
+				}
+				&.ui-tabs-selected a,
+				&.ui-tabs-active a,
+				&.ui-state-hover a,
+				&.ui-state-default a {
+					padding: 10px !important;
+				}
+
+				a {
+					text-decoration: none !important;
+					font-size: 14px;
+				}
+			}
+		}
+	}
+
+	&.tabs-wide-area {
+		&.ui-tabs-left {
+			> .ui-tabs-nav{
+				width: 35%;
+				height: 600px;
+				overflow: hidden;
+				overflow-y: auto;
+			}
+
+			> .ui-tabs-panels {
+				width: 64%;
+				height: 600px;
+				overflow: hidden;
+				overflow-y: auto;
+			}
+		}
+	}
+}

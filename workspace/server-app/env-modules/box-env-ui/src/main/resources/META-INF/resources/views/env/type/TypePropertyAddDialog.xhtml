@@ -1,0 +1,487 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<h:form id="type_property_add_form">
+		<o:importConstants type="ru.argustelecom.box.env.type.model.TypePropertyRef" />
+		<o:importFunctions type="ru.argustelecom.box.env.type.TypeUtils"/>
+
+		<p:dialog id="type_property_edit_dlg" header="#{typeBundle['box.type.property.create_dialog']}" width="650"
+				widgetVar="typePropertyAddDlgVar" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+			<dl class="name-value width-120 m-mar-bot-0">
+				<dt>
+					<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="name" value="#{typePropertyAddDm.propertyDto.name}" required="true"
+								 label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="add_type" value="#{typeBundle['box.type.property.type']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="add_type" value="#{typePropertyAddDm.propertyDto.propertyType}"
+									 label="#{typeBundle['box.type.property.type']}"
+							required="true">
+						<p:ajax update="specific_params_block property_flags"/>
+
+						<f:selectItem value="#{null}" itemLabel=""/>
+						<f:selectItems value="#{typePropertyAddDm.supportedPropertyTypes}" var="pt" itemValue="#{pt}" itemLabel="#{pt.name}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<!--TODO отрисовать если это диалог редактирования-->
+				<ui:fragment rendered="false">
+					<dt>
+						<p:outputLabel for="type" value="#{typeBundle['box.type.property.type']}:"/>
+					</dt>
+					<dd>
+						<h:outputText id="type" value="#{typePropertyEditDm.property.type.name}"/>
+					</dd>
+				</ui:fragment>
+			</dl>
+
+			<p:outputPanel id="specific_params_block" styleClass="#{typePropertyAddDm.specificParamsBlockStyle}">
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.DATE_INTERVAL}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt class="width-120">
+							<p:outputLabel for="date_interval_pattern" value="#{typeBundle['box.type.property.pattern']}:"/>
+						</dt>
+						<dd>
+                            <p:inputText id="date_interval_pattern" value="#{typePropertyAddDm.propertyDto.datePattern}" required="true" styleClass="width-94-percents">
+                                <p:ajax event="blur" update="date_interval" />
+                                <f:validator validatorId="ru.argustelecom.box.inf.validator.type.DatePatternValidator"/>
+                            </p:inputText>
+							<h:outputText id="help_button_di" class="icon-help_outline tooltip-help tooltip-help-5 fs20 m-mar-left-5"
+										  title=""/>
+							<p:overlayPanel id="help_button_pannel_di" for="help_button_di" appendToBody="true"
+											showCloseIcon="true" my="right top" at="right bottom" dismissable="false">
+								<div class="m-pad10 m-shadow-effect">
+									<h:outputText value="#{typeBundle['box.type.date_property_tooltip']}" escape="false"/>
+								</div>
+							</p:overlayPanel>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="date_interval" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<boxenv:inputDateIntervalValue id="date_interval" value="#{typePropertyAddDm.propertyDto.dateIntervalDefaultValue}"
+														   pattern="#{typePropertyAddDm.propertyDto.datePattern}" disabled="#{typePropertyAddDm.propertyDto.datePattern eq null}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.DATE}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt class="width-120">
+							<p:outputLabel for="date_pattern" value="#{typeBundle['box.type.property.pattern']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="date_pattern" value="#{typePropertyAddDm.propertyDto.datePattern}"
+										 required="true" styleClass="width-94-percents">
+								<p:ajax event="blur" update="date" />
+                                <f:validator validatorId="ru.argustelecom.box.inf.validator.type.DatePatternValidator"/>
+							</p:inputText>
+							<h:outputText id="help_button_d" class="icon-help_outline tooltip-help tooltip-help-5 fs20 m-mar-left-5"
+										  title=""/>
+							<p:overlayPanel id="help_button_pannel_d" for="help_button_d" appendToBody="true"
+											showCloseIcon="true" my="right top" at="right bottom" dismissable="false">
+								<div class="m-pad10 m-shadow-effect">
+									<h:outputText value="#{typeBundle['box.type.date_property_tooltip']}" escape="false"/>
+								</div>
+							</p:overlayPanel>
+						</dd>
+						
+						<dt>
+							<p:outputLabel for="date" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:calendar id="date" value="#{typePropertyAddDm.propertyDto.dateDefaultValue}" pattern="#{typePropertyAddDm.propertyDto.datePattern}"
+										disabled="#{typePropertyAddDm.propertyDto.datePattern eq null}"
+										locale="#{languageBean.locale.language}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.LOGICAL}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt>
+							<p:outputLabel for="logical_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:selectBooleanCheckbox id="logical_value" value="#{typePropertyAddDm.propertyDto.logicalDefaultValue}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.LOOKUP}">
+					<dl class="name-value width-205 m-mar-bot-0">
+						<dt class="width-120">
+							<p:outputLabel for="lookup_category" value="#{overallBundle['box.overall.category']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="lookup_category" value="#{typePropertyAddDm.propertyDto.lookupCategory}"
+											 label="#{overallBundle['box.overall.category']}"
+											 forceSelection="true">
+									<p:ajax update="default_lookup_entry"/>
+
+									<f:selectItems value="#{selectItems.byDirectoryName('LookupCategory', true, false, null)}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt class="width-120">
+							<p:outputLabel for="default_lookup_entry" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="default_lookup_entry" value="#{typePropertyAddDm.propertyDto.lookupDefaultValue}"
+											 label="#{typeBundle['box.contact.type.category']}"
+											 forceSelection="true" required="true">
+
+									<f:selectItem itemValue="#{null}" itemLabel=""/>
+									<f:selectItems value="#{typePropertyAddDm.propertyDto.lookupCategory.getPossibleValues(entityManager)}"
+											var="lookupEntry" itemValue="#{lookupEntry}" itemLabel="#{lookupEntry.objectName}"/>
+							</p:selectOneMenu>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.MEASURED_INTERVAL}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt>
+							<p:outputLabel for="interval_measure" value="#{typeBundle['box.type.property.measure.interval']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="interval_measure" value="#{typePropertyAddDm.propertyDto.measure}" required="true"
+											 label="#{typeBundle['box.type.property.measure.interval']}:">
+								<p:ajax update="type_property_add_form-specific_params_block"/>
+								
+								<f:selectItem value="#{null}" itemLabel="" />
+								<f:selectItems value="#{typePropertyAddDm.possibleMeasureUnits}" var="m" itemLabel="#{m.name}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="default_measured_interval_value" value="#{typeBundle['box.type.property.default']}: "
+									rendered="#{typePropertyAddDm.propertyDto.measure ne null}"/>
+						</dt>
+						<dd>
+							<boxenv:inputMeasuredIntervalValue  id="default_measured_interval_value"
+									value="#{typePropertyAddDm.propertyDto.defaultMeasuredIntervalValue}"
+									defaultMeasure="#{typePropertyAddDm.propertyDto.measure}"
+									rendered="#{typePropertyAddDm.propertyDto.measure ne null}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.MEASURED}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt>
+							<p:outputLabel for="measure" value="#{typeBundle['box.type.property.measure']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="measure" value="#{typePropertyAddDm.propertyDto.measure}"
+											 required="true" label="#{typeBundle['box.type.property.measure']}:">
+								<p:ajax update="type_property_add_form-specific_params_block" />
+							
+								<f:selectItem value="#{null}" itemLabel="" />
+								<f:selectItems value="#{typePropertyAddDm.possibleMeasureUnits}" var="m" itemLabel="#{m.name}" />
+							</p:selectOneMenu>
+						</dd>
+						<ui:fragment rendered="#{typePropertyAddDm.propertyDto.measure ne null}">
+							<dt>
+								<p:outputLabel for="default_measured_value" value="#{typeBundle['box.type.property.default']}:"/>
+							</dt>
+							<dd>
+								<boxenv:inputMeasuredValue  id="default_measured_value" value="#{typePropertyAddDm.propertyDto.defaultMeasuredValue}"
+										defaultMeasure="#{typePropertyAddDm.propertyDto.measure}"/>
+							</dd>
+						</ui:fragment>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.DOUBLE}">
+					<dl class="name-value width-200 m-mar-bot-0">
+
+						<ui:fragment rendered="#{TypeUtils:supportUniqueProperty(currentType.value['class'])}">
+							<dt>
+								<p:outputLabel for="double_unique" value="#{typeBundle['box.type.unique']}: " />
+							</dt>
+							<dd>
+								<p:selectBooleanCheckbox id="double_unique" value="#{typePropertyAddDm.propertyDto.unique}">
+									<f:ajax render="double_value"/>
+								</p:selectBooleanCheckbox>
+							</dd>
+						</ui:fragment>
+
+						<dt>
+							<p:outputLabel for="double_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="double_value" value="#{typePropertyAddDm.propertyDto.numberDefaultValue}" disabled="#{typePropertyAddDm.propertyDto.unique}">
+                                <f:validator validatorId="ru.argustelecom.box.inf.validator.type.RangeAndScaleValidator"/>
+                                <f:attribute name="minimum" value="#{typePropertyAddDm.propertyDto.numberMinValue}"/>
+                                <f:attribute name="maximum" value="#{typePropertyAddDm.propertyDto.numberMaxValue}"/>
+								<f:converter converterId="ru.argustelecom.box.inf.converter.DynamicDoubleNumberConverter"/>
+                            </p:inputText>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="double_min_value" value="#{typeBundle['box.type.property.min']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="double_min_value" value="#{typePropertyAddDm.propertyDto.numberMinValue}">
+                                <f:ajax event="blur" update="double_value double_max_value"/>
+								<f:converter converterId="ru.argustelecom.box.inf.converter.DynamicDoubleNumberConverter"/>
+                            </p:inputText>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="double_max_value" value="#{typeBundle['box.type.property.max']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="double_max_value" value="#{typePropertyAddDm.propertyDto.numberMaxValue}">
+                                <f:ajax event="blur" update="double_min_value double_value"/>
+                                <f:validator validatorId="ru.argustelecom.box.inf.validator.type.RangeAndScaleValidator"/>
+                                <f:attribute name="minimum" value="#{typePropertyAddDm.propertyDto.numberMinValue}"/>
+								<f:converter converterId="ru.argustelecom.box.inf.converter.DynamicDoubleNumberConverter"/>
+                            </p:inputText>
+						</dd>
+
+						<dt class="width-120">
+							<p:outputLabel for="precision" value="#{typeBundle['box.type.property.scale']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="precision" value="#{typePropertyAddDm.propertyDto.numberPrecision}"
+										 styleClass="width-94-percents">
+								<f:validateLongRange minimum="1" maximum="9"/>
+							</p:inputText>
+							<h:outputText id="help_button_p" class="icon-help_outline tooltip-help tooltip-help-5 fs20 m-mar-left-5"
+										  title=""/>
+							<p:overlayPanel id="help_button_pannel_p" for="help_button_p" appendToBody="true"
+											showCloseIcon="true" my="right top" at="right bottom" dismissable="false">
+								<div class="m-pad10 m-shadow-effect">
+									<h:outputText value="#{typeBundle['box.type.number_property_tooltip']}" escape="false"/>
+								</div>
+							</p:overlayPanel>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.LONG}">
+					<dl class="name-value width-200 m-mar-bot-0">
+
+						<ui:fragment rendered="#{TypeUtils:supportUniqueProperty(currentType.value['class'])()}">
+							<dt>
+								<p:outputLabel for="long_unique" value="#{typeBundle['box.type.unique']}: " />
+							</dt>
+							<dd>
+								<p:selectBooleanCheckbox id="long_unique" value="#{typePropertyAddDm.propertyDto.unique}">
+									<f:ajax render="long_value"/>
+								</p:selectBooleanCheckbox>
+							</dd>
+						</ui:fragment>
+
+						<dt>
+							<p:outputLabel for="long_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="long_value" value="#{typePropertyAddDm.propertyDto.numberDefaultValue}"
+										 disabled="#{typePropertyAddDm.propertyDto.unique}" 
+										 converterMessage="#{typeBundle['box.type.property.number.conv_msg']}">
+								<f:validator validatorId="ru.argustelecom.box.env.type.DynamicLongRangeValidator"/>
+								<f:attribute name="minimum" value="#{typePropertyAddDm.propertyDto.numberMinValue}"/>
+								<f:attribute name="maximum" value="#{typePropertyAddDm.propertyDto.numberMaxValue}"/>
+								<f:converter converterId="javax.faces.Long"/>
+							</p:inputText>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="long_min_value" value="#{typeBundle['box.type.property.min']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="long_min_value" value="#{typePropertyAddDm.propertyDto.numberMinValue}" 
+										 converterMessage="#{typeBundle['box.type.property.number.conv_msg']}">
+								<f:ajax event="blur" update="long_value long_max_value"/>
+								<f:validator validatorId="ru.argustelecom.box.env.type.DynamicLongRangeValidator"/>
+								<f:converter converterId="javax.faces.Long"/>
+							</p:inputText>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="long_max_value" value="#{typeBundle['box.type.property.max']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="long_max_value" value="#{typePropertyAddDm.propertyDto.numberMaxValue}" 
+										 converterMessage="#{typeBundle['box.type.property.number.conv_msg']}">
+								<f:ajax event="blur" update="long_min_value long_value"/>
+								<f:validator validatorId="ru.argustelecom.box.env.type.DynamicLongRangeValidator"/>
+								<f:attribute name="minimum" value="#{typePropertyAddDm.propertyDto.numberMinValue}"/>
+								<f:converter converterId="javax.faces.Long"/>
+							</p:inputText>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.TEXT}">
+					<dl class="name-value width-200 m-mar-bot-0">
+
+						<ui:fragment rendered="#{TypeUtils:supportUniqueProperty(currentType.value['class'])}">
+							<dt>
+								<p:outputLabel for="text_unique" value="#{typeBundle['box.type.unique']}: " />
+							</dt>
+							<dd>
+								<p:selectBooleanCheckbox id="text_unique" value="#{typePropertyAddDm.propertyDto.unique}">
+									<f:ajax render="text_pattern"/>
+								</p:selectBooleanCheckbox>
+							</dd>
+						</ui:fragment>
+
+						<dt class="width-120">
+							<p:outputLabel for="text_pattern" value="#{typeBundle['box.type.property.pattern']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="text_pattern" value="#{typePropertyAddDm.propertyDto.textPattern}" styleClass="width-94-percents" 
+										 disabled="#{typePropertyAddDm.propertyDto.unique}"/>
+							<h:outputText id="help_button_t" class="icon-help_outline tooltip-help tooltip-help-5 fs20 m-mar-left-5"
+										  title=""/>
+							<p:overlayPanel id="help_button_pannel_t" for="help_button_t" appendToBody="true"
+											showCloseIcon="true" my="right top" at="right bottom" dismissable="false">
+								<div class="m-pad10 m-shadow-effect">
+									<h:outputText value="#{typeBundle['box.type.text_property_tooltip']}" escape="false"/>
+								</div>
+							</p:overlayPanel>
+						</dd>
+
+
+						<dt>
+							<p:outputLabel for="text_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="text_value" value="#{typePropertyAddDm.propertyDto.defaultValueText}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<!-- Текстовый массив-->
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.TEXT_ARRAY}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt class="width-120">
+							<p:outputLabel for="text_array_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<boxenv:inputTextArray id="text_array_value" styleClass="width-97-percents"
+												   value="#{typePropertyAddDm.propertyDto.defaultValueTextArray}"/>
+						</dd>
+					</dl>
+				</ui:fragment>
+
+				<!-- Массив LookupEntry -->
+				<ui:fragment rendered="#{typePropertyAddDm.propertyDto.propertyType eq TypePropertyRef.LOOKUP_ARRAY}">
+					<dl class="name-value width-200 m-mar-bot-0">
+						<dt class="width-120">
+							<p:outputLabel for="lookup_array_category" value="#{overallBundle['box.overall.category']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="lookup_array_category" value="#{typePropertyAddDm.propertyDto.lookupCategory}"
+											 label="#{overallBundle['box.overall.category']}"
+											 forceSelection="true">
+								<p:ajax update="type_property_add_form-default_lookup_array_value-default_lookup_array_value"/>
+
+								<f:selectItems value="#{selectItems.byDirectoryName('LookupCategory', true, false, null)}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt class="width-120">
+							<p:outputLabel for="default_lookup_array_value" value="#{typeBundle['box.type.property.default']}:"/>
+						</dt>
+						<dd>
+							<boxenv:inputLookupArray id="default_lookup_array_value"
+													 value="#{typePropertyAddDm.propertyDto.defaultValueLookupArray}"
+													 items="#{typePropertyAddDm.propertyDto.lookupCategory.getPossibleValues(entityManager)}"/>
+						</dd>
+						<!--</p:panelGrid>-->
+					</dl>
+				</ui:fragment>
+			</p:outputPanel>
+
+			<dl class="name-value width-120">
+				<dt>
+					<p:outputLabel for="keyword" value="#{overallBundle['box.overall.keyword']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="keyword" value="#{typePropertyAddDm.propertyDto.keyword}"
+								 label="#{overallBundle['box.overall.keyword']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="hint" value="#{typeBundle['box.type.property.hint']}:"/>
+				</dt>
+				<dd class="m-pad-bot5">
+					<p:inputText id="hint" value="#{typePropertyAddDm.propertyDto.hint}" label="#{typeBundle['box.type.property.hint']}"/>
+				</dd>
+			</dl>
+
+			<dl class="name-value width-155">
+				<dt>
+					<p:outputLabel for="group" value="#{overallBundle['box.overall.group']}:"/>
+				</dt>
+				<dd>
+					<h:outputText id="group" styleClass="text-redonly"
+								  value="#{typePropertyAddDm.propertyDto.group eq null ? typeBundle['box.type.default_group_name'] : typePropertyAddDm.propertyDto.group.name}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="ordinal_number" value="#{typeBundle['box.type.order']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="ordinal_number" value="#{typePropertyAddDm.propertyDto.ordinalNumber}"
+								 label="#{typeBundle['box.type.order']}">
+						<f:validator validatorId="ru.argustelecom.box.env.type.DynamicLongRangeValidator"/>
+						<f:attribute name="minimum" value="1"/>
+						<f:attribute name="maximum" value="#{typePropertyAddDm.propertyDto.maxOrdinalNumber + 1}"/>
+					</p:inputText>
+				</dd>
+			</dl>
+
+			<p:outputPanel id="property_flags">
+				<dl class="name-value width-160">
+					<dt>
+						<p:outputLabel for="required" value="#{typeBundle['box.type.property.required']}:"/>
+					</dt>
+					<dd>
+						<p:selectBooleanCheckbox id="required" value="#{typePropertyAddDm.propertyDto.required}"/>
+					</dd>
+					<ui:fragment rendered="#{TypeUtils:supportFiltering(currentType.value['class'], typePropertyAddDm.propertyDto.propertyType)}">
+						<dt>
+							<p:outputLabel for="filtered" value="#{typeBundle['box.type.property.filtered']}:"/>
+						</dt>
+						<dd>
+							<p:selectBooleanCheckbox id="filtered" value="#{typePropertyAddDm.propertyDto.filtered}"/>
+						</dd>
+					</ui:fragment>
+				</dl>
+			</p:outputPanel>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+						styleClass="m-blue-text-button"
+                        update="type_property_edit_dlg date_interval_pattern date_interval date_pattern date
+                        logical_value lookup_category default_lookup_entry interval_measure default_measured_interval_value
+                        measure default_measured_value long_value double_value long_min_value long_max_value double_min_value double_min_value
+                        precision text_pattern text_value keyword hint type_property_add_form" process="@this"
+						action="#{typePropertyAddDm.clear()}" resetValues="true" onclick="PF('typePropertyAddDlgVar').hide()"/>
+				<p:commandButton id="type_property_edit_button" value="#{overallBundle['box.overall.add']}"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('typePropertyAddDlgVar').hide()}"
+						action="#{typePropertyAddDm.addProperty()}" update="#{updatedElements} date_interval_pattern
+                        logical_value lookup_category default_lookup_entry interval_measure default_measured_interval_value
+                        measure default_measured_value long_value double_value long_min_value long_max_value double_min_value double_min_value
+                        date_interval date_pattern date precision text_pattern text_value keyword hint type_property_add_form"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>	
+			

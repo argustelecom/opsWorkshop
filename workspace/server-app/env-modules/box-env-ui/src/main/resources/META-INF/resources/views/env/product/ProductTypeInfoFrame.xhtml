@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:box-env="http://argustelecom.ru/box/env">
+
+	<ui:fragment rendered="#{compositeProductType}">
+		<p:dataTable value="#{type.compositeParts}" var="partType" styleClass="contact-info">
+			<p:column>
+				<h:outputText value="#{partType.name}"/>
+			</p:column>
+		</p:dataTable>
+	</ui:fragment>
+
+	<ui:fragment rendered="#{!compositeProductType}">
+		<p:dataTable value="#{type.entries}" var="typeEntry" styleClass="contact-info">
+			<p:column styleClass="width-30-percents">
+				<h:outputText value="#{typeEntry.type.name}"/>
+			</p:column>
+
+			<p:column styleClass="width-70-percents">
+				<dl class="name-value width-200">
+					<ui:include src="/views/env/type/GroupTypePropertyValueFrame.xhtml">
+						<ui:param name="instance" value="#{typeEntry}"/>
+						<ui:param name="readonly" value="true"/>
+						<ui:param name="editableSection" value="true"/>
+					</ui:include>
+
+					<!--TODO: пока использовал новый фрейм с группировкой, если он не подходит, то надо поправить-->
+					<!--<ui:repeat value="#{typePropertyValuePm.getAccessors(typeEntry)}" var="accessor">-->
+						<!--<dt style="overflow-wrap: break-word;">-->
+							<!--<h:outputText value="#{accessor.property.name}  :"/>-->
+						<!--</dt>-->
+						<!--<dd>-->
+							<!--<h:outputText value="#{accessor.asString}"/>-->
+						<!--</dd>-->
+					<!--</ui:repeat>-->
+				</dl>
+			</p:column>
+		</p:dataTable>
+	</ui:fragment>
+
+</ui:composition>

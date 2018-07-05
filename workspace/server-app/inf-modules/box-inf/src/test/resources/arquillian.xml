@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+	<!-- kostd: arq doesn`t give a shit for UTF-8 encoding. Do not use cyrillic symbols in this file -->
+	<!-- n.vasilishin: TASK-41616. Now there is only one arquillian.xml. Other modules (e.g. support-service) copy it using 
+		maven-resources-plugin. -->
+	<!-- https://community.jboss.org/message/623963?_sscc=t -->
+	<!-- http://docs.jboss.org/arquillian/api/1.0.3.Final/org/jboss/arquillian/container/test/api/ContainerController.html -->
+	<defaultProtocol type="Servlet 3.0" />
+
+	<engine>
+		<!-- here will be placed the test deployment created by @Deployment method of tests -->
+		<property name="deploymentExportPath">target/arquillian</property>
+	</engine>
+
+	<!-- #TODO: container attribute mode="manual" need to manual server start-stop in test class -->
+	<container qualifier="wildfly-managed">
+		<configuration>
+			<property name="jbossHome">${UNIT_TEST_SERVER_PATH}</property>
+			<property name="javaVmArguments">-Xms2048m -Xmx4096m -Xverify:none -XX:+UseFastAccessorMethods</property>
+			<property name="outputToConsole">true</property>
+			<property name="startupTimeoutInSeconds">300</property>
+			<property name="managementAddress">${MANAGEMENT_ADDRESS}</property>
+			<property name="managementPort">${MANAGEMENT_PORT}</property>
+			<property name="allowConnectingToRunningServer">true</property>
+		</configuration>
+	</container>
+
+	<container qualifier="wildfly-remote" default="true">
+		<configuration>
+			<property name="managementAddress">${MANAGEMENT_ADDRESS:127.0.0.1}</property>
+			<property name="managementPort">${MANAGEMENT_PORT:9990}</property>
+			<property name="allowConnectingToRunningServer">true</property>
+
+			<!-- should define username and password if u use managementAddress different from 127.0.0.1 -->
+
+			<!-- %wildfly-home%/bin/add-user.bat -> Management User -->
+			<!-- <property name="username">developer</property> -->
+			<!-- <property name="password">developer</property> -->
+		</configuration>
+	</container>
+
+	<!-- https://community.jboss.org/message/830965?tstart=0 -->
+	<extension qualifier="transaction">
+		<property name="manager">java:jboss/UserTransaction</property>
+	</extension>
+
+	<extension qualifier="webdriver">
+		<property name="browser">chrome</property>
+		<!-- s.golovanov: our official target resolution -->
+		<property name="dimensions">1280x1024</property>
+	</extension>
+
+	<extension qualifier="graphene">
+		<property name="url">http://${MANAGEMENT_ADDRESS:127.0.0.1}:${APP_PORT:8080}/${CONTEXT_ROOT:box}/</property>
+		<!-- большие значения таймаутов, чтобы меньше false positives, когда билд-агент или БД задумались -->
+		<property name="waitAjaxInterval">30</property>
+		<property name="waitGuiInterval">10</property>
+		<property name="waitModelInterval">120</property>
+		<!-- s.golovanov: can`t make custom strategy the default: https://issues.jboss.org/browse/ARQGRA-357 -->
+		<!--property name="defaultElementLocatingStrategy"></property -->
+	</extension>
+
+	<!-- TASK-86080 Описание graphene скриншотера-->
+	<extension qualifier="screenshooter">
+		<property name="rootDir">target/uitest-fails-photo</property>
+		<!-- Когда тест фэйлится автоматически скриншот делается не в тот момент.
+		Поэтому отключаем и будем снимать сами в правильный момент -->
+		<property name="takeWhenTestFailed">false</property>
+	</extension>
+
+</arquillian>

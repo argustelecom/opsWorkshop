@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:form id="group_type_property_form">
+        <p:dialog id="group_type_property_edit_dlg"
+                  header="#{typePropertyGroupEditDm.editMode ? typeBundle['box.type.group_edit_header'] : typeBundle['box.type.group_create_header']}"
+                  widgetVar="groupTypePropertyEditDlgVar" resizable="false" width="650"
+                  modal="true" closable="false" styleClass="icon-creation">
+
+            <dl class="name-value width-140">
+                <dt>
+                    <p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="name" value="#{typePropertyGroupEditDm.groupDto.name}" required="true"
+                                 label="#{overallBundle['box.overall.name']}"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="ordinal_number" value="#{typeBundle['box.type.order']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="ordinal_number" value="#{typePropertyGroupEditDm.groupDto.ordinalNumber}"
+                                 required="#{typePropertyGroupEditDm.editMode}"
+                                 label="#{typeBundle['box.type.order']}">
+                        <f:validator validatorId="ru.argustelecom.box.env.type.DynamicLongRangeValidator"/>
+                        <f:attribute name="minimum" value="1"/>
+                        <f:attribute name="maximum" value="#{typePropertyGroupEditDm.editMode ? typePropertyGroupEditDm.wrapper.maxOrdinalNumber : typePropertyGroupEditDm.groupDto.maxOrdinalNumber + 1}"/>
+                    </p:inputText>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                        update="group_type_property_edit_dlg group_type_property_form" process="@this"
+                        action="#{typePropertyGroupEditDm.clear()}" styleClass="m-blue-text-button"
+                        oncomplete="PF('groupTypePropertyEditDlgVar').hide()"/>
+                <p:commandButton id="type_property_edit_button" resetValues="true"
+                                 value="#{typePropertyGroupEditDm.editMode ? overallBundle['box.overall.save'] : overallBundle['box.overall.add']}"
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('groupTypePropertyEditDlgVar').hide()}"
+                        action="#{typePropertyGroupEditDm.onAction()}"
+                        update="group_type_property_edit_dlg #{updatedElements}"/>
+            </div>
+        </p:dialog>
+    </h:form>
+</ui:composition>

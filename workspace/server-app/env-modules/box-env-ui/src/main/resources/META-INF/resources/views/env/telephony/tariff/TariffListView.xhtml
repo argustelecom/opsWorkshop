@@ -1,0 +1,54 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<ui:param name="viewModel" value="#{tariffListVm}"/>
+	<ui:param name="pageTitle" value="#{tariffBundle['box.telephony.tariff.tariffs']}"/>
+	<ui:param name="resultFormId" value="tariff_search_result_form"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+		<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="mode" value="#{tariffListVs.mode}" required="false"/>
+			<f:viewParam name="name" value="#{tariffListVs.name}" required="false"/>
+			<f:viewParam name="validFrom" value="#{tariffListVs.validFrom}" required="false">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+			</f:viewParam>
+			<f:viewParam name="validTo" value="#{tariffListVs.validTo}" required="false">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"/>
+			</f:viewParam>
+			<f:viewParam name="state" value="#{tariffListVs.state}"/>
+			<f:viewParam name="customerType" value="#{tariffListVs.customerType}"/>
+			<f:viewParam name="customer" value="#{tariffListVs.customer}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{tariffBundle['box.telephony.tariff.tariffs']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="TariffListFrame.xhtml">
+			<ui:param name="viewState" value="#{tariffListVs}"/>
+			<ui:param name="lazyDm" value="#{tariffListVm.lazyDm}"/>
+			<ui:param name="page" value="TariffListView.xhtml"/>
+			<ui:param name="filterFormId" value="tariff_search_form"/>
+			<ui:param name="resultFormId" value="#{resultFormId}"/>
+			<ui:param name="update" value="#{filterFormId}"/>
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="TariffCreationDialog.xhtml">
+			<ui:param name="update" value="#{resultFormId}-tariff_creation_modes"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

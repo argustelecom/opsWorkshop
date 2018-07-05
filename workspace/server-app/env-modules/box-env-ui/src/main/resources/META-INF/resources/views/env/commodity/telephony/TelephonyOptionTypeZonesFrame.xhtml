@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="telephonyZoneBundle" basename="TelephonyZoneBundle"/>
+
+    <f:event listener="#{telephonyOptionTypeZonesFm.preRender(nodeDto)}" type="preRenderComponent"/>
+
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect simple-fb">
+                <h:form id="telephony_option_type_zones_form" styleClass="type-content">
+
+                    <script>
+                        $( document ).ready(function() {
+                            Argus.System.AutoHeight.compute('telephony_option_type_zones_form', 40);
+                        });
+                    </script>
+
+                    <div class="ui-dashboard-header">
+                        <i class="icon-phone_forwarded"/>
+                        <h:outputText styleClass="card-header" value="#{telephonyZoneBundle['box.telephony.zone.title']}"/>
+
+                        <p:outputPanel id="property_managed_buttons" styleClass="m-fright property-panel">
+                            <p:commandLink action="#{editTelephonyOptionTypeZonesDm.openDialog()}"
+                                           title="#{telephonyZoneBundle['box.telephony.zone.telephony_option_type_edit_dialog_title']}">
+                                <i class="fa fa-edit icon-btn"/>
+
+                                <f:setPropertyActionListener value="#{telephonyOptionTypeZonesFm.callbackAfterChanged}" target="#{editTelephonyOptionTypeZonesDm.callbackAfterChanged}"/>
+                                <f:setPropertyActionListener value="#{commodityTypeDirectoryVs.nodeDto}" target="#{editTelephonyOptionTypeZonesDm.nodeDto}"/>
+                            </p:commandLink>
+                        </p:outputPanel>
+                    </div>
+
+                    <p:dataList value="#{telephonyOptionTypeZonesFm.zones}" var="zone" styleClass="no-bg-and-borders"
+                                emptyMessage="#{overallBundle['box.overall.empty']}">
+                        <h:outputText value="#{zone.objectName}"/>
+                    </p:dataList>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

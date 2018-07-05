@@ -1,0 +1,104 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{customerSegmentDirectoryViewModel}" />
+	<ui:param name="pageTitle" value="#{segmentBundle['box.segment.customer.plural']}" />
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css" />
+		<f:loadBundle var="segmentBundle" basename="SegmentBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}"
+			url="/views/env/directory/DirectoryDashboardView.xhtml" />
+		<p:menuitem value="#{segmentBundle['box.segment.customer.plural']}" />
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect simple-fb">
+					<h:form id="customer_segments_form">
+
+						<script>
+							$( document ).ready(function() {
+								Argus.System.AutoHeight.compute('customer_segments_form', 40);
+							});
+						</script>
+
+						<div class="ui-dashboard-header">
+							<i class="icon-center_focus_weak" />
+							<h:outputText value="#{segmentBundle['box.segment.customer.plural']}" styleClass="card-header"/>
+
+							<p:outputPanel id="managed_buttons" styleClass="m-fright">
+								<p:commandLink styleClass="m-mar-left10" title="#{overallBundle['box.overall.add']}" oncomplete="PF('customerSegmentCreationDlgVar').show()"
+											   update="customer_segment_edit_dlg_form"
+											   disabled="#{!p:ifGranted('System_CustomerSegmentsEdit')}">
+												<i class="fa fa-edit icon-btn"/>
+												<f:setPropertyActionListener value="#{customerSegmentDirectoryViewModel.callback}"
+																			 target="#{customerSegmentCreationDlg.callback}" />
+												<f:setPropertyActionListener value="#{null}" target="#{customerSegmentCreationDlg.segment}" />
+								</p:commandLink>
+								<p:commandLink  id="remove_button" styleClass="m-mar-left10" title="#{overallBundle['box.overall.delete']}"
+												update="customer_segments_table" action="#{customerSegmentDirectoryViewModel.removeSelectedSegments()}"
+												disabled="#{!p:ifGranted('System_CustomerSegmentsEdit') or customerSegmentDirectoryViewModel.selectedSegments == null or empty customerSegmentDirectoryViewModel.selectedSegments}">
+												<i class="fa fa-trash icon-btn"/>
+												<p:confirm header="#{segmentBundle['box.segment.delete_dialog']}"
+														   message="#{segmentBundle['box.segment.delete_dialog.details']}" />
+								</p:commandLink>
+							</p:outputPanel>
+						</div>
+						<p:dataTable id="customer_segments_table" value="#{customerSegmentDirectoryViewModel.customerSegments}"
+							var="segment" selection="#{customerSegmentDirectoryViewModel.selectedSegments}" rowKey="#{segment.id}"
+							scrollable="true" scrollHeight="90%">
+
+							<p:ajax event="rowSelectCheckbox" update="customer_segments_form-remove_button" />
+							<p:ajax event="rowUnselectCheckbox" update="customer_segments_form-remove_button" />
+							<p:ajax event="rowSelect" update="customer_segments_form-remove_button" />
+							<p:ajax event="rowUnselect" update="customer_segments_form-remove_button" />
+							<p:ajax event="toggleSelect" update="customer_segments_form-remove_button" />
+
+							<p:column selectionMode="multiple" styleClass="width-16" />
+
+							<p:column headerText="#{segmentBundle['box.segment.customer.type']}" styleClass="width-300">
+								<h:outputText value="#{segment.customerType.objectName}" />
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.name']}" styleClass="width-200">
+								<h:outputText value="#{segment.objectName}" />
+							</p:column>
+
+							<p:column headerText="#{overallBundle['box.overall.desc']}">
+								<h:outputText value="#{segment.description}" />
+							</p:column>
+
+							<p:column styleClass="width-20" rendered="#{p:ifGranted('System_CustomerSegmentsEdit')}">
+								<p:commandLink oncomplete="PF('customerSegmentCreationDlgVar').show()"
+												update="customer_segment_edit_dlg_form">
+												<i class="icon-create fs20 m-bold-gray"/>
+												<f:setPropertyActionListener value="#{customerSegmentDirectoryViewModel.callback}"
+													target="#{customerSegmentCreationDlg.callback}" />
+												<f:setPropertyActionListener value="#{segment}" target="#{customerSegmentCreationDlg.segment}" />
+								</p:commandLink>
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="CustomerSegmentCreationDialog.xhtml">
+			<ui:param name="update" value="customer_segments_form" />
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

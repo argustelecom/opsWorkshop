@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena"
+                xmlns:f="http://java.sun.com/jsf/core" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle basename="SaldoExportBundle" var="saldoExportBundle"/>
+
+    <div class="m-container-indent">
+        <div class="m-card m-shadow-effect simple-fb">
+            <h:form id="operation_history_form">
+
+                <div class="ui-dashboard-header">
+                    <i class="icon-youtube_searched_for" />
+                    <h:outputText styleClass="card-header" value="#{saldoExportBundle['box.saldo.export.history.operation']}" />
+                    <h:outputText  id="settingsttp" class="icon-help_outline tooltip-help-15" position="top"
+                                   title="#{saldoExportBundle['box.saldo.export.history.operation.hint']}"/>
+                    <p:tooltip id="saldo_sett_ttp" for="settingsttp" />
+                    <p:outputPanel id="manage_buttons_panel" styleClass="m-fright">
+						<p:commandLink title="#{saldoExportBundle['box.saldo.export.history.operation.retry.hint']}" process="@this"
+                                       rendered="#{p:ifGranted('Billing_SaldoExportEdit') and saldoExportOperationHistoryFM.canReexport()}"
+                                       action="#{saldoExportOperationHistoryFM.restartExport()}" update="operation_history_form-manage_buttons_panel">
+							<i class="icon-sync icon-btn"/>
+						</p:commandLink>
+						<!--<p:commandLink  styleClass="m-mar-left10" title="Отменить обработку" process="@this" rendered="#{p:ifGranted('Billing_SaldoExportEdit')}">-->
+							<!--<i class="icon-highlight_remove icon-btn"/>-->
+						<!--</p:commandLink>-->
+                    </p:outputPanel>
+                </div>
+                <p:outputPanel id="operation_history_panel">
+                    <p:dataTable id="operation_history_table" value="#{saldoExportOperationHistoryFM.issue.events}" var="event"
+                                 styleClass="paginator-top-hidden" rows="5" paginator="true" rowsPerPageTemplate="5,10,15"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 emptyMessage="#{saldoExportBundle['box.saldo.export.history.operation.empty']}" currentPageReportTemplate="{startRecord} - {endRecord} из {totalRecords}">
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.date']}" styleClass="width-200">
+                            <h:outputText value="#{event.executedDate}">
+                                <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.history.operation.event']}" styleClass="width-200">
+                            <h:outputText value="#{saldoExportBundle[event.type.property]}"/>
+                        </p:column>
+
+                        <p:column headerText="#{saldoExportBundle['box.saldo.export.history.operation.result']}" styleClass="width-200">
+                            <h:outputText value="#{saldoExportBundle[event.state.property]}"/>
+                        </p:column>
+
+                        <p:column headerText="#{overallBundle['box.overall.desc']}">
+                            <h:outputText value="#{event.description}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+            </h:form>
+        </div>
+    </div>
+
+</ui:composition>

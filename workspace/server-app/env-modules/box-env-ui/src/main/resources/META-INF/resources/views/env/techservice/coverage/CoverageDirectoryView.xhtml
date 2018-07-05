@@ -1,0 +1,108 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena">
+
+    <ui:param name="viewModel" value="#{coverageDirectoryVM}"/>
+    <ui:param name="pageTitle" value="#{coverageBundle['box.coverage']}"/>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css" />
+        <h:outputStylesheet name="inf/styles/box-functional-block.css" />
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <f:loadBundle basename="OverallBundle" var="overallBundle"/>
+        <f:loadBundle basename="CoverageBundle" var="coverageBundle"/>
+
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+        <p:menuitem value="#{coverageBundle['box.coverage']}"/>
+    </ui:define>
+
+    <ui:define name="body">
+        <div class="m-container100">
+            <div class="m-container-indent">
+                <div class="m-card m-shadow-effect simple-fb">
+
+                    <h:form id="coverage_form">
+
+                        <script>
+                            $( document ).ready(function() {
+                                Argus.System.AutoHeight.compute('coverage_form', 40);
+                            });
+                        </script>
+
+                        <div class="ui-dashboard-header">
+                            <i class="icon-my_location" />
+                            <h:outputText value="#{coverageBundle['box.coverage']}" styleClass="card-header"/>
+
+                            <p:outputPanel id="managed_buttons" styleClass="m-fright">
+                                <p:commandLink styleClass="m-mar-left10"
+                                               title="#{overallBundle['box.overall.add']}" update="coverage_edit_form" oncomplete="PF('coverageEditDlgVar').show()"
+                                               disabled="#{!p:ifGranted('System_CoverageEdit')}">
+                                               <i class="fa fa-edit icon-btn"/>
+                                               <f:setPropertyActionListener value="#{coverageDirectoryVM.coverageCallback}"
+                                                                             target="#{coverageEditDlgM.coverageCallback}"/>
+                                </p:commandLink>
+                                <p:commandLink styleClass="m-mar-left10" update="coverages_table"
+                                               title="#{overallBundle['box.overall.delete']}"
+                                               action="#{coverageDirectoryVM.remove()}"
+                                               disabled="#{!p:ifGranted('System_CoverageEdit') or coverageDirectoryVM.selectedCoverages eq null or empty coverageDirectoryVM.selectedCoverages}">
+                                               <i class="fa fa-trash icon-btn"/>
+                                               <p:confirm header="#{coverageBundle['box.coverage.delete_dialog']}"
+                                                          message="#{coverageBundle['box.coverage.delete_dialog.details']}"/>
+                                </p:commandLink>
+                            </p:outputPanel>
+                        </div>
+
+                        <p:dataTable id="coverages_table" rowKey="#{coverage.id}" value="#{coverageDirectoryVM.coverages}"
+                                     var="coverage" selection="#{coverageDirectoryVM.selectedCoverages}" scrollable="true"
+                                     scrollHeight="90%" emptyMessage="#{overallBundle['box.overall.empty']}">
+
+                            <p:ajax event="rowSelectCheckbox" update="coverage_form-managed_buttons"/>
+                            <p:ajax event="rowUnselectCheckbox" update="coverage_form-managed_buttons"/>
+                            <p:ajax event="rowSelect" update="coverage_form-managed_buttons"/>
+                            <p:ajax event="rowUnselect" update="coverage_form-managed_buttons"/>
+                            <p:ajax event="toggleSelect" update="coverage_form-managed_buttons"/>
+
+                            <p:column selectionMode="multiple" styleClass="width-16"/>
+
+                            <p:column headerText="#{coverageBundle['box.coverage.address']}" width="30%">
+                                <h:outputText value="#{coverage.building.fullName}"/>
+                            </p:column>
+
+                            <p:column headerText="#{overallBundle['box.overall.state']}" width="20%">
+                                <h:outputText value="#{coverage.state.objectName}" style="color: #{coverage.state.color}"/>
+                            </p:column>
+
+                            <p:column headerText="#{overallBundle['box.overall.desc']}" width="40%">
+                                <h:outputText value="#{coverage.note}"/>
+                            </p:column>
+
+                            <p:column styleClass="width-20" rendered="#{p:ifGranted('System_CoverageEdit')}">
+                                <p:commandLink update="coverage_edit_form" oncomplete="PF('coverageEditDlgVar').show()"
+                                               title="#{overallBundle['box.overall.edit']}">
+                                    <i class="icon-create fs20 m-bold-gray"/>
+                                    <f:setPropertyActionListener value="#{coverage}" target="#{coverageEditDlgM.coverage}" />
+                                </p:commandLink>
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </h:form>
+
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="CoverageEditDialog.xhtml">
+            <ui:param name="update" value="coverage_form-coverages_table"/>
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

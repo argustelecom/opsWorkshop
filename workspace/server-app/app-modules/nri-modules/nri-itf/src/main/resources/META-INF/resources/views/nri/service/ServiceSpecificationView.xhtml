@@ -1,0 +1,267 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<ui:param name="viewModel" value="#{serviceSpecificationVM}"/>
+	<ui:param name="pageTitle" value="#{serviceSpecificationBundle['box.nri.service_specification.title']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="serviceSpecification" value="#{serviceSpecificationViewState.specification}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="ServiceSpecificationBundle" var="serviceSpecificationBundle"/>
+		<f:loadBundle basename="ServiceSpecificationsBundle" var="serviceSpecificationsBundle"/>
+		<f:loadBundle basename="NriServiceBundle" var="serviceBundle"/>
+		<f:loadBundle basename="BookingBundle" var="bookingBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+		<p:menuitem value="#{serviceSpecificationsBundle['box.nri.service.specifications.breadcrumbs']}"
+					url="/views/nri/service/ServiceSpecificationsView.xhtml"/>
+		<p:menuitem value="#{serviceSpecificationBundle['box.nri.service_specification.title']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+
+						<h:form id="resource_schema_structure_tree_form">
+							<div class="ui-dashboard-header">
+								<h:outputText styleClass="card-header"
+											  value="#{serviceSpecificationBundle['box.nri.service_specification.tree_header']}"/>
+								<p:outputPanel id="tree_buttons_panel" styleClass="m-fright">
+									<p:commandLink id="create_resource_schema_button" styleClass="m-mar-left10"
+												   rendered="#{p:ifGranted('Nri_ServiceSpecificationEdit') and serviceSpecificationVM.currentServiceSpecification ne null}"
+												   update="-resource_schema_creation_dlg scheme_tree_panel"
+												   oncomplete="PF('resourceSchemaCreationDlg').show()">
+										<i class="fa fa-sitemap icon-btn"/>
+									</p:commandLink>
+									<p:commandLink id="create_requirement_button" styleClass="m-mar-left10"
+												   rendered="#{p:ifGranted('Nri_ServiceSpecificationEdit') and serviceSpecificationVM.currentServiceSpecification ne null}"
+												   disabled="#{serviceSpecificationVM.selectedRequiredItemDto eq null and
+                                                   serviceSpecificationVM.selectedSchemaDto eq null}"
+												   update="-requirement_creation_dlg scheme_tree_panel"
+												   oncomplete="PF('requirementSchemaCreationDlg').show()">
+										<i class="fa fa-plus icon-btn"/>
+									</p:commandLink>
+									<p:commandLink id="remove_button" styleClass="m-mar-left10"
+												   update="scheme_tree_panel tree_buttons_panel -required_item_info_form
+												   -required_item_info_form-params_requirement_table -scheme_info_form
+													-schema_booking_info_form"
+												   action="#{serviceSpecificationVM.removeSelectedItem}"
+												   rendered="#{p:ifGranted('Nri_ServiceSpecificationEdit')
+																and serviceSpecificationVM.selectedNode ne null}">
+										<i class="fa fa-trash icon-btn"/>
+
+										<p:confirm
+												header="#{serviceSpecificationBundle['box.nri.service_specification.schema_delete_title']}"
+												message="#{serviceSpecificationBundle['box.nri.service_specification.schema_delete_message']}"/>
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<p:outputPanel id="scheme_tree_panel" styleClass="fs14">
+								<p:tree id="resource_scheme_structure_tree"
+										value="#{serviceSpecificationVM.elementsTree}" var="node"
+										styleClass="width-100-percents m-ov-auto tree-no-border" selectionMode="single"
+										selection="#{serviceSpecificationVM.selectedNode}" style="overflow-x: hidden"
+										propagateSelectionDown="false" propagateSelectionUp="false">
+
+									<p:ajax event="select" process="@this"
+											listener="#{serviceSpecificationVM.onNodeSelect}"
+											update="resource_schema_structure_tree_form-tree_buttons_panel -schema_booking_info_form
+											 -required_item_info_form -required_item_info_form-params_requirement_table -scheme_info_form"/>
+									<p:ajax event="expand" listener="#{serviceSpecificationVM.onNodeExpand}"/>
+									<p:ajax event="collapse" listener="#{serviceSpecificationVM.onNodeCollapse}"/>
+
+									<p:treeNode>
+										<h:outputText value="#{node.name}" style="padding-left: 5px;"/>
+									</p:treeNode>
+
+								</p:tree>
+
+							</p:outputPanel>
+							<script>
+                                $(document).ready(function () {
+                                    Argus.System.AutoHeight.compute('resource_schema_structure_tree_form', 40);
+                                    Argus.System.AutoHeight.compute('resource_schema_structure_tree_form-resource_scheme_structure_tree', 40);
+                                });
+							</script>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="m-container65 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+						<h:form id="service_specification_info_form">
+							<p:outputPanel id="resource_info_panel" styleClass="m-container100"
+										   rendered="#{serviceSpecificationVM.currentServiceSpecification ne null}">
+								<div class="ui-dashboard-header">
+									<i class="fa fa-cart-plus"/>
+									<h:outputText styleClass="card-header"
+												  value="#{serviceSpecificationBundle['box.nri.service_specification.title']}"/>
+								</div>
+								<dl class="name-value width-250 m-font-roboto-regular">
+									<dt>
+										<p:outputLabel
+												value="#{serviceSpecificationBundle['box.nri.service_specification.name']}"/>
+									</dt>
+									<dd>
+										<p:outputLabel
+												value="#{serviceSpecificationVM.currentServiceSpecification.type.objectName}"/>
+									</dd>
+								</dl>
+							</p:outputPanel>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<h:form id="scheme_info_form">
+			<p:outputPanel id="scheme_info_panel" styleClass="m-container65  m-responsive100"
+						   rendered="#{serviceSpecificationVM.selectedSchemaDto ne null}">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+						<div class="ui-dashboard-header">
+							<i class="fa fa-sitemap"/>
+							<h:outputText styleClass="card-header"
+										  value="#{serviceSpecificationVM.selectedSchemaDto.name}"/>
+						</div>
+						<sysinf:editableSection disabled="#{!p:ifGranted('Nri_ResourceInstallationEdit')}">
+							<p:ajax event="save" process="@this"
+									update="-resource_schema_structure_tree_form"
+									listener="#{serviceSpecificationVM.changeSchemeName()}"/>
+							<dl class="name-value width-250 m-font-roboto-regular">
+								<dt>
+									<p:outputLabel
+											value="#{serviceSpecificationBundle['box.nri.service_specification.schema_name_label']}"/>
+								</dt>
+								<dd>
+									<p:inputText
+											value="#{serviceSpecificationVM.selectedSchemaDto.name}"
+											required="true"
+											requiredMessage="#{commonBundle['box.nri.common.name_required']}"/>
+								</dd>
+							</dl>
+						</sysinf:editableSection>
+					</div>
+				</div>
+			</p:outputPanel>
+		</h:form>
+
+		<div class="m-container65 m-responsive100">
+			<ui:include src="SchemaBookingInfoFrame.xhtml">
+				<ui:param name="schema" value="#{serviceSpecificationVM.selectedSchemaDto}"/>
+			</ui:include>
+		</div>
+
+		<div class="m-container65 m-responsive100">
+
+			<ui:include src="ParamsRequirementInfoFrame.xhtml">
+				<ui:param name="requiredItem" value="#{serviceSpecificationVM.selectedRequiredItemDto}"/>
+			</ui:include>
+		</div>
+	</ui:define>
+	<ui:define name="dialogs">
+		<p:dialog id="resource_schema_creation_dlg"
+				  header="#{serviceSpecificationBundle['box.nri.service_specification.schema_creation_header']}"
+				  widgetVar="resourceSchemaCreationDlg" resizable="false" modal="true" closable="false"
+				  styleClass="icon-creation" style="max-width: 75%; min-width: 50%;">
+			<h:form id="resource_schema_creation_form">
+
+				<p:outputPanel id="new_resource_spec_panel" style="width: 100%">
+					<dl class="name-value width-250">
+						<dt>
+							<p:outputLabel for="new_schema"
+										   value="#{serviceSpecificationBundle['box.nri.service_specification.schema_name_label']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="new_schema" value="#{serviceSpecificationVM.newSchemaName}"
+										 styleClass="width-100-percents"
+										 converter="#{stringTrimConverter}"
+										 maxlength="64" required="true"
+										 requiredMessage="#{commonBundle['box.nri.common.name_required']}"/>
+						</dd>
+					</dl>
+				</p:outputPanel>
+				<div class="dialog-footer-buttons">
+					<p:commandButton id="cancel_creation_button"
+									 value="#{overallBundle['box.overall.cancel']}"
+									 styleClass="m-blue-text-button" immediate="true"
+									 resetValues="true"
+									 action="#{serviceSpecificationVM.cleanSchemaCreationParams()}"
+									 onclick="PF('resourceSchemaCreationDlg').hide()"/>
+					<p:commandButton id="dialog_create_button"
+									 value="#{overallBundle['box.overall.create']}"
+									 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('resourceSchemaCreationDlg').hide()}"
+									 action="#{serviceSpecificationVM.createSchema()}"
+									 update="-resource_schema_structure_tree_form -required_item_info_form
+									 -required_item_info_form-params_requirement_table -scheme_info_form
+									 -schema_booking_info_form"/>
+				</div>
+			</h:form>
+		</p:dialog>
+		<p:dialog id="requirement_creation_dlg"
+				  header="#{serviceSpecificationBundle['box.nri.service_specification.required_item_creation_header']}"
+				  widgetVar="requirementSchemaCreationDlg" resizable="false" modal="true" closable="false"
+				  styleClass="icon-creation" style="max-width: 75%; min-width: 50%;">
+			<h:form id="requirement_creation_form">
+
+				<p:outputPanel id="new_requirement_spec_panel" style="width: 100%">
+					<dl class="name-value width-250">
+						<dt>
+							<p:outputLabel for="new_spec"
+										   value="#{serviceSpecificationBundle['box.nri.service_specification.required_item_name_label']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu value="#{serviceSpecificationVM.newElemSpecificationId}"
+											 id="new_spec" required="true">
+								<p:ajax event="change" update="@form" process="@this"
+										oncomplete="PF('requirementSchemaCreationDlg').initPosition()"/>
+								<f:selectItem value="#{null}"/>
+								<f:selectItems value="#{serviceSpecificationVM.possibleResourceSpecification}"
+											   var="spec" itemLabel="#{spec.name}" itemValue="#{spec.id}"/>
+							</p:selectOneMenu>
+
+						</dd>
+					</dl>
+				</p:outputPanel>
+				<div class="dialog-footer-buttons">
+					<p:commandButton id="cancel_creation_button1"
+									 value="#{overallBundle['box.overall.cancel']}"
+									 styleClass="m-blue-text-button" immediate="true"
+									 resetValues="true"
+									 action="#{serviceSpecificationVM.cleanSchemaCreationParams()}"
+									 onclick="PF('requirementSchemaCreationDlg').hide()"/>
+					<p:commandButton id="dialog_create_button1"
+									 value="#{overallBundle['box.overall.create']}"
+									 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('requirementSchemaCreationDlg').hide()}"
+									 actionListener="#{serviceSpecificationVM.createRequirement()}"
+									 update="-resource_schema_structure_tree_form -required_item_info_form -required_item_info_form-params_requirement_table -scheme_info_form"/>
+				</div>
+
+			</h:form>
+		</p:dialog>
+		<ui:include src="ParamRequirementAddDialog.xhtml">
+			<ui:param name="update" value="required_item_info_form-params_requirement_table"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

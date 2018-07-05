@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+	<o:importConstants type="ru.argustelecom.box.nri.ports.model.PortType"/>
+
+	<p:dialog id="port_creation_dialog" widgetVar="portCreationDlg"
+			  header="#{resourceBundle['box.nri.resources.port.creation']}"
+			  width="450" modal="true" dynamic="true" closable="false"
+			  resizable="false" styleClass="icon-creation">
+		<h:form id="port_creation">
+			<f:event listener="#{addPortDM.preRender(resourceInstance) }"
+					 type="preRenderComponent"/>
+			<ui:fragment id="port_creation_form">
+				<p:outputPanel id="edit_port_panel" style="width: 100%">
+
+					<ui:include src="PortPropertiesFrame.xhtml">
+						<ui:param name="port" value="#{addPortDM.port}"/>
+					</ui:include>
+				</p:outputPanel>
+			</ui:fragment>
+			<p:tooltip id="toolTipFocus" value="#{resourceBundle['box.nri.resources.port.mass_port_hint']}" for="port_creation-port_number" showEvent="focus" hideEvent="blur" />
+			<p:accordionPanel multiple="true" activeIndex="null">
+				<p:tab title="#{resourceBundle['box.nri.resource.prop_creation_mode']}" titleStyle="color: white">
+					<h:panelGrid columns="2" cellpadding="10">
+						<h:outputLabel value="#{resourceBundle['box.nri.resources.port.port_number']}:"
+									   for="new_res_number_spinner"/>
+						<p:spinner id="new_res_number_spinner"
+								   value="#{addPortDM.newPortsNumber}" min="1"/>
+						<h:outputLabel value="#{resourceBundle['box.nri.resource.init_val']}:"
+									   for="initial_ports_number_spinner"/>
+						<p:spinner id="initial_ports_number_spinner" disabled="#{!addPortDM.shouldIncrementName}"
+								   value="#{addPortDM.initialPortNumber}" min="1"/>
+						<h:outputLabel value="#{resourceBundle['box.nri.resource.increment_name']}:"
+									   for="should_incrementn_name"/>
+						<p:selectBooleanCheckbox id="should_incrementn_name" value="#{addPortDM.shouldIncrementName}">
+							<p:ajax event="change" update="initial_ports_number_spinner" />
+						</p:selectBooleanCheckbox>
+					</h:panelGrid>
+				</p:tab>
+			</p:accordionPanel>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_creation_button"
+								 value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" immediate="true"
+								 resetValues="true"
+								 update="port_creation_dialog #{updateWhenCancel}"
+								 action="#{addPortDM.cleanCreationParams()}"
+								 process="@this"
+								 onclick="PF('portCreationDlg').hide()"/>
+				<p:commandButton id="dialog_create_button"
+								 value="#{overallBundle['box.overall.create']}"
+								 update="#{update}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('portCreationDlg').hide();}"
+								 action="#{addPortDM.save()}"
+				/>
+
+			</div>
+		</h:form>
+	</p:dialog>
+</ui:composition>

@@ -1,0 +1,176 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:" />
+					</span>
+					<span class="filter-value">
+						<p:inputText id="name" value="#{numerationSequenceFilterFs.name}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="period" value="#{numerationBundle['box.numeration.sequence.period']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="period" value="#{numerationSequenceFilterFs.period}" process="@this">
+
+							<p:ajax process="@this" update="#{filterFormId}"/>
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{numerationSequenceFrameModel.periodTypes}" var="period" itemLabel="#{period.getName()}"
+										   itemValue="#{period}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="valid_to_from" value="#{overallBundle['box.overall.valid_from']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="valid_to_from" value="#{numerationSequenceFilterFs.validFrom}"
+									pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-43-percents" locale="#{languageBean.locale.language}"/>
+						<p:outputLabel for="valid_to_to" value="#{overallBundle['box.overall.valid_to.short']}:" styleClass="m-tex-al-right width-10-percents mar-top-2"/>
+						<p:calendar id="valid_to_to" value="#{numerationSequenceFilterFs.validTo}"
+									pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-43-percents"
+                                    locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="current_value" value="#{numerationSequenceBundle['box.numeration.sequence.value.current']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="current_value" value="#{numerationSequenceFilterFs.currentValue}"/>
+					</span>
+				</div>
+			</li>
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{numerationSequenceFilterFs.name ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.name']}:"/>
+					<h:outputText value="#{numerationSequenceFilterFs.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{numerationSequenceFilterFs.period ne null}">
+				<li>
+					<p:outputLabel value="#{numerationBundle['box.numeration.sequence.period']}:"/>
+					<h:outputText value="#{numerationSequenceFilterFs.period.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{numerationSequenceFilterFs.validFrom ne null or numerationSequenceFilterFs.validTo ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.valid_to']}:"/>
+					<h:outputText value="#{dateUtils.format(numerationSequenceFilterFs.validFrom, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+					<p:outputLabel value="#{overallBundle['box.overall.valid_from']}:"
+								   styleClass="m-pad-left-3"
+								   rendered="#{numerationSequenceFilterFs.validTo ne null}"/>
+					<h:outputText value="#{dateUtils.format(numerationSequenceFilterFs.validTo, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{numerationSequenceFilterFs.currentValue ne null}">
+				<li>
+					<p:outputLabel value="#{numerationBundle['box.numeration.sequence.value.current']}:"/>
+					<h:outputText value="#{numerationSequenceFilterFs.currentValue};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+		<h:form id="sequence_search_result_form">
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars" />
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}" />
+
+				<p:outputPanel id="create_button" styleClass="m-fright">
+					<p:commandButton id="create_sequence_button" action="#{numerationSequenceEditDM.open()}"
+									 value="#{numerationBundle['box.numeration.sequence.create']}"
+									 disabled="#{!p:ifGranted('System_NumSequenceEdit')}">
+						<f:setPropertyActionListener value="#{numerationPatternFm.numerationPatternNodeDataList}"
+													 target="#{numerationSequenceEditDM.numerationPatternNodeDataList}"/>
+					</p:commandButton>
+				</p:outputPanel>
+			</div>
+
+			<p:dataTable id="sequence_table" value="#{lazyDm}" var="sequence" tableStyle="table-layout: auto" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}" rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{NumerationSequenceSort.name}" sortOrder="ascending" selectionMode="single">
+
+				<p:column headerText="#{overallBundle['box.overall.name']}" sortBy="#{NumerationSequenceSort.name}">
+					<h:outputText value="#{sequence.name}" />
+				</p:column>
+
+				<p:column headerText="#{numerationBundle['box.numeration.sequence.value.initial']}" sortBy="#{NumerationSequenceSort.initialValue}">
+					<h:outputText value="#{sequence.initialValue}" />
+				</p:column>
+
+				<p:column headerText="#{numerationBundle['box.numeration.sequence.increment']}" sortBy="#{NumerationSequenceSort.increment}">
+					<h:outputText value="#{sequence.increment}" />
+				</p:column>
+
+				<p:column headerText="#{numerationBundle['box.numeration.sequence.period']}" sortBy="#{NumerationSequenceSort.period}">
+					<h:outputText value="#{sequence.period.name}" />
+				</p:column>
+
+				<p:column headerText="#{numerationBundle['box.numeration.sequence.capacity']}" sortBy="#{NumerationSequenceSort.capacity}">
+					<h:outputText value="#{sequence.capacity}" />
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.valid_to']}" sortBy="#{NumerationSequenceSort.validTo}">
+					<h:outputText value="#{sequence.validTo}">
+						<sysinf:convertDateTime pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{numerationBundle['box.numeration.sequence.value.current']}" sortBy="#{NumerationSequenceSort.currentValue}">
+					<h:outputText value="#{sequence.currentValue}" />
+				</p:column>
+
+				<p:column styleClass="width-45" rendered="#{p:ifGranted('System_NumSequenceEdit')}">
+					<p:commandLink action="#{numerationSequenceEditDM.open()}"
+								   title="#{overallBundle['box.overall.edit']}">
+						<i class="icon-create fs20 m-bold-gray" />
+						<f:setPropertyActionListener value="#{sequence}" target="#{numerationSequenceEditDM.editableSequence}" />
+						<f:setPropertyActionListener value="#{numerationPatternFm.numerationPatternNodeDataList}"
+													 target="#{numerationSequenceEditDM.numerationPatternNodeDataList}"/>
+					</p:commandLink>
+					<p:commandLink disabled="#{!sequence.canBeDeleted}" action="#{viewModel.delete(sequence)}"
+								   update="num_pattern_tab_view-sequence_search_result_form"
+								   title="#{overallBundle['box.overall.delete']}">
+						<i class="fa fa-trash fs20 m-bold-gray" />
+						<p:confirm header="#{numerationBundle['box.numeration.sequence.delete_dialog']}"
+								   message="#{numerationBundle['box.numeration.sequence.delete_dialog.details']}"/>
+						<p:ajax listener="#{lazyDm.reloadData()}"/>
+					</p:commandLink>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

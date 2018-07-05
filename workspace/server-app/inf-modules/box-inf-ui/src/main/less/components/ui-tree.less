@@ -1,0 +1,54 @@
+/* ui-tree */
+
+.ui-tree {
+
+	padding: 13px;
+	margin-top: -15px;
+
+	.ui-tabs-panels & {
+		padding-right: 8px;
+		margin-top: -1px;
+		margin-bottom: -3px;
+	}
+
+	.ui-treenode {
+		padding: 4px !important;
+
+		span.ui-treenode-label {
+			font-size: @ui-tree-font-size;
+			outline: none;
+		}
+	}
+
+	.ui-treenode-children {
+		padding: 0 0 0 25px;
+	}
+
+	.ui-icon-triangle-1-s,.ui-icon-triangle-1-e {
+		background-image: url("#{resource['modena-theme/images/breadcrumb-arrow.svg']}");
+		background-size: 100%;
+		margin-top: 5px;
+		height: 12px;
+		width: 12px;
+	}
+
+	.ui-icon-triangle-1-s {
+		transform: rotate(90deg);
+		margin-top: 3px;
+	}
+
+	.ui-treenode-parent {
+		padding-bottom: 0!important;
+	}
+
+	.ui-treenode-label {
+		width: 89%;
+		line-height: 18px;
+		white-space: normal;
+		word-wrap: break-word;
+		-webkit-hyphens: auto;
+		-moz-hyphens: auto;
+		-ms-hyphens: auto;
+		hyphens: auto;
+	}
+}

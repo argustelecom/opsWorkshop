@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="lookupBundle" basename="LookupBundle"/>
+	<h:form id="lookup_category_creation_form">
+		<p:dialog id="lookup_category_create_dlg" header="#{lookupBundle['box.lookup.category.create_dialog']}" width="500"
+				  widgetVar="lookupCategoryCreateDlgVar" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+			<dl class="name-value width-120">
+				<dt>
+					<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="name" value="#{lookupDirectoryViewModel.name}" required="true"
+							label="#{overallBundle['box.overall.name']}" />
+				</dd>
+
+				<dt>
+					<p:outputLabel for="description" value="#{overallBundle['box.overall.desc']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="description" value="#{lookupDirectoryViewModel.description}" 
+							label="#{overallBundle['box.overall.desc']}" />
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+						styleClass="m-blue-text-button" update="lookup_category_create_dlg" process="@this" resetValues="true"
+						action="#{lookupDirectoryViewModel.cleanCreationParams()}" onclick="PF('lookupCategoryCreateDlgVar').hide()" />
+				<p:commandButton id="lookup_category_create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('lookupCategoryCreateDlgVar').hide()}"
+								 action="#{lookupDirectoryViewModel.create()}" update="#{updatedElements} name description" />
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>	
+			

@@ -1,0 +1,11 @@
+*.sh text eol=lf
+run.conf text eol=lf
+
+#The number of files to consider when performing the copy/rename detection; equivalent to the git diff option -l.
+diff.renameLimit=20000
+
+#Tells git to detect renames. If set to any boolean value, it will enable basic rename detection. If set to "copies" or "copy", it will detect copies, as well.
+#diff.renames
+
+#The number of files to consider when performing rename detection during a merge; if not specified, defaults to the value of diff.renameLimit.
+#merge.renameLimit

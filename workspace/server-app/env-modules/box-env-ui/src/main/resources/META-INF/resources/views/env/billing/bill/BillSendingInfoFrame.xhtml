@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect simple-fb">
+				<h:form id="bill_sending_info_form">
+					<f:event type="preRenderComponent" listener="#{billSendingInfoFm.preRender(bill)}"/>
+
+					<div class="ui-dashboard-header">
+						<i class="fa fa-send (alias)"/>
+						<h:outputText styleClass="card-header" value="#{billBundle['box.bill.sending_info']}"/>
+					</div>
+
+					<ui:fragment rendered="#{billSendingInfoFm.billWasSent()}">
+						<div class="columns">
+							<div class="column">
+								<dl class="name-value width-150 m-mar-bot-0">
+									<dt>
+										<p:outputLabel for="sending_date" value="#{billBundle['box.bill.sending_info.date']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="sending_date" value="#{billSendingInfoFm.billSendingInfo.date}">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+										</h:outputText>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="email" value="#{billBundle['box.bill.sending_info.email']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="email" value="#{billSendingInfoFm.billSendingInfo.email}"/>
+									</dd>
+								</dl>
+							</div>
+						</div>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{not billSendingInfoFm.billWasSent()}">
+						<h:outputText value="#{billBundle['box.bill.sending_info.not_sent']}"/>
+					</ui:fragment>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

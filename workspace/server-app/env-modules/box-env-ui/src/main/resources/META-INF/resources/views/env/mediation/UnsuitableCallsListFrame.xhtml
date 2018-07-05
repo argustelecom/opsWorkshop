@@ -1,0 +1,454 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="mediationBundle" basename="MediationBundle"/>
+
+	<ui:define name="completeFilterFields">
+		<o:importConstants type="ru.argustelecom.box.env.mediation.UnsuitableCallsListViewModel.UnsuitableCallsContext" var="UnsuitableCallsContext"/>
+		<ul>
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION)}">
+
+				<li>
+					<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="error" styleClass="width-120"
+									   value="#{mediationBundle['box.mediation.converter.error']}:"/>
+					</span>
+						<span class="filter-value">
+						<p:selectOneMenu id="error" value="#{unsuitableCallsListVs.error}"
+											  process="@this" label="#{mediationBundle['box.mediation.converter.error']}">
+
+							<f:selectItem value="#{null}"/>
+							<f:selectItems value="#{unsuitableCallsListVs.unsuitableCallsContext.possibleErrors}"
+										   var="error" itemLabel="#{error.name}" itemValue="#{error}"/>
+						</p:selectOneMenu>
+					</span>
+					</div>
+				</li>
+
+			</ui:fragment>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="foreign_id" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.foreign_id']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="foreign_id" value="#{unsuitableCallsListVs.foreignId}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="date_from" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.date_from']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="date_from" value="#{unsuitableCallsListVs.dateFrom}"
+									pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}" process="@this"
+									styleClass="width-43-percents" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="date_to" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.date_to']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="date_to" value="#{unsuitableCallsListVs.dateTo}"
+									styleClass="width-43-percents" pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"
+									process="@this" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="incoming_resource" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.incoming_resource']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="incoming_resource" value="#{unsuitableCallsListVs.calledNumber}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="incoming_channel" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.incoming_channel']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="incoming_channel" value="#{unsuitableCallsListVs.incomingChannel}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="incoming_trunk" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.incoming_trunk']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="incoming_trunk" value="#{unsuitableCallsListVs.incomingTrunk}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="outgoing_resource" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.outgoing_resource']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="outgoing_resource" value="#{unsuitableCallsListVs.callingNumber}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="outgoing_channel" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.outgoing_channel']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="outgoing_channel" value="#{unsuitableCallsListVs.outgoingChannel}"/>
+					</span>
+				</div>
+			</li>
+
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION)}">
+				<li>
+					<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="outgoing_trunk" styleClass="width-130"
+									   value="#{mediationBundle['box.mediation.converter.outgoing_trunk']}:"/>
+					</span>
+						<span class="filter-value">
+						<p:inputText id="outgoing_trunk" value="#{unsuitableCallsListVs.outgoingTrunk}"/>
+					</span>
+					</div>
+				</li>
+
+				<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.ANALYSIS)}">
+
+					<li>
+						<div class="filter-item">
+							<span class="filter-name">
+								<p:outputLabel for="service" styleClass="width-120"
+									   value="#{mediationBundle['box.mediation.identification.service']}:"/>
+							</span>
+
+							<span class="filter-value">
+								<p:selectOneMenu id="service" filter="true"
+										 filterMatchMode="contains"
+										 value="#{unsuitableCallsListVs.service}"
+										 label="#{mediationBundle['box.mediation.identification.service']}" var="svc">
+
+									<f:selectItem itemValue="#{null}"/>
+									<f:selectItems value="#{unsuitableCallsListVm.getPossibleServices()}" var="possibleService"
+												   itemLabel="#{possibleService.name} #{possibleService.id}"
+												   itemValue="#{svc}"/>
+
+									<p:column>
+										<h:outputText styleClass="ui-theme ui-theme-#{svc.name}"/>
+									</p:column>
+
+									<p:column>
+										<h:outputText value="#{svc.name} #{svc.id}"/>
+									</p:column>
+								</p:selectOneMenu>
+							</span>
+						</div>
+					</li>
+
+					<li>
+						<div class="filter-item">
+							<span class="filter-name">
+								<p:outputLabel for="tariff" styleClass="width-120"
+									   value="#{mediationBundle['box.mediation.identification.tariff']}:"/>
+							</span>
+
+							<span class="filter-value">
+								<p:selectOneMenu id="tariff" value="#{unsuitableCallsListVs.tariff}" process="@this">
+
+									<f:selectItem value="#{null}"/>
+									<f:selectItems value="#{unsuitableCallsListVm.possibleTariffs}"
+										   var="tariff" itemLabel="#{tariff.name}" itemValue="#{tariff}"/>
+								</p:selectOneMenu>
+							</span>
+						</div>
+					</li>
+				</ui:fragment>
+			</ui:fragment>
+
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+
+		<ul>
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION) and unsuitableCallsListVs.error ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.error']}:"/>
+					<ui:repeat value="#{unsuitableCallsListVs.error}" var="err">
+						<h:outputText value="#{unsuitableCallsListVs.error.name};"/>
+					</ui:repeat>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.foreignId ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.foreign_id']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.foreignId};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment
+					rendered="#{unsuitableCallsListVs.dateFrom ne null or unsuitableCallsListVs.dateTo ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.date_from']}:"/>
+					<h:outputText
+							value="#{dateUtils.format(unsuitableCallsListVs.dateFrom, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.date_to']}"
+								   styleClass="m-pad-left-3" rendered="#{unsuitableCallsListVs.dateTo ne null}"/>
+					<h:outputText
+							value="#{dateUtils.format(unsuitableCallsListVs.dateTo, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.calledNumber ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.incoming_resource']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.calledNumber};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.incomingChannel ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.incoming_channel']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.incomingChannel};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.incomingTrunk ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.incoming_trunk']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.incomingTrunk};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.callingNumber ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.outgoing_resource']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.callingNumber};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableCallsListVs.outgoingChannel ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.outgoing_channel']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.outgoingChannel};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION) and unsuitableCallsListVs.outgoingTrunk ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.converter.outgoing_trunk']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.outgoingTrunk};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION) and !unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.ANALYSIS) and unsuitableCallsListVs.service ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.identification.service']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.service.objectName};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION) and !unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.ANALYSIS) and unsuitableCallsListVs.tariff ne null}">
+				<li>
+					<p:outputLabel value="#{mediationBundle['box.mediation.identification.tariff']}:"/>
+					<h:outputText value="#{unsuitableCallsListVs.tariff.objectName};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+
+		<h:form id="#{resultFormId}">
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+
+				<p:outputPanel styleClass="m-fright">
+					<p:commandButton id="create_job_button"
+									 value="#{mediationBundle['box.mediation.converter.do_recharge_button']}"
+									 disabled="#{p:ifNoneGranted('Mediation_UnsuitableCallsEdit')}"
+									 action="#{unsuitableCallsRecycleDm.onDialogOpen(unsuitableCallsListVs.unsuitableCallsContext)}"/>
+					<p:commandButton id="toggler" type="button" value="#{overallBundle['box.overall.columns']}" icon="fa fs15 fa-calculator"/>
+					<p:columnToggler datasource="unsuitable_calls_table" trigger="toggler"/>
+				</p:outputPanel>
+
+			</div>
+			<p:dataTable id="unsuitable_calls_table" value="#{unsuitableCallsListVm.lazyDm}"
+						 var="unsuitableCall" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{UnsuitableCallsSort.id}" sortOrder="descending" selectionMode="single">
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.error']}"
+						  sortBy="#{UnsuitableCallsSort.errorType}">
+					<h:outputText value="#{unsuitableCall.errorType.getName()}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.error_desc']}"
+						  sortBy="#{UnsuitableCallsSort.errorMsg}">
+					<h:outputText value="#{unsuitableCall.errorMsg}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.call_id']}"
+						  sortBy="#{UnsuitableCallsSort.callId}">
+					<h:outputText value="#{unsuitableCall.callId}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.foreign_id']}"
+						  sortBy="#{UnsuitableCallsSort.foreignId}">
+					<h:outputText value="#{unsuitableCall.foreignId}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.source']}"
+						  sortBy="#{UnsuitableCallsSort.exchange}">
+					<h:outputText value="#{unsuitableCall.exchange}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.time']}"
+						  sortBy="#{UnsuitableCallsSort.callDate}">
+					<h:outputText value="#{dateUtils.format(unsuitableCall.callDate, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.duration']}"
+						  sortBy="#{UnsuitableCallsSort.duration}">
+					<h:outputText value="#{unsuitableCall.duration}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.period_unit']}"
+						  sortBy="#{UnsuitableCallsSort.cdrUnit}">
+					<h:outputText value="#{unsuitableCall.cdrUnit.getName()}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.raw_call_date']}"
+						  sortBy="#{UnsuitableCallsSort.rawCallDate}">
+					<h:outputText value="#{dateUtils.format(unsuitableCall.rawCallDate, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.raw_duration']}"
+						  sortBy="#{UnsuitableCallsSort.rawDuration}">
+					<h:outputText value="#{unsuitableCall.rawDuration}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.end_cause']}"
+						  sortBy="#{UnsuitableCallsSort.releaseCode}">
+					<h:outputText value="#{unsuitableCall.releaseCode.getName()}"/>
+				</p:column>
+
+
+				<p:column headerText="#{mediationBundle['box.mediation.analysis.direction']}"
+						  rendered="#{!context.equals(UnsuitableCallsContext.CONVERTATION)}"
+						  sortBy="#{UnsuitableCallsSort.callDirection}">
+					<h:outputText value="#{unsuitableCall.callDirection}"/>
+				</p:column>
+
+
+				<p:column headerText="#{mediationBundle['box.mediation.identification.service']}"
+						  rendered="#{unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.IDENTIFICATION) or unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CHARGING)}"
+						  sortBy="#{UnsuitableCallsSort.service}">
+					<boxenv:linkToCard value="#{unsuitableCall.service.getIdentifiable()}" text="#{unsuitableCall.service.objectName}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.identification.tariff']}"
+						  rendered="#{unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.IDENTIFICATION) or unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CHARGING)}"
+						  sortBy="#{UnsuitableCallsSort.tariff}">
+					<boxenv:linkToCard value="#{unsuitableCall.tariff.getIdentifiable()}" text="#{unsuitableCall.tariff.objectName}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.outgoing_resource.short']}"
+						  sortBy="#{UnsuitableCallsSort.callingNumber}">
+					<h:outputText value="#{unsuitableCall.callingNumber}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.outgoing_channel.short']}"
+						  sortBy="#{UnsuitableCallsSort.outgoingChannel}">
+					<h:outputText value="#{unsuitableCall.outgoingChannel}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.outgoing_trunk.short']}"
+						  sortBy="#{UnsuitableCallsSort.outgoingTrunk}" rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION)}">
+					<h:outputText value="#{unsuitableCall.outgoingTrunk}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.analysis.outgoing_provider.short']}"
+						  sortBy="#{UnsuitableCallsSort.outgoingProvider}" rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION)}">
+					<h:outputText value="#{unsuitableCall.outgoingProvider}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.incoming_resource.short']}"
+						  sortBy="#{UnsuitableCallsSort.calledNumber}">
+					<h:outputText value="#{unsuitableCall.calledNumber}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.incoming_channel.short']}"
+						  sortBy="#{UnsuitableCallsSort.incomingChannel}">
+					<h:outputText value="#{unsuitableCall.incomingChannel}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.converter.incoming_trunk.short']}"
+						  sortBy="#{UnsuitableCallsSort.incomingTrunk}">
+					<h:outputText value="#{unsuitableCall.incomingTrunk}"/>
+				</p:column>
+
+
+				<p:column headerText="#{mediationBundle['box.mediation.analysis.incoming_provider.short']}"
+						  sortBy="#{UnsuitableCallsSort.incomingProvider}" rendered="#{!unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION)}">
+					<h:outputText value="#{unsuitableCall.incomingProvider}"/>
+				</p:column>
+
+				<p:column headerText="#{mediationBundle['box.mediation.identification.charging']}"
+						  sortBy="#{UnsuitableCallsSort.identifiedBy}" rendered="#{unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.IDENTIFICATION) or unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CHARGING)}">
+					<h:outputText value="#{unsuitableCall.identifiedBy}"/>
+				</p:column>
+
+
+				<p:column toggleable="false" styleClass="width-20" rendered="#{p:ifGranted('Mediation_UnsuitableCallsEdit') and (unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.CONVERTATION) or unsuitableCallsListVs.unsuitableCallsContext.equals(UnsuitableCallsContext.ANALYSIS))}">
+					<p:commandLink title="#{overallBundle['box.overall.edit']}"
+								   oncomplete="PF('unsuitableCallsEditVar').show()">
+						<i class="icon-create fs20 m-bold-gray"/>
+						<f:setPropertyActionListener value="#{unsuitableCall}"
+													 target="#{unsuitableCallsEditDm.unsuitableCall}"/>
+						<f:setPropertyActionListener value="#{unsuitableCallsListVs.unsuitableCallsContext}"
+													 target="#{unsuitableCallsEditDm.context}"/>
+					</p:commandLink>
+				</p:column>
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<h:form id="unsuitable_rated_outgoing_calls_repeat_processing_form">
+
+		<p:dialog id="unsuitable_rated_outgoing_calls_repeat_processing_dlg"
+				  header="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.repeat.processing.dialog.header']}"
+				  widgetVar="unsuitableRatedOutgoingCallsRepeatProcessingDlgVar" width="700"
+				  resizable="false" modal="true" closable="true"
+				  dynamic="true" styleClass="icon-iteration" closeOnEscape="true">
+
+			<div class="m-container100 m-responsive100">
+				<div class="message fs14">
+					<div class="message-info message-icon message-icon-info">
+						<p>#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.repeat.processing.dialog.hint']}</p>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<p:outputLabel for="date_from" styleClass="width-150 m-mar-top5"
+							   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_from']}:"/>
+				<p:calendar id="date_from" value="#{unsuitableRatedOutgoingCallsRepeatProcessingDm.dateFrom}" required="true"
+							pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" styleClass="width-20-percents"
+							label="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_from']}"
+							locale="#{languageBean.locale.language}"/>
+
+				<p:outputLabel for="date_to"
+							   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_to']}:"
+							   styleClass="m-tex-al-right width-25-percents m-mar-top5"/>
+				<p:calendar id="date_to" value="#{unsuitableRatedOutgoingCallsRepeatProcessingDm.dateTo}" required="true"
+							pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+							label="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_to']}"
+							styleClass="width-20-percents" locale="#{languageBean.locale.language}"/>
+			</div>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="processing_cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" onclick="PF('unsuitableRatedOutgoingCallsRepeatProcessingDlgVar').hide()"
+								 action="#{unsuitableRatedOutgoingCallsRepeatProcessingDm.onCancel()}" process="@this"/>
+				<p:commandButton id="repeat_processing"
+								 value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.repeat.processing.dialog.process_button']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('unsuitableRatedOutgoingCallsRepeatProcessingDlgVar').hide()}"
+								 action="#{unsuitableRatedOutgoingCallsRepeatProcessingDm.onCreate()}"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+</ui:composition>

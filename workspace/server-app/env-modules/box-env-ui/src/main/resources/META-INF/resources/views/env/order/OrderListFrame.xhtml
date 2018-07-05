@@ -1,0 +1,246 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="number" value="#{overallBundle['box.overall.number']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="number" value="#{orderListViewState.number}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="assignee" value="#{orderBundle['box.order.assignee']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="assignee" value="#{orderListViewState.assignee}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{orderListViewModel.employees}" var="employee"
+										   itemLabel="#{employee.name}" itemValue="#{employee}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="create_from" value="#{orderBundle['box.order.list.search.created_from']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="create_from" value="#{orderListViewState.createFrom}" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+									styleClass="width-43-percents" locale="#{languageBean.locale.language}"/>
+
+						<p:outputLabel for="create_to" value="#{orderBundle['box.order.list.search.to']}:" styleClass="m-tex-al-right width-10-percents mar-top-2"/>
+						<p:calendar id="create_to" value="#{orderListViewState.createTo}" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+									styleClass="width-43-percents" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="due_date" value="#{orderBundle['box.order.list.search.due']}:" styleClass="width-120"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="due_date" value="#{orderListViewState.dueDate}" styleClass="m-disp-block" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" locale="ru"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="state" value="#{orderListViewState.state}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{orderListViewModel.states}" var="state"
+										   itemLabel="#{state.name}" itemValue="#{state}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="priority" value="#{orderBundle['box.order.priority']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="priority" value="#{orderListViewState.priority}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{orderListViewModel.priorities}" var="priority"
+										   itemLabel="#{priority.name}" itemValue="#{priority}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="customer_type" value="#{orderBundle['box.order.customer.type']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="customer_type" value="#{orderListViewState.customerType}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{orderListViewModel.customerTypes}" var="customerType"
+										   itemLabel="#{customerType.name}" itemValue="#{customerType}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+		</ul>
+    </ui:define>
+
+    <ui:define name="shortFilterFields">
+        <ul>
+			<ui:fragment rendered="#{orderListViewState.number ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.number']}: "/>
+					<h:outputText value="#{orderListViewState.number};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.assignee.name ne null}">
+				<li>
+					<p:outputLabel value="#{orderBundle['box.order.assignee']}: "/>
+					<h:outputText value="#{orderListViewState.assignee.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.createFrom ne null or orderListViewState.createTo ne null}">
+				<li>
+					<p:outputLabel value="#{orderBundle['box.order.list.search.created_from']}: "/>
+					<h:outputText value="#{dateUtils.format(orderListViewState.createFrom, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+					<p:outputLabel value="#{orderBundle['box.order.list.search.to']}: " styleClass="m-pad-left-3" rendered="#{orderListViewState.createTo ne null}"/>
+					<h:outputText  value="#{dateUtils.format(orderListViewState.createTo, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.dueDate ne null}">
+				<li>
+					<p:outputLabel value="#{orderBundle['box.order.list.search.due']}: "/>
+					<h:outputText value="#{dateUtils.format(orderListViewState.dueDate, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.state.name ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.state']}: "/>
+					<h:outputText value="#{orderBundle[orderListViewState.state.name]};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.priority ne null}">
+				<li>
+					<p:outputLabel for="contract_short" value="#{orderBundle['box.order.priority']}: "/>
+					<h:outputText id="contract_short" value="#{orderBundle[orderListViewState.priority.getName()]};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderListViewState.customerType.name ne null}">
+				<li>
+					<p:outputLabel for="personal_account_short" value="#{orderBundle['box.order.customer.type']}: "/>
+					<h:outputText id="personal_account_short" value="#{orderListViewState.customerType.name};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+    </ui:define>
+
+    <ui:define name="searchResult">
+        <h:form id="order_search_result_form">
+            <f:loadBundle var="customerTypeBundle" basename="CustomerTypeBundle"/>
+
+
+            <div class="ui-dashboard-header">
+                <i class="fa fa-binoculars"/>
+                <h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+
+                <p:outputPanel id="create_button" styleClass="m-fright">
+                    <p:commandButton id="create_order_button" value="#{orderBundle['box.order.create']}"
+                                     disabled="#{!p:ifGranted('CRM_OrderEdit')}" update="possible_order_categories"/>
+
+                    <p:overlayPanel id="order_creation_panel" widgetVar="orderCreationPanelVar" for="create_order_button"
+                                    styleClass="select-one-item-overlay-panel">
+                        <p:selectOneListbox id="possible_order_categories" value="#{orderCreationDialogModel.newCustomerCategory}" var="category">
+
+                            <p:ajax process="@this" listener="#{orderCreationDialogModel.onCreationDialogOpen()}"
+                                    update="order_creation_form" oncomplete="PF('orderCreationPanelVar').hide();"/>
+
+                            <f:selectItems value="#{orderCreationDialogModel.customerCategories}" var="cc"
+                                           itemValue="#{cc}" itemLabel="#{cc.name}"/>
+                            <p:column>
+                                <i class="#{category.icon}"/>
+                            </p:column>
+
+                            <p:column>
+                                <h:outputText value=" #{category.name}"/>
+                            </p:column>
+                        </p:selectOneListbox>
+                    </p:overlayPanel>
+                </p:outputPanel>
+
+            </div>
+
+            <p:dataTable id="personnel_table" value="#{orderListViewModel.lazyDm}" var="order" lazy="true" tableStyle="table-layout: fixed;"
+                         paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}" rowsPerPageTemplate="25,50,100" sortMode="single"
+                         sortBy="#{OrderSort.id}" sortOrder="descending" selectionMode="single">
+
+                <p:column headerText="#{overallBundle['box.overall.id']}" sortBy="#{OrderSort.id}">
+                    <boxenv:linkToCard value="#{order.getIdentifiable()}" text="#{order.id}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.number']}" sortBy="#{OrderSort.number}">
+                    <h:outputText value="#{order.number}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.state']}" sortBy="#{OrderSort.state}">
+                    <h:outputText value="#{order.state}"/>
+                </p:column>
+
+                <p:column headerText="#{orderBundle['box.order.created']}" sortBy="#{OrderSort.creationDate}">
+                    <h:outputText value="#{order.creationDate}">
+                        <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="#{orderBundle['box.order.list.search.due']}" sortBy="#{OrderSort.dueDate}">
+                    <h:outputText value="#{order.dueDate}">
+                        <sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="#{orderBundle['box.order.customer.type']}" sortBy="#{OrderSort.customerType}">
+                    <h:outputText value="#{order.customerType}"/>
+                </p:column>
+
+                <p:column headerText="#{orderBundle['box.order.priority']}" sortBy="#{OrderSort.priority}">
+                    <h:outputText value="#{order.priority}"/>
+                </p:column>
+
+                <p:column headerText="#{orderBundle['box.order.assignee']}" sortBy="#{OrderSort.assignee}">
+                    <h:outputText value="#{order.assignee}"/>
+                </p:column>
+
+            </p:dataTable>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

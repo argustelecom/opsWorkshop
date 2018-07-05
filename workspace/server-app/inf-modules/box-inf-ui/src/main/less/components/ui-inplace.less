@@ -1,0 +1,116 @@
+/* ui-inplace */
+.ui-inplace {
+
+	.ui-inplace-display {
+		padding: 0px;
+		position: relative;
+
+		&.ui-state-highlight {
+			background-color: @ui-inplace-highlight-bg;
+			padding: @ui-inplace-highlight-padding;
+			border: none !important;
+			border-radius: @ui-inplace-highlight-border-radius;
+			box-shadow: 0 0 6px 0 @ui-inplace-highlight-box-shadow-color;
+
+			&:before {
+				z-index: 2;
+				position: absolute;
+				bottom: 0;
+				right: 3px;
+				margin-bottom: 7px;
+				content: '\e1e0';
+				color: @leaden-green-back;
+				background-color: rgba(255,255,255, .7);
+				font-family: "Modena";
+				font-size: 18px;
+				line-height: 1;
+				text-indent: 0;
+			}
+		}
+	}
+
+	.ui-selectonemenu-trigger .ui-icon-triangle-1-s,
+	.ui-selectcheckboxmenu-trigger .ui-icon-triangle-1-s {
+		margin-top: 0px !important;
+	}
+
+	.property-item {
+		.ui-selectonemenu {
+			.ui-selectonemenu-trigger {
+				padding: 0px 6px !important;
+			}
+			.ui-selectonemenu-trigger .ui-icon-triangle-1-s,
+			.ui-selectcheckboxmenu-trigger .ui-icon-triangle-1-s {
+				margin-top: 4px !important;
+			}
+		}
+
+	}
+
+
+	//.ui-inplace-display-disabled>dl{
+	//	padding: 0px;
+	//}
+
+	.name-value>dd {
+		height: 22px;
+	}
+
+	.ui-inplace-content {
+
+		&:before, &:after {
+			content: " ";
+			display: table;
+			height: 0;
+			clear: both;
+			visibility: hidden;
+		}
+
+		.ui-input-date-interval-value {
+
+			.ui-menubutton {
+
+				.ui-button {
+					width: 14px !important;
+					height: 14px !important;
+
+					&:before {
+						font-size: 20px;
+					}
+				}
+			}
+		}
+	}
+}
+
+.ui-inplace + .name-value {
+	padding-top: 0;
+	margin-top: -4px;
+}
+
+.hover-overlay-block {
+
+	.ui-state-highlight .sys-comp-editable-section-output-multiline {
+		max-height: inherit;
+	}
+
+	.ui-inplace-display,
+	.ui-inplace-content {
+		z-index: 1;
+		position: absolute;
+		left: 0;
+		right: 0;
+	}
+}
+
+.personal-account {
+
+	.ui-inplace-display,
+	.ui-inplace-display.ui-state-highlight {
+		padding: 0 20px 0 0;
+	}
+
+	.sys-comp-editable-section-writable {
+		max-width: 80%;
+	}
+}

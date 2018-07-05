@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<!-- 
+		резолв system properties в этом и других файлах обеспечивается настройкой spec-descriptor-property-replacement 
+		в standalone.xml. так что можно делать так: ${jboss.server.data.dir} 
+	-->
+
+	<persistence-unit name="ArgusPU">
+		<jta-data-source>java:jboss/datasources/ArgusDS</jta-data-source>
+		<!-- 
+			В Window->Preferences->Java persistence ->JPA->Errors/Warnings необходимо установить: 
+			Для избежания ошибок "JAR file cannot be resolved": Для Persistence Unit выбрать "Jar file cannot be resolved = Ignore" 
+			Для избежания ошибки "The persistence.xml file does not have recognized content": Для Project выбрать "Invalid content (no root node) = Ignore" 
+		-->
+
+		<!-- 
+			Здесь должны быть перечислены все модули, содержащие entity beans или hbm.xml.
+			Только в перечисленных здесь модулях будут распознаваться hibernate/jpa аннотации и hbm.xml.  TASK-75824
+			Путь указан относительный. Относительно модуля, содержащего persistence.xml, т.е. ear 
+		-->
+
+		<!-- "System" modules -->
+		<jar-file>system-inf-${argus.app.version}.jar</jar-file>
+		<jar-file>../box-inf-${box.app.version}.jar</jar-file>
+		<jar-file>../box-env-${box.app.version}.jar</jar-file>
+
+		<!-- "CRM" module & features -->
+		<jar-file>../crm-dom-${box.app.version}.jar</jar-file>
+
+		<!-- "Product Directory" module & features -->
+		<jar-file>../product-dir-dom-${box.app.version}.jar</jar-file>
+
+		<!-- "Billing" module & features -->
+		<jar-file>../billing-dom-${box.app.version}.jar</jar-file>
+
+		<!-- "Network Resource Inventory" module & features -->
+		<jar-file>../nri-dom-${box.app.version}.jar</jar-file>
+		
+		<!--  FIXME [elsis-gate] --> 
+		<jar-file>../elsis-gate-${box.app.version}.jar</jar-file>
+
+
+		<!-- 
+			Проверка что отсутствующий модуль не приводит к ошибке. Рассчитываем на это, т.к. перечень
+			выше не корректируется в зависимости от профиля сборки 
+		-->
+		<jar-file>../NonExistentModule.jar</jar-file>
+
+
+		<!-- 
+			Фактически настройка не действует, т.к. сканирование классов из Root выключено (TASK-75824).
+			А в hibernate это просто фильтр результатов сканирования.
+			Такое положение дел соотвествует значению true. 
+		-->
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>	
+
+		<properties>
+			<!-- Hibernate Properties -->
+
+			<!-- 
+				В обычой сборке поставлен несуществующий режим ignore, чтобы не тратить время на валидацию.
+				Но сама строка с настройкой нужна - по ней некоторые тесты возвращают validate или даже create-drop 
+			-->
+			<property name="hibernate.hbm2ddl.auto" value="ignore" />
+			<property name="hibernate.default_batch_fetch_size" value="25" />
+			<property name="hibernate.jdbc.batch_size" value="50" />
+			<property name="hibernate.order_inserts" value="true" />
+			<property name="hibernate.order_updates" value="true" />
+			<property name="hibernate.cache.use_second_level_cache" value="true" />
+			<property name="hibernate.cache.use_query_cache" value="true" />
+			<property name="hibernate.cache.region_prefix" value="argus-cache-region"/> 
+			<property name="jboss.entity.manager.jndi.name" value="java:jboss/ArgusEntityManager"/>
+			<property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/ArgusEntityManagerFactory" />
+			<property name="jboss.entity.manager.jndi.name" value="java:jboss/ArgusEntityManager"/>
+			<property name="hibernate.session_factory_name" value="java:jboss/SessionFactory" />
+
+			<!-- https://docs.jboss.org/author/display/WFLY8/JPA+Reference+Guide#JPAReferenceGuide-BindingEntityManagerFactory%2FEntityManagertoJNDI -->
+			<property name="hibernate.session_factory_name_is_jndi" value="false" />
+
+			<property name="hibernate.physical_naming_strategy" value="ru.argustelecom.system.inf.dataaccess.hibernate.cfg.ArgusPhysicalNamingStrategy" />
+			<property name="hibernate.implicit_naming_strategy" value="ru.argustelecom.system.inf.dataaccess.hibernate.cfg.ArgusImplicitNamingStrategy" />
+
+			<property name="hibernate.dialect" value="ru.argustelecom.box.inf.hibernate.dialect.PostgreSQL94Dialect" />
+
+			<!-- Чтобы по логу было понятно какой и почему запрос выполнен. -->
+			<property name="hibernate.use_sql_comments" value="true" />
+
+			<!-- Оптимизированный сканнер только для ускорения старта сервера. TASK-75824 -->
+			<property name="hibernate.archive.scanner" value="org.hibernate.boot.archive.scan.spi.OptimizedHibernateArchiveScanner" />
+
+			<!-- настройки hibernate-search -->
+
+			<!-- 
+				поднятие версии движка lucene должно сопровождаться полным ребилдом индекса, то есть не следует
+				механически поднимать эту версию при смене версии hibernate search 
+			-->
+			<property name="hibernate.search.lucene_version" value="LUCENE_5_3_1" />
+			<property name="hibernate.search.generate_statistics" value="true" />
+			<property name="hibernate.search.jmx_enabled" value="true" />
+			<property name="hibernate.search.default.exclusive_index_use" value="true" />
+			<property name="hibernate.search.default.indexBase" value="${argus.textsearch.store-path}" />
+			<property name="hibernate.search.default.worker.backend" value="ru.argustelecom.system.inf.search.cluster.HandmadeClusterBackendQueueProcessor" />
+			<!-- расчет, что бэкенд отрабатывает в контексте той же транзакции, в которой сделаны изменения - см. процессор -->
+			<!-- kostd, TASK-70172: ISPN-6425 early prevention -->
+			<property name="hibernate.search.default.worker.execution" value="sync"/>
+			<property name="hibernate.search.default.write_metadata_async" value="false"/>
+
+			<!-- 
+				явное отключение фичи multitable bulk, т.к. по дефолту получались ошибки на старте сервера
+				(TASK-75621), которые стало сложно спрятать после возвращения log4jdbc (TASK-38012) 
+			-->
+			<property name="hibernate.hql.bulk_id_strategy" value="ru.argustelecom.system.inf.dataaccess.hibernate.cfg.DisabledMultiTableBulkIdStrategy" />
+
+			<!-- Если True - проверка корректности типа синхронизации выполняется через проверку IsJoinToTransaction (TASK-75403) -->
+			<property name="jboss.as.jpa.syncasjoin" value="true" />
+
+			<!-- 
+				kostd, TASK-74078.з11, з17:
+				HHH-11083 WrongClassException using Infinispan and sharing cache regions
+				HHH-10287 Cache keys no longer include the entity type 
+			-->
+			<property name="hibernate.cache.keys_factory" value="ru.argustelecom.system.inf.hibernate.cache.ClassicalCacheKeysFactory" />
+
+			<property name="hibernate.ejb.entitymanager_factory_name" value="EntityManagerFactory" />
+
+			<!-- 
+				Пропускать проверку: 
+				Условие: Есть ассоциированный с транзакцией Unsynchronized Persistence Context(Например, есть UnitOfWork)
+				Причина: В бине объявлен Synchronized Persistence Context (например, аннотацией @PersistenceContext) 
+				Следствие: Бросается исключение 
+				Если настройка включена: Данная проверка выключена, исключений не бросается, ошибок нет. Должно быть выставлено как TRUE!! 
+			-->
+			<property name="wildfly.jpa.skipmixedsynctypechecking" value="true" />
+
+			<!-- 
+				Если проверка wildfly.jpa.skipmixedsynctypechecking=false, то можно изменить проверку 
+				mixedsynctype: UNSYNC PersistenceContext при выполненном для него JoinTransaction считается SYNCHRONIZED 
+			-->
+			<property name="wildfly.jpa.allowjoinedunsync" value="true"/>
+		</properties>
+	</persistence-unit>
+</persistence>

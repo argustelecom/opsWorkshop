@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<p:dialog id="lifecycle_routing_info_dialog" header="Переход по жизненному циклу" width="400"
+			  style="position: absolute !important;"
+			  widgetVar="lifecycleRoutingInfoDialog" resizable="false" dynamic="true" modal="true" closable="false"
+			  styleClass="icon-setings">
+		<div class="m-container100 m-responsive100">
+			<div class="m-container100 m-responsive100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect">
+						<dl class="name-value width-200">
+									<dt>
+										<p:outputLabel for="transfer_date" value="Переход выполнен:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="transfer_date"
+													   value="#{model.currentHistoryItem.transitionTime}"/>
+									</dd>
+
+
+									<dt>
+										<p:outputLabel for="start_state" value="Из состояния:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="start_state"
+													   value="#{model.currentHistoryItem.fromState}"/>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="end_state"
+													   value="В состояние:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="end_state"
+													   value="#{model.currentHistoryItem.toState}"/>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="trans_init" value="Инициатор перехода:"/>
+									</dt>
+									<dd>
+										<p:outputLabel id="trans_init"
+													   value=" #{model.currentHistoryItem.initiator.name()}"/>
+									</dd>
+
+								</dl>
+							</div>
+						</div>
+					</div>
+				</div>
+
+		<p:commandButton id="cancel2_button" value="Закрыть"
+						 styleClass="m-blue-text-button" resetValues="true" update="lifecycle_routing_info_dialog"
+						 onclick="PF('lifecycleRoutingInfoDialog').hide()"/>
+
+	</p:dialog>
+</ui:composition>

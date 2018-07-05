@@ -1,0 +1,232 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	<ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="name"
+									   value="#{overallBundle['box.overall.name']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="name" value="#{tariffListVs.name}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="valid_from" value="#{overallBundle['box.overall.valid_from']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="valid_from" value="#{tariffListVs.validFrom}"
+									pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" process="@this"
+									styleClass="width-43-percents" locale="#{languageBean.locale.language}"/>
+
+						<p:outputLabel for="valid_to" styleClass="m-tex-al-right width-10-percents mar-top-2" value="#{overallBundle['box.overall.valid_to.short']}:"/>
+						<p:calendar id="valid_to" value="#{tariffListVs.validTo}"
+									styleClass="width-43-percents" pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"
+									process="@this" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<o:importConstants type="ru.argustelecom.box.env.telephony.tariff.model.TariffState" />
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="status" value="#{overallBundle['box.overall.state']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="status" value="#{tariffListVs.state}" process="@this">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{TariffState.values()}"
+										   var="tariffStatus" itemLabel="#{tariffStatus.name}"
+										   itemValue="#{tariffStatus}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<o:importConstants type="ru.argustelecom.box.env.telephony.tariff.TariffListViewState.TariffListMode" />
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="mode" styleClass="width-120" value="#{overallBundle['box.overall.type']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="mode" value="#{tariffListVs.mode}" process="@this" styleClass="pricelist-search-type">
+
+							<p:ajax process="@this" update="#{filterFormId} #{resultFormId}"/>
+
+							<f:selectItems value="#{TariffListMode.values()}"
+										   var="mode" itemLabel="#{mode.name}" itemValue="#{mode}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<ui:fragment rendered="#{tariffListVs.mode eq 'CUSTOM'}">
+			<li>
+				<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel for="customer_type" value="#{tariffBundle['box.telephony.tariff.customer.type']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:selectOneMenu id="customer_type" value="#{tariffListVs.customerType}">
+
+								<p:ajax process="@this" update="#{filterFormId}-customer"/>
+
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{tariffListVm.customerTypes}" var="customerType"
+											   itemLabel="#{customerType.name}" itemValue="#{customerType}"/>
+							</p:selectOneMenu>
+						</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel for="customer" value="#{tariffBundle['box.telephony.tariff.customer']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:autoComplete id="customer" value="#{tariffListVs.customer}" var="customer"
+											itemValue="#{customer}" itemLabel="#{customer.name}"
+											disabled="#{tariffListVs.customerType eq null}"
+											completeMethod="#{tariffListVm.completeCustomer}"/>
+						</span>
+				</div>
+			</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{tariffListVs.name ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.name']}:"/>
+					<h:outputText value="#{tariffListVs.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{tariffListVs.validFrom ne null or tariffListVs.validTo ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.valid_from']}:"/>
+					<h:outputText value="#{dateUtils.format(tariffListVs.validFrom, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)}"/>
+					<p:outputLabel value="#{overallBundle['box.overall.valid_to.short']}" styleClass="m-pad-left-3" rendered="#{tariffListVs.validTo ne null}"/>
+					<h:outputText value="#{dateUtils.format(tariffListVs.validTo, dateUtils.DATETIME_WITH_SECONDS_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{tariffListVs.state.name ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.state']}:"/>
+					<h:outputText value="#{tariffListVs.state.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{tariffListVs.mode.name ne null}">
+				<li>
+					<p:outputLabel value="#{tariffBundle['box.telephony.tariff.type']}:"/>
+					<h:outputText value="#{tariffListVs.mode.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{tariffListVs.mode eq 'CUSTOM'}">
+				<ui:fragment rendered="#{tariffListVs.customerType.name ne null}">
+					<li>
+						<p:outputLabel for="contract_short" value="#{tariffBundle['box.telephony.tariff.customer.type']}:"/>
+						<h:outputText id="contract_short" value="#{tariffListVs.customerType.name};"/>
+					</li>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{pricelistJournalViewState.customer.name ne null}">
+					<li>
+						<p:outputLabel for="personal_account_short" value="#{tariffBundle['box.telephony.tariff.customer']}:"/>
+						<h:outputText id="personal_account_short" value="#{tariffListVs.customer.name};"/>
+					</li>
+				</ui:fragment>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+
+		<h:form id="#{resultFormId}">
+			<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+
+				<p:outputPanel styleClass="m-fright">
+					<p:commandButton id="create_tariff_button" value="#{tariffBundle['box.telephony.tariff.create']}"
+									 disabled="#{p:ifNoneGranted('ProductManagment_CommonTariffEdit,ProductManagment_CustomTariffEdit')}"
+									 update="tariff_creation_modes"/>
+
+					<p:overlayPanel id="tariff_creation_panel" widgetVar="tariffCreationPanelVar" for="create_tariff_button"
+									styleClass="select-one-item-overlay-panel">
+						<p:selectOneListbox id="tariff_creation_modes" value="#{tariffCreationDm.mode}">
+
+							<p:ajax process="@this" listener="#{tariffCreationDm.onCreationDialogOpen()}"/>
+
+							<f:selectItems value="#{tariffCreationDm.modesForCreationButton}" var="mode"
+										   itemValue="#{mode}" itemLabel="#{mode.name}" itemDisabled="#{!p:ifGranted(mode.permissionId)}"/>
+						</p:selectOneListbox>
+					</p:overlayPanel>
+				</p:outputPanel>
+
+			</div>
+
+			<p:dataTable id="tariffs_table" value="#{tariffListVm.lazyDm}" var="tariff" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{TariffSort.id}" sortOrder="descending" selectionMode="single">
+
+                <p:column headerText="#{overallBundle['box.overall.id']}" sortBy="#{TariffSort.id}">
+                    <boxenv:linkToCard value="#{tariff.getIdentifiable()}" text="#{tariff.id}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.type']}" sortBy="#{TariffSort.type}">
+                    <h:outputText value="#{tariff.typeName}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.name']}" sortBy="#{TariffSort.name}">
+                    <h:outputText value="#{tariff.name}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.state']}" sortBy="#{TariffSort.state}">
+                    <h:outputText value="#{tariff.state}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.valid_from']}" sortBy="#{TariffSort.validFrom}">
+                    <h:outputText value="#{dateUtils.format(tariff.validFrom, dateUtils.DATE_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.valid_to']}" sortBy="#{TariffSort.validTo}">
+                    <h:outputText value="#{dateUtils.format(tariff.validTo, dateUtils.DATE_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+                </p:column>
+
+                <p:column headerText="#{tariffBundle['box.telephony.tariff.customer']}" sortBy="#{TariffSort.customer}">
+                    <ui:fragment rendered="#{tariff.customer ne null}">
+                        <boxenv:linkToCard value="#{tariff.customer.getIdentifiable()}" text="#{tariff.customer.name}"/>
+                    </ui:fragment>
+                </p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

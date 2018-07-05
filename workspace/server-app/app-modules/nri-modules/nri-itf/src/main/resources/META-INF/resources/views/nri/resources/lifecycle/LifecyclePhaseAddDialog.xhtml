@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form id="lifecycle_phase_add_dlg_form">
+	<p:dialog id="lifecycle_phase_add_dlg"
+			  header="#{lifecyclePhaseAddDialogModel.dialogHeader}"
+			  widgetVar="lifecyclePhaseAddDlg" resizable="false" modal="true" closable="false"
+			  styleClass="icon-creation" style="max-width: 75%; min-width: 50%;">
+		<p:panel rendered="#{lifecyclePhaseAddDialogModel.phaseCreationMode}">
+			<dl class="name-value width-200">
+				<dt>
+					<p:outputLabel for="newPhaseName"
+								   value="Название состояния:"/>
+				</dt>
+				<dd>
+					<p:inputText id="newPhaseName" value="#{lifecyclePhaseAddDialogModel.newPhaseName}" required="true"/>
+				</dd>
+				<dt>
+					<p:outputLabel for="newIncomingPhases"
+								   value="Из состояния"/>
+				</dt>
+				<dd>
+					<p:dataTable id="newIncomingPhases" var="incomingPhase"
+								 value="#{lifecyclePhaseAddDialogModel.newIncomingPhases}"
+								 styleClass="newIncomingPhasesWidget"
+								 editable="true" style="margin-bottom:20px">
+						<p:ajax event="rowEditCancel" listener="#{lifecyclePhaseAddDialogModel.cancelEditNewIncomingPhase}"/>
+						<p:ajax event="rowEdit" listener="#{lifecyclePhaseAddDialogModel.acceptEditNewIncomingPhase}"/>
+						<p:column headerText="Действие">
+							<p:cellEditor>
+								<f:facet name="output"><h:outputText value="#{incomingPhase.name}" /></f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{incomingPhase.name}" required="true"/>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column headerText="Из состояния">
+							<p:cellEditor>
+								<f:facet name="output"><h:outputText value="#{incomingPhase.phase.phaseName}" /></f:facet>
+								<f:facet name="input">
+									<p:selectOneMenu value="#{incomingPhase.phase}" required="true">
+										<f:selectItems value="#{lifecyclePhaseAddDialogModel.phases}" var="p"
+											itemLabel="#{p.phaseName}" itemValue="#{p}"/>
+									</p:selectOneMenu>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column style="width:32px">
+							<f:facet name="header">
+								<p:commandLink id="addNewIncomingPhasesBtn"
+									update="newIncomingPhases" process="@this"
+									oncomplete="jQuery('.newIncomingPhasesWidget tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});"
+									action="#{lifecyclePhaseAddDialogModel.addNewIncomingPhase}">
+									<i class="fa fa-plus icon-btn"/>
+								</p:commandLink>
+							</f:facet>
+							<p:rowEditor/>
+						</p:column>
+					</p:dataTable>
+				</dd>
+				<dt>
+					<p:outputLabel for="newOutcomingPhases"
+								   value="В состояние"/>
+				</dt>
+				<dd>
+					<p:dataTable id="newOutcomingPhases" var="outcomingPhase"
+								 value="#{lifecyclePhaseAddDialogModel.newOutcomingPhases}"
+								 styleClass="newOutcomingPhasesStyleClass"
+								 editable="true" style="margin-bottom:20px">
+						<p:ajax event="rowEditCancel" listener="#{lifecyclePhaseAddDialogModel.cancelEditNewOutcomingPhase}"/>
+						<p:ajax event="rowEdit" listener="#{lifecyclePhaseAddDialogModel.acceptEditNewOutcomingPhase}"/>
+						<p:column headerText="Действие">
+							<p:cellEditor>
+								<f:facet name="output"><h:outputText value="#{outcomingPhase.name}" /></f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{outcomingPhase.name}" required="true"/>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column headerText="В состояние">
+							<p:cellEditor>
+								<f:facet name="output"><h:outputText value="#{outcomingPhase.phase.phaseName}" /></f:facet>
+								<f:facet name="input">
+									<p:selectOneMenu value="#{outcomingPhase.phase}" required="true">
+										<f:selectItems value="#{lifecyclePhaseAddDialogModel.phases}" var="p"
+													   itemLabel="#{p.phaseName}" itemValue="#{p}"/>
+									</p:selectOneMenu>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+						<p:column style="width:32px">
+							<f:facet name="header">
+								<p:commandLink id="addNewOutcomingPhasesBtn"
+											   update="newOutcomingPhases" process="@this"
+											   oncomplete="jQuery('.newOutcomingPhasesStyleClass tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});"
+											   action="#{lifecyclePhaseAddDialogModel.addNewOutcomingPhase}">
+									<i class="fa fa-plus icon-btn"/>
+								</p:commandLink>
+							</f:facet>
+							<p:rowEditor/>
+						</p:column>
+					</p:dataTable>
+				</dd>
+			</dl>
+		</p:panel>
+		<p:panel rendered="#{!lifecyclePhaseAddDialogModel.phaseCreationMode}">
+			<dl class="name-value width-200">
+				<dt>
+					<p:outputLabel for="newTransitionName"
+								   value="Название перехода:"/>
+				</dt>
+				<dd>
+					<p:inputText id="newTransitionName" value="#{lifecyclePhaseAddDialogModel.newTransitionName}" rendered="true"/>
+				</dd>
+				<dt>
+					<p:outputLabel for="incomingPhase"
+								   value="Из состояния:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="incomingPhase" value="#{lifecyclePhaseAddDialogModel.incomingPhase}" style="width:100%;"
+									 var="p" required="true">
+						<f:converter converterId="defaultDtoConverter"/>
+						<f:selectItems value="#{lifecyclePhaseAddDialogModel.phases}" var="phase" itemLabel="#{phase.phaseName}"/>
+						<p:column>
+							<h:outputText value="#{p.phaseName}" />
+						</p:column>
+					</p:selectOneMenu>
+				</dd>
+				<dt>
+					<p:outputLabel for="oucomingPhase"
+								   value="В состояние:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="oucomingPhase" value="#{lifecyclePhaseAddDialogModel.outcomingPhase}" style="width:100%;"
+									 var="p" required="true">
+						<f:converter converterId="defaultDtoConverter"/>
+						<f:selectItems value="#{lifecyclePhaseAddDialogModel.phases}" var="phase" itemLabel="#{phase.phaseName}"/>
+						<p:column>
+							<h:outputText value="#{p.phaseName}" />
+						</p:column>
+					</p:selectOneMenu>
+				</dd>
+			</dl>
+		</p:panel>
+		<div class="dialog-footer-buttons">
+			<p:commandButton id="cancel_button"
+							 value="#{overallBundle['box.overall.cancel']}"
+							 styleClass="m-blue-text-button" resetValues="true"
+							 immediate="true" action="#{lifecyclePhaseAddDialogModel.clear()}"
+							 onclick="PF('buildingElementCreationDlg').hide()"/>
+			<p:commandButton id="dlg_create_transition_button" rendered="#{!lifecyclePhaseAddDialogModel.phaseCreationMode}"
+							 value="#{overallBundle['box.overall.create']}"
+							 update="#{update}" process="@this"
+							 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('lifecyclePhaseAddDlg').hide();}"
+							 actionListener="#{lifecyclePhaseAddDialogModel.createNewPhaseTransition}" />
+			<p:commandButton id="dlg_create_phase_button" rendered="#{lifecyclePhaseAddDialogModel.phaseCreationMode}"
+							 value="#{overallBundle['box.overall.create']}"
+							 update="#{update}" process="@form"
+							 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('lifecyclePhaseAddDlg').hide();}"
+							 actionListener="#{lifecyclePhaseAddDialogModel.createNewPhase}" />
+		</div>
+
+	</p:dialog>
+	</h:form>
+</ui:composition>

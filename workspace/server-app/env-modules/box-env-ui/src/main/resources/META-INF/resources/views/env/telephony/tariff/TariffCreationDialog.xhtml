@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	<h:form id="tariff_creation_form">
+		<p:dialog id="tariff_creation_dlg" header="#{tariffBundle['box.telephony.tariff.creation_dialog']}"
+				  width="550" styleClass="icon-creation"
+				  widgetVar="tariffCreationDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<ui:fragment rendered="#{tariffCreationDm.mode eq 'CUSTOM'}">
+				<dl class="name-value width-200">
+					<dt>
+						<p:outputLabel for="parent_tariff" value="#{tariffBundle['box.telephony.tariff.parent']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="parent_tariff" required="true"
+										 value="#{tariffCreationDm.newTariff.parent}"
+										 label="#{tariffBundle['box.telephony.tariff.parent']}">
+
+							<f:selectItem itemValue="#{null}"/>
+							<f:selectItems value="#{tariffCreationDm.commonTariffs}" var="commonTariff"
+										   itemLabel="#{commonTariff.name}" itemValue="#{commonTariff}"/>
+						</p:selectOneMenu>
+					</dd>
+					<dt>
+						<p:outputLabel for="new_customer_type" value="#{tariffBundle['box.telephony.tariff.customer.type']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="new_customer_type" required="true"
+										 value="#{tariffCreationDm.newTariff.customerType}"
+										 label="#{tariffBundle['box.telephony.tariff.customer.type']}">
+
+							<p:ajax process="@this" update="tariff_creation_form-new_customer"/>
+
+							<f:selectItem itemValue="#{null}"/>
+							<f:selectItems value="#{tariffCreationDm.customerTypes}" var="customerType"
+										   itemLabel="#{customerType.name}" itemValue="#{customerType}"/>
+						</p:selectOneMenu>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_customer" value="#{tariffBundle['box.telephony.tariff.customer']}:"/>
+					</dt>
+					<dd>
+						<p:autoComplete id="new_customer" value="#{tariffCreationDm.newTariff.customer}" var="customer"
+										itemValue="#{customer}" itemLabel="#{customer.objectName}"
+										styleClass="width-100-percents"
+										disabled="#{tariffCreationDm.newTariff.customerType eq null}"
+										completeMethod="#{tariffCreationDm.completeCustomer}" required="true"
+										label="#{tariffBundle['box.telephony.tariff.customer']}" />
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<dl class="name-value width-200">
+				<dt>
+					<p:outputLabel for="new_name" value="#{overallBundle['box.overall.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="new_name" value="#{tariffCreationDm.newTariff.name}" maxlength="128"
+								 required="true" label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_valid_from" value="#{overallBundle['box.overall.valid_from']}"/>
+				</dt>
+				<dd>
+					<p:calendar id="new_valid_from" value="#{tariffCreationDm.newTariff.validFrom}"
+								pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-40-percents"
+								required="true" locale="#{languageBean.locale.language}"
+								label="#{overallBundle['box.overall.valid_from']}">
+						<p:ajax event="dateSelect" process="@this" update="tariff_creation_form-valid_to"/>
+					</p:calendar>
+
+					<p:outputLabel for="valid_to" value="#{overallBundle['box.overall.valid_to.short']}:"
+								   styleClass="m-tex-al-right width-17-percents"/>
+					<p:calendar id="valid_to" value="#{tariffCreationDm.newTariff.validTo}"
+								mindate="#{tariffCreationDm.newTariff.validFrom}"
+								pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-40-percents"
+								locale="#{languageBean.locale.language}"
+								label="#{overallBundle['box.overall.valid_to.short']}"/>
+				</dd>
+
+
+				<dt>
+					<p:outputLabel for="new_rated_unit" value="#{tariffBundle['box.telephony.tariff.rated_unit']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_rated_unit" required="true"
+									 value="#{tariffCreationDm.newTariff.ratedUnit}"
+									 label="#{tariffBundle['box.telephony.tariff.rated_unit']}">
+
+						<f:selectItem itemValue="#{null}"/>
+						<f:selectItems value="#{tariffCreationDm.getPossibleRatedUnits()}" var="ratedUnit"
+									   itemLabel="#{ratedUnit.getName()}" itemValue="#{ratedUnit}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<o:importConstants type="ru.argustelecom.box.env.billing.provision.model.RoundingPolicy" />
+
+				<dt>
+					<p:outputLabel for="new_rounding_policy" value="#{tariffBundle['box.telephony.tariff.round_policy']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_rounding_policy" required="true"
+									 value="#{tariffCreationDm.newTariff.roundingPolicy}"
+									 label="#{tariffBundle['box.telephony.tariff.round_policy']}">
+
+						<f:selectItem itemValue="#{null}"/>
+						<f:selectItems value="#{RoundingPolicy.values()}" var="roundingPolicy"
+									   itemLabel="#{roundingPolicy.getName()}" itemValue="#{roundingPolicy}"/>
+					</p:selectOneMenu>
+				</dd>
+
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="#{update} tariff_creation_dlg parent_tariff new_customer_type new_customer"
+								 resetValues="true" immediate="true"
+								 process="@this" action="#{tariffCreationDm.cleanCreationParams()}"
+								 onclick="PF('tariffCreationDlgVar').hide()"/>
+
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('tariffCreationDlgVar').hide()}"
+								 action="#{tariffCreationDm.onCreated()}"
+								 update="new_name new_valid_from parent_tariff new_customer new_customer_type valid_to new_rounding_policy new_rated_unit"
+								 process="tariff_creation_dlg"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

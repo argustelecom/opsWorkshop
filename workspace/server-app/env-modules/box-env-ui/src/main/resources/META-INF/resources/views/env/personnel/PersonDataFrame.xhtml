@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+				<h:panelGroup styleClass="m-disp-block m-mar-bot20" rendered="true">
+					<h:outputText styleClass="m-disp-block " id="prefix"
+								  rendered="#{not empty personDataDto.prefix}" value="#{personDataDto.prefix}"/>
+
+					<h:outputText styleClass="m-disp-block fs20" id="last_name"
+								  rendered="#{not empty personDataDto.lastName}" value="#{personDataDto.lastName}"/>
+
+					<h:outputText styleClass="m-disp-inl-block fs18 m-mar-right10" id="first_name"
+								  rendered="#{not empty personDataDto.firstName}" value="#{personDataDto.firstName}"/>
+
+					<h:outputText styleClass="m-disp-inl-block fs18 m-mar-right10" id="second_name"
+								  rendered="#{not empty personDataDto.secondName}" value="#{personDataDto.secondName}"/>
+
+					<h:outputText styleClass="m-disp-inl-block" id="suffix"
+								  rendered="#{not empty personDataDto.suffix}" value="#{personDataDto.suffix}"/>
+				</h:panelGroup>
+
+				<ui:insert name="extended_attributes"/>
+
+				<h:panelGroup styleClass="m-disp-block" rendered="#{not empty personDataDto.note}">
+					<h:outputText  id="settingsttp" class="icon-paper m-bold-gray fs16 m-mar-right10"
+								   title="#{personnelBundle['box.personnel.note']}"/>
+
+					<h:outputText id="personnel_notes" value="#{personDataDto.note}"/>
+				</h:panelGroup>
+
+</ui:composition>

@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+	<f:loadBundle basename="CompanyInfoBundle" var="companyInfoBundle"/>
+
+	<h:form id="general_info_edit_form">
+
+		<ui:param name="accessor" value="#{companyInfoGeneralOptionsFm.accessor}"/>
+
+		<p:dialog id="general_info_edit_dlg" styleClass="icon-creation"
+				  header="#{companyInfoBundle['box.company_info.edit_dialog']}"
+				  width="800"
+				  widgetVar="generalInfoEditDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value width-130 fs14">
+				<dt>
+					<p:outputLabel for="param_name" value="#{overallBundle['box.overall.name']}: "/>
+				</dt>
+				<dd>
+					<h:outputText id="param_name"
+								  value="#{accessor.property.name}" required="true"
+								  label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="param_keyword" value="#{overallBundle['box.overall.keyword']}: "/>
+				</dt>
+				<dd>
+					<h:outputText id="param_keyword"
+								  value="#{accessor.property.keyword}" required="true"
+								  label="#{overallBundle['box.overall.keyword']}"/>
+				</dd>
+
+
+				<dt>
+					<p:outputLabel value="#{overallBundle['box.overall.value']}: "/>
+				</dt>
+				<dd>
+					<boxenv:inputProperty id="prop_value" accessor="#{accessor}"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" onclick="PF('generalInfoEditDlgVar').hide()"
+								 update="general_info_edit_form" process="@this"/>
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.save']}"
+								 update="-company_information_form general_info_edit_dlg"
+								 process="general_info_edit_dlg"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('generalInfoEditDlgVar').hide()}"
+						/>
+			</div>
+		</p:dialog>
+
+	</h:form>
+
+</ui:composition>

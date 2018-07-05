@@ -1,0 +1,96 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<f:event listener="#{createResourceInfoFrameModel.preRender(parentResource, specificationId)}"
+			 type="preRenderComponent"/>
+	<o:importConstants type="ru.argustelecom.box.nri.resources.spec.model.ParameterDataType"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<p:outputPanel styleClass="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb" id="parameters_panel">
+				<div class="ui-dashboard-header">
+					<p:outputLabel styleClass="#{createResourceInfoFrameModel.specification.image}"/>
+					<h:outputText id="specification_name" styleClass="card-header"
+								  value="#{createResourceInfoFrameModel.specification.name}"/>
+				</div>
+				<dl class="name-value width-250 m-font-roboto-regular">
+					<dt>
+						<p:outputLabel value="#{resourceBundle['box.nri.resource.resource_name']}"/>
+					</dt>
+					<dd>
+						<p:inputText value="#{createResourceInfoFrameModel.resource.name}"
+									 required="true"
+									 requiredMessage="#{commonBundle['box.nri.common.name_required']}"/>
+					</dd>
+					<dt>
+						<p:outputLabel value="#{resourceBundle['box.nri.resource.resource_status']}"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu value="#{createResourceInfoFrameModel.resource.status}">
+							<f:selectItems value="#{createResourceInfoFrameModel.allStatuses}" var="status"
+										   itemLabel="#{status.name}" itemValue="#{status}"/>
+						</p:selectOneMenu>
+					</dd>
+					<ui:repeat value="#{createResourceInfoFrameModel.parameters}" var="parameter">
+						<dt>
+							<p:outputLabel rendered="#{not createResourceInfoFrameModel.incrementParams.contains(parameter.specification)}"
+									value="#{parameter.specification.name}:#{parameter.specification.required?' *':''}"/>
+						</dt>
+						<dd>
+							<p:inputText value="#{parameter.value}"
+										 rendered="#{(parameter.specification.dataType eq ParameterDataType.STRING
+										 or parameter.specification.dataType eq ParameterDataType.INTEGER
+										 or parameter.specification.dataType eq ParameterDataType.FLOAT)
+										 	and not createResourceInfoFrameModel.incrementParams.contains(parameter.specification)}">
+								<o:validator validatorId="javax.faces.RegularExpression"
+										message="#{parameter.specification.name}
+											#{commonBundle['box.nri.common.reg_mismatch']}"
+										pattern="#{parameter.specification.regex ne null ?
+										parameter.specification.regex : parameter.specification.dataType.regex}"
+										disabled="#{createResourceInfoFrameModel.incrementParams.contains(parameter.specification)}"/>
+							</p:inputText>
+
+							<p:selectBooleanButton value="#{parameter.value}" styleClass="small-boolean-button"
+												   onLabel="#{commonBundle['box.nri.common.true']}"
+												   offLabel="#{commonBundle['box.nri.common.false']}"
+												   rendered="#{parameter.specification.dataType == ParameterDataType.BOOLEAN}">
+							</p:selectBooleanButton>
+						</dd>
+					</ui:repeat>
+				</dl>
+				<p:accordionPanel multiple="true" activeIndex="null"
+								  rendered="#{createResourceInfoFrameModel.parentResource ne null}">
+					<p:tab title="#{resourceBundle['box.nri.resource.prop_creation_mode']}" titleStyle="color: white">
+						<h:panelGrid columns="2" cellpadding="10">
+							<h:outputLabel value="#{resourceBundle['box.nri.resource.resource_number']}:" for="new_res_number_spinner"/>
+							<p:spinner id="new_res_number_spinner"
+									   value="#{createResourceInfoFrameModel.newResourcesNumber}" min="1"/>
+							<h:outputLabel value="#{resourceBundle['box.nri.resource.init_val']}:" for="initial_res_number_spinner"/>
+							<p:spinner id="initial_res_number_spinner"
+									   value="#{createResourceInfoFrameModel.initialResNumber}" min="1"/>
+							<h:outputLabel value="#{resourceBundle['box.nri.resource.increment_name']}:" for="should_incrementn_name"/>
+							<p:selectBooleanCheckbox id="should_incrementn_name" value="#{createResourceInfoFrameModel.shouldIncrementName}"/>
+							<h:outputLabel value="#{resourceBundle['box.nri.resource.new_res_number']}:" for="new_res_number_spinner"/>
+
+							<p:autoComplete id="incrementing_params_selector" multiple="true"
+											placeholder="#{resourceBundle['box.nri.resource.increment_parameter_hint']}"
+											value="#{createResourceInfoFrameModel.incrementParams}"
+											converter="#{createResourceInfoFrameModel.converter}"
+											completeMethod="#{createResourceInfoFrameModel.completeSpec}"
+											var="spec" itemLabel="#{spec.name}" itemValue="#{spec}">
+								<p:ajax event="itemSelect" process="@form" update="resource_specification_selection_form-parameters_panel"/>
+								<p:ajax event="itemUnselect" process="@form" update="resource_specification_selection_form-parameters_panel"/>
+								<p:column>
+									<h:outputText value="#{spec.name}" />
+								</p:column>
+							</p:autoComplete>
+						</h:panelGrid>
+					</p:tab>
+				</p:accordionPanel>
+			</p:outputPanel>
+		</div>
+	</div>
+</ui:composition>

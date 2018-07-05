@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env"
+                xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:f="http://java.sun.com/jsf/core">
+
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect simple-fb">
+                <h:form id="charge_job_filter_form">
+
+					<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+
+                    <div class="ui-dashboard-header">
+                        <i class="fa fa-info-circle"/>
+                        <h:outputText styleClass="card-header" value="#{chargeJobBundle['box.charge_job.filter']}"/>
+                    </div>
+
+					<div class="column m-container100 m-fnone m-responsive100">
+						<div class="columns">
+							<div class="column m-container100 m-responsive100">
+								<dl class="name-value width-250">
+									<dt>
+										<p:outputLabel for="date_from" value="#{chargeJobBundle['box.charge_job.filter.date_from']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="date_from" value="#{filter.dateFrom}">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"/>
+										</h:outputText>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="date_to" value="#{chargeJobBundle['box.charge_job.filter.date_to']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="date_to" value="#{filter.dateTo}">
+											<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"/>
+										</h:outputText>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="service" value="#{chargeJobBundle['box.charge_job.filter.service']}:"/>
+									</dt>
+									<dd>
+										<ui:fragment rendered="#{chargeJobCardVs.service ne null}">
+											<boxenv:linkToCard id="service" value="#{chargeJobCardVs.service.getIdentifiable()}" text="#{chargeJobCardVs.service.objectName} #{chargeJobCardVs.service.id}"/>
+										</ui:fragment>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="tariff" value="#{chargeJobBundle['box.charge_job.filter.tariff']}:"/>
+									</dt>
+									<dd>
+										<ui:fragment rendered="#{chargeJobCardVs.tariff ne null}">
+											<boxenv:linkToCard id="tariff" value="#{chargeJobCardVs.tariff.getIdentifiable()}" text="#{chargeJobCardVs.tariff.objectName}"/>
+										</ui:fragment>
+									</dd>
+
+									<dt>
+										<p:outputLabel for="cause" value="#{chargeJobBundle['box.charge_job.filter.cause']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="cause" value="#{filter.cause}"/>
+									</dd>
+								</dl>
+							</div>
+						</div>
+					</div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

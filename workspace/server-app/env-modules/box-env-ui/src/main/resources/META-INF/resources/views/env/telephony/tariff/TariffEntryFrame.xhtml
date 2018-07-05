@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect simple-fb">
+				<h:form id="tariff_entry_form">
+
+					<f:event type="preRenderComponent" listener="#{tariffEntryFm.preRender(tariff)}"/>
+
+					<o:importConstants
+							type="ru.argustelecom.box.env.telephony.tariff.lifecycle.AbstractTariffLifecycle.Behaviors"
+							var="behavior"/>
+					<o:importConstants type="ru.argustelecom.box.env.telephony.tariff.model.TariffState" var="state"/>
+
+					<div class="ui-dashboard-header">
+						<i class="icon-format_list_numbered"/>
+						<h:outputText styleClass="card-header"
+									  value="#{tariffBundle['box.telephony.tariff.entries']}"/>
+						<h:outputText id="plpottp" class="icon-help_outline tooltip-help-15" position="top"
+									  title="#{tariffBundle['box.telephony.tariff.entry.hint']}"/>
+						<p:tooltip id="plpo_ttp" for="plpottp"/>
+
+						<p:outputPanel id="tariff_entries_managed_buttons" styleClass="m-tex-al-right m-fright"
+									   rendered="#{!behaviorUtils.isForbidden(currentTariff.value, behavior.modifyEntries)}">
+
+							<ui:fragment rendered="#{tariffEntryFm.tariff.state eq state.FORMALIZATION.name}">
+								<p:commandLink id="import_tariff_entry" styleClass="m-mar-left10" process="@this"
+											   update="tariff_entry_import_form"
+											   icon="fa fa-upload" oncomplete="PF('tariffEntryImportDlgVar').show()"
+											   disabled="#{(sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+														or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))}">
+									<i class="icon-file_upload m-bold-gray icon-btn" />
+									<f:setPropertyActionListener value="#{tariffEntryFm.importCallback}"
+																 target="#{tariffEntryImportDm.importCallback}"/>
+									<f:setPropertyActionListener value="#{tariffEntryFm.tariff}"
+																 target="#{tariffEntryImportDm.tariff}"/>
+								</p:commandLink>
+							</ui:fragment>
+
+							<p:commandLink id="export_tariff_entry"
+										   title="#{overallBundle['box.overall.download']}" position="left"
+										   ajax="false" process="@this" icon="fa fa-download">
+								<i class="icon-get_app m-bold-gray icon-btn" />
+								<p:fileDownload value="#{tariffEntryFm.export()}"/>
+							</p:commandLink>
+
+							<p:commandLink id="open_dlg_new_tariff_entry" styleClass="m-mar-left10" process="@this"
+										   action="#{tariffEntryEditDm.onDialogOpen()}"
+										   title="#{overallBundle['box.overall.create']}"
+										   disabled="#{(tariffEntryFm.tariff.getIdentifiable().state.equals(state.FORMALIZATION) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))))
+																    or (tariffEntryFm.tariff.getIdentifiable().state.equals(state.ACTIVE) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_ActiveCustomTariffEntryEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_ActiveCommonTariffEntryEdit'))))
+																	and !behaviorUtils.isForbidden(tariffEntryFm.tariff.getIdentifiable(), behavior.editEntry)}">
+								<i class="fa fa-edit icon-btn"/>
+								<f:setPropertyActionListener value="#{tariffEntryFm.tariff.id}"
+															 target="#{tariffEntryEditDm.tariffId}"/>
+								<f:setPropertyActionListener value="#{tariffEntryFm.callback}"
+															 target="#{tariffEntryEditDm.callback}"/>
+							</p:commandLink>
+
+							<p:commandLink styleClass="m-mar-left10" action="#{tariffEntryFm.onConfirmDialogOpen()}"
+										   update="tariff_entry_table" title="#{overallBundle['box.overall.delete']}"
+										   disabled="#{(tariffEntryFm.tariff.getIdentifiable().state.equals(state.FORMALIZATION) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_CustomTariffEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_CommonTariffEdit'))))
+																    or (tariffEntryFm.tariff.getIdentifiable().state.equals(state.ACTIVE) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and !p:ifGranted('ProductManagment_ActiveCustomTariffEntryEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and !p:ifGranted('ProductManagment_ActiveCommonTariffEntryEdit'))))
+																	and !behaviorUtils.isForbidden(tariffEntryFm.tariff.getIdentifiable(), behavior.editEntry)
+														or tariffEntryFm.selectedEntries == null or empty tariffEntryFm.selectedEntries}">
+								<i class="fa fa-trash icon-btn"/>
+							</p:commandLink>
+						</p:outputPanel>
+					</div>
+
+					<ui:fragment rendered="#{sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff')}">
+						<dl class="name-value width-20">
+							<dt>
+								<p:selectBooleanCheckbox id="show_only_custom_entries" value="#{tariffEntryFm.onlyCustom}">
+									<p:ajax update="tariff_entry_table"/>
+								</p:selectBooleanCheckbox>
+
+							</dt>
+							<dd>
+								<p:outputLabel value="#{tariffBundle['box.telephony.tariff.entry.show_only_diff']}"/>
+							</dd>
+						</dl>
+					</ui:fragment>
+
+
+					<p:dataTable id="tariff_entry_table" var="entry" value="#{tariffEntryFm.entries}" paginator="true" widgetVar="tariffEntryTableVar"
+								 rows="25" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+								 rowsPerPageTemplate="25,50,100" selection="#{tariffEntryFm.selectedEntries}" rowKey="#{entry.id}" emptyMessage="#{overallBundle['box.overall.empty']}"
+								 rowStyleClass="#{entry.version > 0 and sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') ? 'inactive-entry' : ''}"
+								 styleClass="tariff-entry-table" filteredValue="#{tariffEntryFm.filteredEntries}">
+
+						<p:ajax event="rowSelectCheckbox"
+								update="#{update} tariff_entry_form-tariff_entries_managed_buttons"/>
+						<p:ajax event="rowUnselectCheckbox"
+								update="#{update} tariff_entry_form-tariff_entries_managed_buttons"/>
+						<p:ajax event="rowSelect" update="#{update} tariff_entry_form-tariff_entries_managed_buttons"/>
+						<p:ajax event="rowUnselect"
+								update="#{update} tariff_entry_form-tariff_entries_managed_buttons"/>
+						<p:ajax event="toggleSelect"
+								update="#{update} tariff_entry_form-tariff_entries_managed_buttons"/>
+
+						<p:column selectionMode="multiple" styleClass="width-20"/>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.route']}"
+								  filterBy="#{entry.name}" filterMatchMode="contains"
+								  filterValue="#{tariffEntryFm.filters['name']}">
+							<h:outputText value="#{entry.name}"/>
+						</p:column>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.prefix']}"
+								  filterBy="#{entry.prefixes}" filterMatchMode="contains"
+								  filterValue="#{tariffEntryFm.filters['prefixes']}">
+							<h:outputText id="tariff_entry_prefix"
+										  value="#{entry.prefixes.get(0)} #{entry.prefixes.size() > 1 ? ', ' : ''}
+							#{entry.prefixes.size() > 1 ? entry.prefixes.get(1) : ''} #{entry.prefixes.size() > 2 ? ',' : ''}
+							#{entry.prefixes.size() > 2 ? entry.prefixes.get(2) : ''} #{entry.prefixes.size() > 3 ? '...' : ''}"/>
+							<div/>
+							<p:commandLink styleClass="ui-button-text-only" id="popup_expand"
+										   value="#{tariffBundle['box.telephony.tariff.entry.prefix.total']} #{entry.prefixes.size()}"
+										   update="tariff_entry_form-prefix_expand_panel"
+										   oncomplete="PF('tariffEntryPrefixPanelVar').show('#{component.clientId}')"
+										   rendered="#{entry.prefixes.size() gt 3}">
+								<f:setPropertyActionListener value="#{entry}" target="#{tariffEntryFm.selectedEntry}"/>
+							</p:commandLink>
+						</p:column>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.cost']}"
+								  filterBy="#{entry.chargePerUnit}" filterMatchMode="contains"
+								  filterValue="#{tariffEntryFm.filters['cost']}">
+							<boxenv:money value="#{entry.chargePerUnit}" unicolour="true" size="fs14"/>
+						</p:column>
+
+						<p:column headerText="#{tariffBundle['box.telephony.tariff.entry.zone']}"
+								  filterBy="#{entry.zone.objectName}" filterMatchMode="contains"
+								  filterValue="#{tariffEntryFm.filters['zone']}">
+							<h:outputText value="#{entry.zone.objectName}"/>
+						</p:column>
+
+						<p:column styleClass="width-20" rendered="#{(tariffEntryFm.tariff.getIdentifiable().state.equals(state.FORMALIZATION) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and p:ifGranted('ProductManagment_CustomTariffEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and p:ifGranted('ProductManagment_CommonTariffEdit'))))
+																    or (tariffEntryFm.tariff.getIdentifiable().state.equals(state.ACTIVE) and
+																	((sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CustomTariff') and p:ifGranted('ProductManagment_ActiveCustomTariffEntryEdit'))
+																    or (sysinf:isEntity(tariffEntryFm.tariff.getIdentifiable(), 'CommonTariff') and p:ifGranted('ProductManagment_ActiveCommonTariffEntryEdit'))))
+																	and !behaviorUtils.isForbidden(tariffEntryFm.tariff.getIdentifiable(), behavior.editEntry)}">
+							<p:commandLink action="#{tariffEntryEditDm.onDialogOpen()}" process="@this"
+										   title="#{overallBundle['box.overall.edit']}">
+								<i class="icon-create fs20 m-bold-gray"/>
+								<f:setPropertyActionListener value="#{tariffEntryFm.tariff.id}"
+															 target="#{tariffEntryEditDm.tariffId}"/>
+								<f:setPropertyActionListener value="#{tariffEntryFm.callback}"
+															 target="#{tariffEntryEditDm.callback}"/>
+								<f:setPropertyActionListener value="#{entry}"
+															 target="#{tariffEntryEditDm.editableTariffEntry}"/>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+
+					<p:overlayPanel id="prefix_expand_panel" widgetVar="tariffEntryPrefixPanelVar" showEffect="fade"
+									hideEffect="fade" styleClass="panel">
+						<p:dataGrid id="prefixes_grid" var="prefix" value="#{tariffEntryFm.selectedEntry.prefixes}"
+									columns="6">
+							<h:outputText value="#{prefix}, "/>
+						</p:dataGrid>
+
+					</p:overlayPanel>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

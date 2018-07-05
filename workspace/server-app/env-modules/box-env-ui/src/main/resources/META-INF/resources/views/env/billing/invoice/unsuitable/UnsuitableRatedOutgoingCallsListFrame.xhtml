@@ -1,0 +1,253 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="call_date_from" styleClass="width-130"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_from']}:"/>
+					</span>
+					<span class="filter-value">
+						<h:inputText styleClass="visibility-hidden width-0"/>
+						<p:calendar id="call_date_from" value="#{unsuitableRatedOutgoingCallsListVs.callDateFrom}"
+									pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="call_date_to"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_to']}:"
+									   styleClass="width-130"/>
+					</span>
+					<span class="filter-value">
+						<p:calendar id="call_date_to" value="#{unsuitableRatedOutgoingCallsListVs.callDateTo}"
+									pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" locale="#{languageBean.locale.language}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="resource_number" styleClass="width-80"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.resource_number']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="resource_number" value="#{unsuitableRatedOutgoingCallsListVs.resourceNumber}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="zone" styleClass="width-80"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.zone']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="zone" value="#{unsuitableRatedOutgoingCallsListVs.zone}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{unsuitableRatedOutgoingCallsListVm.zones}" var="zone"
+										   itemLabel="#{zone.name}" itemValue="#{zone}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="service" styleClass="width-120"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.service']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="service" value="#{unsuitableRatedOutgoingCallsListVs.service}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{unsuitableRatedOutgoingCallsListVm.services}" var="service"
+										   itemLabel="#{service.name} #{service.id}" itemValue="#{service}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="tariff" styleClass="width-120"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.tariff']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="tariff" value="#{unsuitableRatedOutgoingCallsListVs.tariff}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{unsuitableRatedOutgoingCallsListVm.tariffs}" var="tariff"
+										   itemLabel="#{tariff.name}" itemValue="#{tariff}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="supplier" styleClass="width-100"
+									   value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.supplier']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="supplier" value="#{unsuitableRatedOutgoingCallsListVs.supplier}">
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{unsuitableRatedOutgoingCallsListVm.suppliers}" var="supplier"
+										   itemLabel="#{supplier.name}" itemValue="#{supplier}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.callDateFrom ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_from']}:"/>
+					<h:outputText value="#{dateUtils.format(unsuitableRatedOutgoingCallsListVs.callDateFrom, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.callDateTo ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_date_to']}:"/>
+					<h:outputText value="#{dateUtils.format(unsuitableRatedOutgoingCallsListVs.callDateTo, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.zone ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.zone']}:"/>
+					<h:outputText value="#{unsuitableRatedOutgoingCallsListVs.zone.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.resourceNumber ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.resource_number']}"
+								   styleClass="m-pad-left-3"/>
+					<h:outputText value="#{unsuitableRatedOutgoingCallsListVs.resourceNumber};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.service ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.service']}"
+								   styleClass="m-pad-left-3"/>
+					<h:outputText value="#{unsuitableRatedOutgoingCallsListVs.service.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.tariff ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.tariff']}"
+								   styleClass="m-pad-left-3"/>
+					<h:outputText value="#{unsuitableRatedOutgoingCallsListVs.tariff.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{unsuitableRatedOutgoingCallsListVs.supplier ne null}">
+				<li>
+					<p:outputLabel value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.supplier']}"
+								   styleClass="m-pad-left-3"/>
+					<h:outputText value="#{unsuitableRatedOutgoingCallsListVs.supplier.name};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+
+		<h:form id="#{resultFormId}">
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+				<p:outputPanel styleClass="m-fright">
+					<p:commandButton id="repeat_button"
+									 action="#{unsuitableRatedOutgoingCallsRepeatProcessingDm.onDialogOpen()}"
+									 value="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.repeat_button']}"
+									 disabled="#{!p:ifGranted('Billing_RatedCallsWithoutInvoiceRepeated')}"
+									 oncomplete="PF('unsuitableRatedOutgoingCallsRepeatProcessingDlgVar').show()"/>
+				</p:outputPanel>
+			</div>
+
+			<o:importConstants
+					type="ru.argustelecom.box.env.billing.invoice.unsuitable.UnsuitableRatedOutgoingCallsLazyDataModel.UnsuitableRatedOutgoingCallsSort"/>
+
+			<p:dataTable id="unsuitable_rated_outgoing_calls_table" value="#{lazyDm}" var="call" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{UnsuitableRatedOutgoingCallsSort.id}" sortOrder="descending" selectionMode="single">
+
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.call_id']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.id}">
+					<h:outputText value="#{call.id}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.date']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.callDate}">
+					<h:outputText value="#{dateUtils.format(call.callDate, dateUtils.DATETIME_DEFAULT_PATTERN, TZ.serverTimeZone)}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.duration']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.duration}">
+					<h:outputText value="#{call.duration}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.unit']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.ratedUnit}">
+					<h:outputText value="#{call.ratedUnit.name}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.amount']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.amount}">
+					<h:outputText value="#{call.amount}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.tariff']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.tariff}">
+					<boxenv:linkToCard value="#{call.tariff.getIdentifiable()}" text="#{call.tariff.name}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.resource_number']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.tariff}">
+					<h:outputText value="#{call.resourceNumber}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.service']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.service}">
+					<boxenv:linkToCard value="#{call.service.getIdentifiable()}" text="#{call.service.name} #{call.service.id}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.supplier']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.supplier}">
+					<boxenv:linkToCard value="#{call.supplier.getIdentifiable()}" text="#{call.supplier.name}"/>
+				</p:column>
+
+				<p:column headerText="#{unsuitableRatedOutgoingCallsBundle['box.unsuitable.rated.outgoing.calls.zone']}"
+						  sortBy="#{UnsuitableRatedOutgoingCallsSort.zone}">
+					<h:outputText value="#{call.zone.name}"/>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

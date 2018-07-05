@@ -1,0 +1,126 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:o="http://omnifaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="mediationBundle" basename="MediationBundle"/>
+	<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+	<f:loadBundle var="serviceBundle" basename="ServiceBundle"/>
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+
+	<h:form id="invoice_creation_form">
+		<p:dialog id="converter_recycle_dlg"
+				  header="#{mediationBundle['box.mediation.converter.recycle.dialog.header']}" width="700"
+				  widgetVar="converterRecycleVar" resizable="false" modal="true" closable="false" dynamic="true"
+				  styleClass="icon-creation">
+
+			<o:importConstants type="ru.argustelecom.box.env.mediation.UnsuitableCallsListViewModel.UnsuitableCallsContext" var="UnsuitableCallsContext"/>
+
+			<div class="m-container100 m-responsive100">
+				<div class="message fs14">
+					<div class="message-info message-icon message-icon-info">
+						<p>#{mediationBundle['box.mediation.converter.dialog.hint']}</p>
+					</div>
+				</div>
+			</div>
+
+			<dl class="name-value width-150">
+				<dt>
+					<p:outputLabel for="date_from" value="#{mediationBundle['box.mediation.converter.date_from']}:"
+					styleClass="m-mar-top5"/>
+				</dt>
+				<dd>
+					<p:calendar id="date_from" value="#{unsuitableCallsRecycleDm.newJob.dateFrom}"
+								pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}" styleClass="width-40-percents"
+								required="true" locale="#{languageBean.locale.language}"
+								label="#{mediationBundle['box.mediation.converter.date_from']}">
+						<p:ajax event="dateSelect" process="@this" update="date_to"/>
+					</p:calendar>
+
+					<p:outputLabel for="date_to" value="#{mediationBundle['box.mediation.converter.date_to.short']}:"
+								   styleClass="m-tex-al-right width-17-percents m-mar-top5"/>
+					<p:calendar id="date_to" value="#{unsuitableCallsRecycleDm.newJob.dateTo}"
+								mindate="#{unsuitableCallsRecycleDm.newJob.dateFrom}"
+								pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}" styleClass="width-40-percents"
+								locale="#{languageBean.locale.language}" required="true"
+								label="#{overallBundle['box.overall.valid_to.short']}"/>
+				</dd>
+
+			</dl>
+
+			<ui:fragment rendered="#{unsuitableCallsRecycleDm.context.equals(UnsuitableCallsContext.CHARGING)}">
+				<dl class="name-value width-150 name-value-tooltip">
+					<dt>
+						<p:outputLabel for="new_service_type" value="#{serviceBundle['box.service.type']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="new_service_type"
+										 value="#{unsuitableCallsRecycleDm.newJob.serviceType}"
+										 label="#{serviceBundle['box.service.type']}"
+										 styleClass="width-40-percents">
+
+							<p:ajax process="@this" update="new_service"/>
+
+							<f:selectItem itemValue="#{null}"/>
+							<f:selectItems value="#{unsuitableCallsRecycleDm.getPossibleServiceTypes()}" var="serviceType"
+										   itemLabel="#{serviceType.name}" itemValue="#{serviceType}"/>
+						</p:selectOneMenu>
+
+						<p:outputLabel for="new_service" value="#{serviceBundle['box.service']}:"
+									   styleClass="m-tex-al-right width-17-percents"/>
+						<p:selectOneMenu id="new_service" styleClass="width-40-percents" filter="true"
+										 filterMatchMode="contains"
+										 value="#{unsuitableCallsRecycleDm.newJob.service}"
+										 label="#{serviceBundle['box.service']}" var="service"
+										 required="#{unsuitableCallsRecycleDm.newJob.serviceType ne null}"
+										 disabled="#{unsuitableCallsRecycleDm.newJob.serviceType eq null}">
+
+							<f:selectItem itemValue="#{null}"/>
+							<f:selectItems value="#{unsuitableCallsRecycleDm.getPossibleServices()}" var="possibleService"
+										   itemLabel="#{possibleService.name} #{possibleService.id}"
+										   itemValue="#{service}"/>
+
+							<p:column>
+								<h:outputText styleClass="ui-theme ui-theme-#{service.name}"/>
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{service.name} #{service.id}"/>
+							</p:column>
+						</p:selectOneMenu>
+					</dd>
+				</dl>
+
+				<dl class="name-value width-450 name-value-tooltip">
+					<dt>
+						<p:outputLabel for="new_tariff"
+									   value="#{chargeJobBundle['box.charge_job.wizard.step.input_params.tariff']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="new_tariff" styleClass="width-100-percents"
+										 value="#{unsuitableCallsRecycleDm.newJob.tariff}"
+										 label="#{tariffBundle['box.telephony.tariff']}">
+
+							<f:selectItem itemValue="#{null}"/>
+							<f:selectItems value="#{unsuitableCallsRecycleDm.possibleTariffs}" var="tariff"
+										   itemLabel="#{tariff.name}" itemValue="#{tariff}"/>
+						</p:selectOneMenu>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="converter_recycle_dlg"
+								 process="@this" action="#{unsuitableCallsRecycleDm.cancel()}"
+								 onclick="PF('converterRecycleVar').hide()"/>
+				<p:commandButton id="create_button"
+								 value="#{mediationBundle['box.mediation.converter.dialog.confirm_button']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('converterRecycleVar').hide()}"
+								 action="#{unsuitableCallsRecycleDm.create()}"
+								 update="#{update} converter_recycle_dlg"/>
+			</div>
+		</p:dialog>
+	</h:form>
+</ui:composition>

@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="personalAccountBundle" basename="PersonalAccountBundle"/>
+	<f:loadBundle var="subscriptionBundle" basename="SubscriptionBundle"/>
+	
+	<p:outputPanel rendered="#{p:ifGranted('Billing_PersonalAccountView')}">
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect simple-fb">
+					<h:form id="personal_account_info_form">
+						
+						<f:event listener="#{personalAccountsFm.preRender(personalAccounts)}" type="preRenderComponent"/>
+						
+						<div class="ui-dashboard-header">
+							<i class="icon-account_balance_wallet" />
+							<h:outputText styleClass="card-header"
+										  value="#{personalAccountBundle['box.personal_account.plural']}"/>
+
+							<p:outputPanel id="property_managed_buttons" styleClass="m-fright">
+								<p:commandLink id="add_personal_account" styleClass="m-mar-left10" oncomplete="PF('personalAccountCreationVar').show()"
+												title="#{overallBundle['box.overall.create']}" process="@this" update="accounts_accordion_view"
+												disabled="#{!p:ifGranted('Billing_PersonalAccountEdit')}">
+												<i class="fa fa-edit icon-btn"/>
+								</p:commandLink>
+							</p:outputPanel>
+						</div>
+						
+						<p:accordionPanel multiple="true" id="accounts_accordion_view" value="#{personalAccountsFm.accountDtos}"
+										  var="account" styleClass="accordion-box">
+							<p:tab>
+					            <f:facet name="title">
+									<h:outputText value="#{account.number}" styleClass="personal-account-title"/>
+									<h:outputText value="#{personalAccountBundle['box.personal_account.balance.available']}:"
+												  styleClass="personal-account-title-balance"/>
+									<boxenv:money value="#{account.availableBalance}" size="fs14"/>
+					            </f:facet>
+
+								<div class="personal-account-header">
+									<h:outputText styleClass="personal-account-name" value="#{personalAccountBundle['box.personal_account.card']}"/>
+									<boxenv:linkToCard styleClass="personal-account-link" value="#{account.getIdentifiable()}"
+													   text="#{account.id}" title="#{personalAccountBundle['box.personal_account.card.open']}"/>
+								</div>
+					            
+					            <p:dataTable id="privilege_history_table" value="#{account.subscriptions}" 
+					            			 var="subscription" paginator="#{account.subscriptions.size() gt 5}"
+											 tableStyle="table-layout: auto;" rowsPerPageTemplate="5,10,15" rows="5"
+											 styleClass="paginator-top-hidden borderless header-border"
+											 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+											 emptyMessage="#{overallBundle['box.overall.empty']}" >
+							
+									<p:column headerText="#{overallBundle['box.overall.id']}">
+										<boxenv:linkToCard text="#{subscription.id}" value="#{subscription.getIdentifiable()}" />
+									</p:column>
+									
+									<p:column headerText="#{subscriptionBundle['box.subscription.product']}">
+										<h:outputText value="#{subscription.productName}" />
+									</p:column>
+									
+									<p:column headerText="#{overallBundle['box.overall.state']}">
+										<h:outputText styleClass="#{personalAccountsFm.stateClasses[subscription.state]}" 
+													  value="#{subscription.state.name}" />
+									</p:column>
+								</p:dataTable>
+					        </p:tab>
+						</p:accordionPanel>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</p:outputPanel>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="icon-account_balance_wallet" />
+		<ui:param name="headerText" value="#{personalAccountBundle['box.personal_account.plural']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('Billing_PersonalAccountView')}" />
+	</ui:include>
+
+	<ui:include src="PersonalAccountCreationDialog.xhtml">
+		<ui:param name="update" value="-personal_account_info_form"/>
+	</ui:include>
+
+</ui:composition>

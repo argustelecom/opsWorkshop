@@ -1,0 +1,94 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="completeFilterFields">
+		<ul style="margin-bottom: 0">
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.ip_address_word']}:"/>
+				<p:inputText value="#{ipAddressesViewState.name}" process="@this" maxlength="64"/>
+			</li>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.status_word']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.state}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{ipaddressesVM.states}" var="state" itemLabel="#{state.name}"/>
+				</p:selectOneMenu>
+			</li>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.Ip_addr_type_label']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.isPrivate}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItem itemValue="#{true}" itemLabel="#{ipBundle['box.nri.logicalresource.ip.inner_word']}"/>
+					<f:selectItem itemValue="#{false}" itemLabel="#{ipBundle['box.nri.logicalresource.ip.outer_word']}"/>
+				</p:selectOneMenu>
+			</li>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.ip_addr_purpose_label']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.purpose}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{ipaddressesVM.purposes}" var="purpose" itemLabel="#{purpose.name}"/>
+				</p:selectOneMenu>
+			</li>
+		</ul>
+		<ul>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.ip_addr_static_label']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.isStatic}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItem itemValue="#{true}" itemLabel="#{ipBundle['box.nri.logicalresource.static_word']}"/>
+					<f:selectItem itemValue="#{false}" itemLabel="#{ipBundle['box.nri.logicalresource.dynamic_word']}"/>
+				</p:selectOneMenu>
+			</li>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.transmition_type_label']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.transferType}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{ipaddressesVM.transferTypes}" var="type" itemLabel="#{type.name}"/>
+				</p:selectOneMenu>
+			</li>
+			<li>
+				<p:outputLabel styleClass="width-100" value="#{ipBundle['box.nri.logicalresource.ip.subnet_word']}:"/>
+				<p:selectOneMenu value="#{ipAddressesViewState.subnet}">
+					<f:selectItem itemValue="#{null}" itemLabel="" noSelectionOption="true"/>
+					<f:selectItems value="#{ipaddressesVM.subnets}" var="type" itemLabel="#{type.name}"/>
+				</p:selectOneMenu>
+			</li>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+		<h:form id="#{resultFormId}">
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{ipBundle['box.nri.logicalresource.ip.search_results']}"/>
+			</div>
+
+			<p:dataTable id="ip_addresses_table" value="#{ipaddressesVM.lazyIPAddresses}" var="ipAddr" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink}
+								{PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 rowsPerPageTemplate="25,50,100" sortBy="#{IPAddressSort.NAME}">
+
+				<p:column headerText="#{ipBundle['box.nri.logicalresource.ip.ip_address_word']}" sortBy="#{IPAddressSort.NAME}">
+					<h:outputLink value="IpAddressView.xhtml?ipAddress=IPAddress-#{ipAddr.id}">
+						<h:outputText value="#{ipAddr.name}"/>
+					</h:outputLink>
+				</p:column>
+
+				<p:column headerText="#{ipBundle['box.nri.logicalresource.ip.status_word']}" sortBy="#{IPAddressSort.STATE}">
+					<h:outputText value="#{ipAddr.state.name}"/>
+				</p:column>
+
+				<p:column headerText="#{ipBundle['box.nri.logicalresource.ip.subnet_word']}" sortBy="#{IPAddressSort.SUBNET}">
+					<h:outputLink value="../ipsubnet/IpSubnetView.xhtml?subnet=IPSubnet-#{ipAddr.subnet.id}">
+						<h:outputText value="#{ipAddr.subnet.name}"/>
+					</h:outputLink>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

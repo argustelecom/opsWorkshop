@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle basename="ProductBundle" var="productBundle"/>
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect">
+				<h:form id="product_type_attributes_form">
+
+					<p:outputPanel id="product_type_attributes_panel">
+
+						<f:event listener="#{productTypeAttributesFm.preRender()}" type="preRenderComponent"/>
+
+						<div class="columns">
+
+							<div class="column m-pad-0">
+								<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+									<i class="#{productTypeAttributesFm.selectedLocationIcon} fs60"/>
+									<h:outputText value="ID #{productTypeAttributesFm.productTypeUnit.id}"/>
+								</p:panelGrid>
+							</div>
+
+							<div class="column width-100-percents">
+								<div class="columns">
+									<div class="column m-container50 m-responsive100">
+										<sysinf:editableSection disabled="#{!p:ifGranted('ProductManagment_CatalogEdit') or productTypeAttributesFm.productTypeUnit == null}"
+																saveLabel="#{overallBundle['box.overall.save']}"
+																cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+											<p:ajax event="save" update="#{update}"/>
+
+											<p:outputPanel rendered="#{productTypeAttributesFm.productTypeGroup}">
+												<dl class="name-value width-100">
+													<dt>
+														<p:outputLabel for="group_category" value="#{overallBundle['box.overall.category']}:"/>
+													</dt>
+													<dd>
+														<h:outputText id="group_category" styleClass="m-disp-inl-block m-mar-left-8 m-font-roboto-regular"
+																	  value="#{productTypeAttributesFm.productTypeUnit.categoryName}"/>
+													</dd>
+
+													<dt>
+														<p:outputLabel for="group_name" value="#{overallBundle['box.overall.name']}:"/>
+													</dt>
+													<dd class="width-80-percents">
+														<p:inputText id="group_name" required="true" maxlength="32"
+																	 label="#{overallBundle['box.overall.name']}"
+																	 value="#{productTypeAttributesFm.productTypeUnit.productTypeGroup.objectName}"
+																	 title="#{productTypeAttributesFm.productTypeUnit.productTypeGroup.objectName}"/>
+													</dd>
+												</dl>
+											</p:outputPanel>
+
+											<p:outputPanel rendered="#{productTypeAttributesFm.productType or productTypeAttributesFm.productTypeComposite}">
+												<dl class="name-value width-100">
+													<dt>
+														<p:outputLabel for="product_type_category" value="#{overallBundle['box.overall.category']}:"/>
+													</dt>
+													<dd>
+														<h:outputText id="product_type_category" styleClass="m-disp-inl-block m-mar-left-8 m-font-roboto-regular"
+																	  value="#{productTypeAttributesFm.productTypeUnit.categoryName}"/>
+													</dd>
+
+													<dt>
+														<p:outputLabel for="product_type_name" value="#{overallBundle['box.overall.name']}:"/>
+													</dt>
+													<dd class="data-overflow-width">
+														<p:inputText id="product_type_name" required="true" maxlength="32"
+																	 label="#{overallBundle['box.overall.name']}"
+																	 title="#{productTypeAttributesFm.productTypeUnit.abstractProductType.name}"
+																	 value="#{productTypeAttributesFm.productTypeUnit.abstractProductType.name}" />
+													</dd>
+
+													<dt>
+														<p:outputLabel for="product_type_group" value="#{overallBundle['box.overall.group']}:"/>
+													</dt>
+													<dd>
+														<p:selectOneMenu id="product_type_group" value="#{productTypeAttributesFm.productTypeUnit.abstractProductType.group}"
+																		 required="true" label="#{overallBundle['box.overall.group']}">
+															<f:selectItems value="#{productTypeAttributesFm.productTypeGroups}" var="group" itemValue="#{group}" itemLabel="#{group.objectName}"/>
+														</p:selectOneMenu>
+													</dd>
+												</dl>
+											</p:outputPanel>
+										</sysinf:editableSection>
+									</div>
+
+									<div class="column m-container50 m-responsive100">
+										<div class="m-pos-relative">
+											<div class="hover-overlay-block">
+												<sysinf:editableSection disabled="#{!p:ifGranted('ProductManagment_CatalogEdit') or productTypeAttributesFm.productTypeUnit == null}"
+																		saveLabel="#{overallBundle['box.overall.save']}"
+																		cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+													<p:ajax event="save" update="#{update}"/>
+
+													<p:outputPanel rendered="#{productTypeAttributesFm.productTypeGroup}">
+														<dl class="name-value width-100">
+															<dt>
+																<p:outputLabel for="group_description" value="#{overallBundle['box.overall.desc']}:"/>
+															</dt>
+															<dd class="auto-height">
+																<p:inputTextarea id="group_description" value="#{productTypeAttributesFm.productTypeUnit.productTypeGroup.description}"
+																				 rows="3" cols="30" counter="group_description_display" maxlength="256"
+																				 counterTemplate="#{overallBundle['box.overall.chars_left']}" autoResize="false"/>
+																<h:outputText id="group_description_display"/>
+															</dd>
+														</dl>
+													</p:outputPanel>
+
+													<p:outputPanel rendered="#{productTypeAttributesFm.productType or productTypeAttributesFm.productTypeComposite}">
+
+														<dl class="name-value width-100">
+															<dt>
+																<p:outputLabel for="product_type_description" value="#{overallBundle['box.overall.desc']}:"/>
+															</dt>
+															<dd class="auto-height bill-description">
+																<p:inputTextarea id="product_type_description" value="#{productTypeAttributesFm.productTypeUnit.abstractProductType.description}"
+																		 rows="3" counter="product_type_description_display" maxlength="256"
+                                                                                 counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+																<h:outputText id="product_type_description_display" styleClass="fs12"/>
+															</dd>
+														</dl>
+													</p:outputPanel>
+												</sysinf:editableSection>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</p:outputPanel>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

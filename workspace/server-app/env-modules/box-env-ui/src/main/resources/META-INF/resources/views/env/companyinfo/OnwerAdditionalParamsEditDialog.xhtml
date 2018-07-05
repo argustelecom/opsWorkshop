@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+>
+
+	<h:form id="owner_additional_params_edit_form">
+
+		<p:dialog id="owner_edit_dlg" styleClass="icon-creation"
+				  header="#{ownerAdditionalParameterEditDm.isNewParam() ? companyInfoBundle['box.company_info.create_dialog'] : companyInfoBundle['box.company_info.edit_dialog']}"
+				  width="600" widgetVar="ownerAdditionalParamsEditDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value width-130 fs14">
+				<dt>
+					<p:outputLabel for="param_name" value="#{overallBundle['box.overall.name']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="param_name"
+								 value="#{ownerAdditionalParameterEditDm.parameter.name}" required="true"
+								 label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="param_keyword" value="#{overallBundle['box.overall.keyword']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="param_keyword"
+								 value="#{ownerAdditionalParameterEditDm.parameter.keyword}" required="true"
+								 label="#{overallBundle['box.overall.keyword']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="param_value" value="#{overallBundle['box.overall.value']}: " />
+				</dt>
+				<dd>
+					<p:inputText id="param_value" value="#{ownerAdditionalParameterEditDm.parameter.value}"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" oncomplete="PF('ownerAdditionalParamsEditDlgVar').hide()"
+								 action="#{ownerAdditionalParameterEditDm.cancel()}" process="@this"/>
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.save']}" update="#{update}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('ownerAdditionalParamsEditDlgVar').hide()}"
+								 action="#{ownerAdditionalParameterEditDm.submit()}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

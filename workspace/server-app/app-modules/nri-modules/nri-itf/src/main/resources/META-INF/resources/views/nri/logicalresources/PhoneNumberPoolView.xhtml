@@ -1,0 +1,120 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{phoneNumberPoolVM}"/>
+	<ui:param name="pageTitle" value="#{phoneNumberPoolBundle['box.nri.phone.pool.page_title']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="pool" value="#{phoneNumberPoolViewState.pool}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="PhoneNumberPoolBundle" var="phoneNumberPoolBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{phoneNumberPoolBundle['box.nri.phone.pool.page_title']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+
+						<h:form id="phone_number_pool_tree_form">
+							<div class="ui-dashboard-header">
+								#{phoneNumberPoolBundle['box.nri.phone.pool.page_title']}
+								<p:outputPanel id="tree_buttons_panel" styleClass="m-fright">
+									<p:commandLink id="create_phone_number_pool_button" styleClass="m-mar-left10"
+												   update="phone_number_pool_creation_dlg"
+												   oncomplete="PF('phoneNumberPoolCreationDlg').show()"
+												   rendered="#{p:ifGranted('Nri_PhoneNumberPoolEdit')}"
+												   action="#{phoneNumberPoolCreationDM.onCreationDialogOpen}">
+										<i class="fa fa-plus icon-btn"/>
+										<f:setPropertyActionListener
+												value="#{phoneNumberPoolVM.createPool}"
+												target="#{phoneNumberPoolCreationDM.onCreateButtonPressed}"/>
+									</p:commandLink>
+									<p:commandLink id="remove_button" styleClass="m-mar-left10"
+												   update="@form -phone_number_pool_info_form -phone_number_info_form phone_number_info_form"
+												   action="#{phoneNumberPoolVM.removePool()}"
+												   oncomplete="Argus.System.AutoHeight.compute('phone_number_pool_tree_form-phone_number_pool_tree', 35);"
+												   rendered="#{phoneNumberPoolVM.selectedNode ne null and p:ifGranted('Nri_PhoneNumberPoolEdit')}">
+										<i class="fa fa-trash icon-btn"/>
+
+										<p:confirm header="#{phoneNumberPoolBundle['box.nri.phone.pool.remove_header']}"
+												   message="#{phoneNumberPoolBundle['box.nri.phone.pool.remove_message']}?"/>
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<p:outputPanel id="phone_number_pool_tree_panel" styleClass="fs14">
+								<p:tree id="phone_number_pool_tree" value="#{phoneNumberPoolVM.rootElement}" var="node"
+										styleClass="width-100-percents m-ov-auto tree-no-border" selectionMode="single"
+										selection="#{phoneNumberPoolVM.selectedNode}" style="overflow-x: hidden"
+										propagateSelectionDown="false" propagateSelectionUp="false" dynamic="true">
+
+									<p:ajax event="select" listener="#{phoneNumberPoolVM.onNodeSelect}"
+											update="phone_number_pool_info_form phone_number_info_form phone_number_info_form
+											phone_number_pool_tree_form-tree_buttons_panel"/>
+
+									<p:treeNode>
+										<h:outputText value="#{node.name}" style="padding-left: 5px;"/>
+									</p:treeNode>
+
+								</p:tree>
+							</p:outputPanel>
+						</h:form>
+
+						<script>
+                            $(document).ready(function () {
+                                Argus.System.AutoHeight.compute('phone_number_pool_tree_form', 40);
+                                Argus.System.AutoHeight.compute('phone_number_pool_tree_form-phone_number_pool_tree', 35);
+                            });
+						</script>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container65 m-responsive100">
+			<h:form id="phone_number_pool_info_form">
+				<p:outputPanel id="phone_number_pool_info_panel" styleClass="m-container100"
+							   rendered="#{phoneNumberPoolVM.selectedPool ne null}">
+					<ui:include src="PhoneNumberPoolInfoFrame.xhtml">
+						<ui:param name="phoneNumberPool" value="#{phoneNumberPoolVM.selectedPool}"/>
+						<ui:param name="update" value="phone_number_pool_tree_form-phone_number_pool_tree"/>
+					</ui:include>
+				</p:outputPanel>
+			</h:form>
+			<h:form id="phone_number_info_form">
+				<p:outputPanel id="phone_number_info_panel" styleClass="m-container100"
+							   rendered="#{phoneNumberPoolVM.selectedPool ne null}">
+					<ui:include src="PhoneNumberInfoFrame.xhtml">
+						<ui:param name="phoneNumberPool" value="#{phoneNumberPoolVM.selectedPool}"/>
+					</ui:include>
+				</p:outputPanel>
+			</h:form>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="PhoneNumberPoolCreationDialog.xhtml"/>
+		<ui:include src="PhoneNumberCreationDialog.xhtml">
+			<ui:param name="update" value=""/>
+			<ui:param name="pool" value="#{phoneNumberPoolVM.selectedPool}"/>
+		</ui:include>
+	</ui:define>
+
+</ui:composition>

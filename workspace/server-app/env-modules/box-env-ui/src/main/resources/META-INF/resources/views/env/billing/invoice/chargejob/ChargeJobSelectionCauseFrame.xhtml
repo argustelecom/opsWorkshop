@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+
+	<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+
+	<div class="m-container100 m-responsive100">
+		<div class="message message-icon message-icon-info">
+			<p>#{chargeJobBundle['box.charge_job.wizard.step.selection_cause.tip']}</p>
+		</div>
+
+		<dl class="name-value width-150 name-value-tooltip">
+			<o:importConstants type="ru.argustelecom.box.env.billing.invoice.chargejob.ChargeJobCreationDialogModel.RechargeCause"/>
+			<dt>
+				<p:outputLabel for="cause" value="#{chargeJobBundle['box.charge_job.filter.cause']}:"/>
+			</dt>
+			<dd>
+				<p:selectOneMenu id="cause" value="#{chargeJobCreationDm.newJob.cause}" label="#{chargeJobBundle['box.charge_job.filter.cause']}" required="true">
+					<f:selectItem value="#{null}"/>
+					<f:selectItems value="#{RechargeCause.values()}" var="cause" itemLabel="#{cause.getName()}"
+								   itemValue="#{cause}"/>
+					<p:ajax update="select_cause_nav_panel"/>
+				</p:selectOneMenu>
+			</dd>
+		</dl>
+	</div>
+	<h:panelGroup id="select_cause_nav_panel" layout="block" styleClass="dialog-footer-buttons">
+		<p:commandButton value="#{overallBundle['box.overall.next']}"
+						 oncomplete="PF('chargeJobWizardVar').next()"
+						 disabled="#{chargeJobCreationDm.newJob.cause eq null}"/>
+	</h:panelGroup>
+</ui:composition>

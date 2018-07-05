@@ -1,0 +1,333 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="personnelBundle" basename="PersonnelBundle"/>
+	<ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="customer_type" value="#{customerBundle['box.customer.type']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="customer_type" value="#{customerListViewState.type}" process="@this">
+
+							<p:ajax process="@this" update="#{filterFormId}"/>
+
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{customerListViewModel.customerTypes}" var="type"
+										   itemLabel="#{type.name}" itemValue="#{type}"/>
+							<p:column>
+								<i class="#{type.customerCategory.icon}"/>
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{type.name}"/>
+							</p:column>
+						</p:selectOneMenu>
+					</span>
+				</div>
+			</li>
+
+			<ui:fragment id="organization_filters"
+						 rendered="#{customerListViewState.type ne null and !customerListViewState.individual}">
+				<li>
+					<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel id="oranization_name_label" for="name"
+                                           value="#{overallBundle['box.overall.name']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:inputText id="name" value="#{customerListViewState.organizationName}"/>
+						</span>
+					</div>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment id="individual_filters"
+						 rendered="#{customerListViewState.type ne null and customerListViewState.individual}">
+				<li>
+					<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel for="last_name"
+                                           value="#{personnelBundle['box.personnel.name.last']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:inputText id="last_name" value="#{customerListViewState.lastName}"/>
+						</span>
+					</div>
+				</li>
+
+				<li>
+					<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel for="first_name"
+										   value="#{personnelBundle['box.personnel.name.first']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:inputText id="first_name" value="#{customerListViewState.firstName}"/>
+						</span>
+					</div>
+				</li>
+
+				<li>
+					<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel for="second_name"
+										   value="#{personnelBundle['box.personnel.name.second']}:"/>
+						</span>
+						<span class="filter-value">
+							<p:inputText id="second_name" value="#{customerListViewState.secondName}"/>
+						</span>
+					</div>
+				</li>
+			</ui:fragment>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+
+					<p:outputLabel for="contact_type"
+								   value="#{customerBundle['box.customer.search.contact.type']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:selectOneMenu id="contact_type" value="#{customerListViewState.contactType}" process="@this"
+										 filter="true" filterMatchMode="contains">
+
+							<p:ajax process="@this" update="contact_value_fragment" listener="#{customerListViewState.onContactTypeChanged()}"/>
+
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{customerListViewModel.contactTypes}" var="contactType"
+										   itemLabel="#{contactType.objectName}" itemValue="#{contactType}"/>
+						</p:selectOneMenu>
+					</span>
+				</div>
+				<p:outputPanel id="contact_value_fragment" styleClass="width-100-percents">
+					<div class="filter-item">
+						<span class="filter-name">
+							<p:outputLabel value="#{customerBundle['box.customer.search.contact']}:"/>
+						</span>
+						<span class="filter-value">
+							<o:importConstants type="ru.argustelecom.box.env.contact.ContactCategory" var="contactCategory"/>
+
+							<ui:fragment rendered="#{customerListViewState.contactType ne null and contactCategory.PHONE eq customerListViewState.contactType.category}">
+								<p:inputText id="phone_value" value="#{customerListViewState.phoneNumber}" required="#{customerListViewState.contactType ne null}"/>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{customerListViewState.contactType ne null and contactCategory.EMAIL eq customerListViewState.contactType.category}">
+								<p:inputText id="email_value" value="#{customerListViewState.emailAddress}" required="#{customerListViewState.contactType ne null}"/>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{customerListViewState.contactType ne null and contactCategory.SKYPE eq customerListViewState.contactType.category}">
+								<p:inputText id="skype_value" value="#{customerListViewState.skypeLogin}" required="#{customerListViewState.contactType ne null}"/>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{customerListViewState.contactType eq null or contactCategory.CUSTOM eq customerListViewState.contactType.category}">
+								<p:inputText id="custom_value" value="#{customerListViewState.contactValue}" required="#{customerListViewState.contactType ne null}"/>
+							</ui:fragment>
+						</span>
+					</div>
+				</p:outputPanel>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="contract" value="#{customerBundle['box.customer.search.contract']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="contract" value="#{customerListViewState.contractId}"/>
+					</span>
+				</div>
+			</li>
+
+			<li>
+				<div class="filter-item">
+					<span class="filter-name">
+						<p:outputLabel for="personal_account"
+									   value="#{customerBundle['box.customer.search.personal_account']}:"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText id="personal_account" value="#{customerListViewState.personalAccount}"/>
+					</span>
+				</div>
+			</li>
+
+			<ui:fragment rendered="#{viewState.customerPropsFilter ne null and not empty viewState.customerPropsFilter.accessors}">
+				<ui:repeat value="#{viewState.customerPropsFilter.accessors}" var="accessor">
+					<li>
+						<div class="filter-item">
+                            <span class="filter-name">
+                                <p:outputLabel for="prop_filter" value="#{accessor.property.name}:"/>
+                            </span>
+							<span class="filter-value">
+                                <boxenv:inputProperty id="prop_filter" accessor="#{accessor}" required="false"/>
+                            </span>
+						</div>
+					</li>
+				</ui:repeat>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{viewState.partyPropsFilter ne null and not empty viewState.partyPropsFilter.accessors}">
+				<ui:repeat value="#{viewState.partyPropsFilter.accessors}" var="accessor">
+					<li>
+						<div class="filter-item">
+                            <span class="filter-name">
+                                <p:outputLabel for="prop_filter" value="#{accessor.property.name}:"/>
+                            </span>
+							<span class="filter-value">
+                                <boxenv:inputProperty id="prop_filter" accessor="#{accessor}" required="false"/>
+                            </span>
+						</div>
+					</li>
+				</ui:repeat>
+			</ui:fragment>
+
+			<!--TODO: пофиксить при реализации фильтров-->
+			<!--<ui:fragment id="organization_number" rendered="#{customerListViewState.type ne null and !customerListViewState.individual}">-->
+			<!--<li>-->
+			<!--<p:outputLabel for="tax_payer_id" value="ИНН:"/>-->
+			<!--<p:inputText id="tax_payer_id" value="#{customerListViewState.taxPayerId}" />-->
+			<!--</li>-->
+			<!--</ui:fragment>-->
+			</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{customerListViewState.type.name ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.type']}:"/>
+					<h:outputText value="#{customerListViewState.type.name};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment id="organization_filters_short"
+					 rendered="#{customerListViewState.type ne null and !customerListViewState.individual and customerListViewState.organizationName ne null}">
+				<li>
+					<p:outputLabel value="#{overallBundle['box.overall.name']}:"/>
+					<h:outputText value="#{customerListViewState.organizationName};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment id="individual_filters_short"
+						 rendered="#{customerListViewState.type ne null and customerListViewState.individual}">
+				<ui:fragment rendered="#{customerListViewState.lastName ne null}">
+					<li>
+						<p:outputLabel value="#{personnelBundle['box.personnel.name.last']}:"/>
+						<h:outputText value="#{customerListViewState.lastName};"/>
+					</li>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{customerListViewState.firstName ne null}">
+					<li>
+						<p:outputLabel value="#{personnelBundle['box.personnel.name.first']}:"/>
+						<h:outputText value="#{customerListViewState.firstName};"/>
+					</li>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{customerListViewState.secondName ne null}">
+					<li>
+						<p:outputLabel value="#{personnelBundle['box.personnel.name.second']}:"/>
+						<h:outputText value="#{customerListViewState.secondName};"/>
+					</li>
+				</ui:fragment>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{customerListViewState.contactType.objectName ne null}">
+				<li>
+					<p:outputLabel for="contact_type_short"
+								   value="#{customerBundle['box.customer.search.contact.type']}:"/>
+					<h:outputText id="contact_type_short" value="#{customerListViewState.contactType.objectName};"/>
+
+					<ui:fragment id="contact_value_fragment_short">
+						<p:outputLabel value="#{customerBundle['box.customer.search.contact']}:"/>
+						<h:outputText value="#{customerListViewState.contactValue};"/>
+					</ui:fragment>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{customerListViewState.contractId ne null}">
+				<li>
+					<p:outputLabel for="contract_short"
+								   value="#{customerBundle['box.customer.search.contract']}:"/>
+					<h:outputText id="contract_short" value="#{customerListViewState.contractId};"/>
+				</li>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{customerListViewState.personalAccount ne null}">
+				<li>
+					<p:outputLabel for="personal_account_short"
+								   value="#{customerBundle['box.customer.search.personal_account']}:"/>
+					<h:outputText id="personal_account_short" value="#{customerListViewState.personalAccount};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+
+		<h:form id="#{resultFormId}">
+			<f:loadBundle var="customerTypeBundle" basename="CustomerTypeBundle"/>
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars"/>
+				<h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+				<p:outputPanel styleClass="m-fright">
+					<p:commandButton id="create_customer_button" update="possible_customer_categories"
+									 value="#{customerBundle['box.customer.create']}"
+									 disabled="#{!p:ifGranted('CRM_CustomerEdit')}"/>
+
+					<p:overlayPanel id="customer_creation_panel" widgetVar="customerCreationPanelVar"
+									for="create_customer_button"
+									styleClass="select-one-item-overlay-panel">
+						<p:selectOneListbox id="possible_customer_categories"
+											value="#{customerCreationDialogModel.newCustomerCategory}" var="category">
+
+							<p:ajax process="@this" listener="#{customerCreationDialogModel.onCreationDialogOpen()}"
+									update="customer_creation_form"/>
+
+							<f:selectItems value="#{customerCreationDialogModel.customerCategories}" var="cc"
+										   itemValue="#{cc}" itemLabel="#{cc.name}"/>
+							<p:column>
+								<i class="#{category.icon}"/>
+							</p:column>
+
+							<p:column>
+								<h:outputText value=" #{category.name}"/>
+							</p:column>
+						</p:selectOneListbox>
+					</p:overlayPanel>
+				</p:outputPanel>
+			</div>
+
+			<p:dataTable id="personnel_table" value="#{customerListViewModel.lazyDm}" var="customer" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+						 rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{CustomerSort.id}" sortOrder="descending" selectionMode="single">
+
+				<p:column headerText="#{overallBundle['box.overall.id']}"
+						  sortBy="#{CustomerSort.id}">
+					<boxenv:linkToCard value="#{customer.getIdentifiable()}" text="#{customer.id}"/>
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.name']}"
+						  sortBy="#{CustomerSort.name}">
+					<h:outputText value="#{customer.name}"/>
+				</p:column>
+
+				<p:column headerText="#{customerBundle['box.customer.type']}"
+						  sortBy="#{CustomerSort.type}">
+					<h:outputText value="#{customer.type}"/>
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

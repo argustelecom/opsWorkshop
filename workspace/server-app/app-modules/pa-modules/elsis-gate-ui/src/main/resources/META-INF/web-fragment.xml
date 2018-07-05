@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_3_1.xsd"	version="3.1">
+
+	<name>elsis_gate_ui</name>
+
+	<security-constraint>
+		<display-name>Homemeasurement</display-name>
+		<web-resource-collection>
+			<web-resource-name>homemeasurement_web_resource</web-resource-name>
+			<url-pattern>/views/homemeasurement/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Customer</role-name>
+		</auth-constraint>
+	</security-constraint>
+</web-fragment>

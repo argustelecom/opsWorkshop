@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form id="type_property_form">
+
+		<c:set var="fullFormId" value="#{parentId}type_property_form"/>
+		<o:importFunctions type="ru.argustelecom.box.env.type.TypeUtils"/>
+
+		<script>
+			$( document ).ready(function() {
+				Argus.System.AutoHeight.compute('#{fullFormId}', 40);
+				Argus.System.AutoHeight.compute('type_content', 40);
+			});
+		</script>
+
+		<div class="ui-dashboard-header">
+			<i class="fa fa-tasks"/>
+			<h:outputText value="#{typeBundle['box.type.property.plural']}" styleClass="card-header"/>
+			<p:outputPanel id="property_managed_buttons" styleClass="m-fright property-panel">
+				<p:commandLink id="group_exchange" styleClass="m-mar-left10" title="#{typeBundle['box.type.group.exchange']}"
+							   disabled="#{typePropertyFm.type eq null or disabled}" update="group_exchange_items">
+					<i class="fa fa-exchange icon-btn fs17"/>
+				</p:commandLink>
+
+				<p:overlayPanel id="group_exchange_panel" widgetVar="groupExchangePanelVar" for="group_exchange"
+								styleClass="select-one-item-overlay-panel">
+					<p:commandLink  action="#{typePropertyFm.onPropertiesMove(fullFormId)}" value="#{typeBundle['box.type.default_group_name']}"
+									disabled="#{disabled}">
+						<p:ajax oncomplete="PF('groupExchangePanelVar').hide()"/>
+						<f:setPropertyActionListener value="#{null}" target="#{typePropertyFm.to}" />
+					</p:commandLink>
+
+					<p:dataList id="group_exchange_items" value="#{typePropertyFm.type.propertyGroups}" var="group" type="unordered"
+								emptyMessage="#{overallBundle['box.overall.empty']}">
+						<p:commandLink  action="#{typePropertyFm.onPropertiesMove(fullFormId)}" value="#{group.name}">
+							<p:ajax oncomplete="PF('groupExchangePanelVar').hide()"/>
+							<f:setPropertyActionListener value="#{group}" target="#{typePropertyFm.to}" />
+						</p:commandLink>
+					</p:dataList>
+				</p:overlayPanel>
+
+				<p:commandLink styleClass="m-mar-left10" oncomplete="PF('groupTypePropertyEditDlgVar').show()" disabled="#{typePropertyFm.type eq null or disabled}"
+							   title="#{typeBundle['box.type.group.create']}">
+					<f:setPropertyActionListener value="#{typePropertyFm.addGroupCallback}" target="#{typePropertyGroupEditDm.addGroupCallback}"/>
+					<f:setPropertyActionListener value="#{typePropertyFm.type.propertyGroups.size()}"
+												 target="#{typePropertyGroupEditDm.groupDto.maxOrdinalNumber}"/>
+					<i class="icon-playlist_add icon-btn"/>
+				</p:commandLink>
+			</p:outputPanel>
+		</div>
+
+		<div id="type_content" class="type-content">
+			<c:forEach items="#{typePropertyFm.models}" var="model" varStatus="varStatus">
+				<p:fieldset id="group_fieldset_#{varStatus.index}" toggleable="true" styleClass="m-pos-relative m-mar-bot20">
+					<f:facet name="legend">
+						<h:outputText value="#{model.group eq null ? typeBundle['box.type.default_group_name'] : model.group.name}"/>
+					</f:facet>
+					<div class="type-content-outer">
+						<p:outputPanel id="manage_btn" styleClass="type-content-inner">
+							<p:commandLink title="#{typeBundle['box.type.group.edit']}" disabled="#{model.group eq null or disabled}"
+										   update="group_type_property_form"
+										   oncomplete="PF('groupTypePropertyEditDlgVar').show()">
+								<f:setPropertyActionListener value="#{model.group}" target="#{typePropertyGroupEditDm.group}"/>
+								<f:setPropertyActionListener value="#{typePropertyFm.editGroupCallback}"
+															 target="#{typePropertyGroupEditDm.editGroupCallback}"/>
+								<i class="icon-create icon-btn"/>
+							</p:commandLink>
+							<p:commandLink styleClass="m-mar-left10" title="#{typeBundle['box.type.group.delete']}"
+										   disabled="#{model.group eq null or disabled}" action="#{typePropertyFm.onGroupRemove(model.group)}"
+										   update="@form">
+								<i class="fa fa-trash icon-btn"/>
+								<p:confirm header="#{typeBundle['box.type.group.delete_dialog']}"
+										   message="#{typeBundle['box.type.group.delete_dialog.details']}"/>
+							</p:commandLink>
+							<p:commandLink styleClass="m-mar-left10" title="#{typeBundle['box.type.property.create']}"
+										   oncomplete="PF('typePropertyAddDlgVar').show()" update="type_property_add_form"
+										   disabled="#{disabled}">
+								<i class="icon-playlist_add icon-btn"/>
+								<f:setPropertyActionListener value="#{model.group}" target="#{typePropertyAddDm.propertyDto.group}"/>
+								<f:setPropertyActionListener value="#{typePropertyFm.addPropertyCallback}"
+															 target="#{typePropertyAddDm.addPropertyCallback}"/>
+								<f:setPropertyActionListener value="#{model.properties.size()}"
+															 target="#{typePropertyAddDm.propertyDto.maxOrdinalNumber}"/>
+							</p:commandLink>
+						</p:outputPanel>
+					</div>
+
+
+					<p:dataTable id="property_table_#{varStatus.index}" value="#{model}" lazy="true" rows="#{model.properties.size()}"
+								 var="property" editable="true" draggableRows="true"
+								 selection="#{model.selectedProperties}" styleClass="borderless header-border"
+								 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+						<p:ajax event="rowReorder" listener="#{model.onRowReorder}" update="property_table_#{varStatus.index}"/>
+
+						<p:column selectionMode="multiple" styleClass="width-16 m-tex-al-center"/>
+
+						<p:column headerText="#{overallBundle['box.overall.name']}">
+							<h:outputText value="#{property.name}"/>
+						</p:column>
+
+						<p:column headerText="#{overallBundle['box.overall.keyword']}">
+							<h:outputText value="#{property.keyword}"/>
+						</p:column>
+
+						<p:column headerText="#{typeBundle['box.type.property.type']}">
+							<h:outputText value="#{property.type.name}"/>
+						</p:column>
+
+						<p:column headerText="#{typeBundle['box.type.unique']}"
+								  rendered="#{TypeUtils:supportUniqueProperty(typePropertyFm.type['class'])}">
+							<h:outputText value="#{typePropertyFm.supportsUniqueMessage(property)}"/>
+						</p:column>
+						
+						<p:column headerText="#{typeBundle['box.type.property.required']}">
+							<h:outputText value="#{property.required ? overallBundle['box.overall.yes'] : overallBundle['box.overall.no']}"/>
+						</p:column>
+
+						<p:column headerText="#{typeBundle['box.type.property.filtered']}"
+								  rendered="#{TypeUtils:supportFilteringByType(typePropertyFm.type['class'])}">
+							<h:outputText value="#{typePropertyFm.supportsFilteringMessage(property)}"/>
+						</p:column>
+
+						<p:column styleClass="width-20" rendered="#{!readonly}">
+							<p:commandLink title="#{typeBundle['box.type.property.edit']}"
+										   oncomplete="PF('typePropertyEditDlgVar').show()"
+										   disabled="#{disabled}"
+										   update="type_edit_property_form">
+								<i class="icon-create fs20 icon-btn"/>
+								<f:setPropertyActionListener value="#{property}" target="#{typePropertyEditDm.property}" />
+								<f:setPropertyActionListener value="#{typePropertyFm.editPropertyCallback}"
+															 target="#{typePropertyEditDm.editPropertyCallback}"/>
+							</p:commandLink>
+						</p:column>
+
+						<p:column styleClass="width-20" rendered="#{!readonly}">
+							<p:commandLink title="#{typeBundle['box.type.property.delete']}"
+										   action="#{typePropertyFm.onPropertiesRemove(model)}"
+										   disabled="#{disabled}"
+										   update="property_table_#{varStatus.index}">
+								<i class="fa fa-trash fs20 icon-btn"/>
+								<p:confirm header="#{typeBundle['box.type.property.delete_dialog']}"
+										   message="#{typeBundle['box.type.property.delete_dialog.details']}" />
+								<f:setPropertyActionListener value="#{property}" target="#{model.propertyToRemove}"/>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</c:forEach>
+		</div>
+	</h:form>
+</ui:composition>

@@ -1,0 +1,42 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{supplierListVm}"/>
+	<ui:param name="pageTitle" value="#{contractorBundle['box.contractor.plural']}"/>
+	<ui:param name="resultFormId" value="supplier_search_result_form"/>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css" />
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+		<f:loadBundle var="contractorBundle" basename="ContractorBundle"/>
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="brandName" value="#{supplierListVs.brandName}"/>
+			<f:viewParam name="legalName" value="#{supplierListVs.legalName}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{contractorBundle['box.contractor.plural']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="SupplierListFrame.xhtml">
+			<ui:param name="viewState" value="#{supplierListVs}"/>
+			<ui:param name="lazyDm" value="#{supplierListVm.lazyDm}"/>
+			<ui:param name="page" value="SupplierListView.xhtml"/>
+			<ui:param name="filterFormId" value="supplier_search_form"/>
+			<ui:param name="resultFormId" value="#{resultFormId}"/>
+			<ui:param name="update" value="#{filterFormId}"/>
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="SupplierCreationDialog.xhtml"/>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_3_1.xsd"	version="3.1">
+
+	<name>box_env_ui</name>
+
+
+	<security-constraint>
+		<display-name>BoxEnv</display-name>
+		<web-resource-collection>
+			<web-resource-name>box_env_web_resource</web-resource-name>
+			<url-pattern>/views/env/home/*</url-pattern>
+			<url-pattern>/views/env/directory/*</url-pattern>
+			<url-pattern>/views/env/test/*</url-pattern>
+			<url-pattern>/views/env/klto1c/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>User</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>AddressDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>address_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/address/AddressDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_AddressStructureEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>LocationTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>location_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/address/LocationTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_AddressObjectsTypesEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>LocationLevelDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>location_level_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/address/LocationLevelDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_AddressObjectsLevelsEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>MeasureUnitDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>measure_unit_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/measure/MeasureUnitDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_MeasureUnitEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>PartyTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>party_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/party/PartyTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_PartyTypeEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>AppointmentDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>appointment_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/personnel/AppointmentDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_AppointmentEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>PersonnelView</display-name>
+		<web-resource-collection>
+			<web-resource-name>personnel_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/personnel/EmployeeCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/personnel/EmployeeListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_PersonalView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ContactTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>contact_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/contact/ContactTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_ContactsTypesEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>RoleView</display-name>
+		<web-resource-collection>
+			<web-resource-name>role_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/security/RoleCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/security/RoleListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_RoleView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>CommodityTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>commodity_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/commodity/CommodityTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_CommodityTypeEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>LookupDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>lookup_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/type/LookupDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_LookupDirectoryEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>CustomerSegmentDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>customer_segment_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/party/CustomerSegmentDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_CustomerSegmentsEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>CustomerTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>customer_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/party/CustomerTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_CustomerTypeEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>DocumentTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>document_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/document/type/DocumentTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_DocumentTypesEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>CompanyInfoView</display-name>
+		<web-resource-collection>
+			<web-resource-name>company_information_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/companyinfo/CompanyInfoView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_OwnerView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>CoverageView</display-name>
+		<web-resource-collection>
+			<web-resource-name>coverage_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/techservice/coverage/CoverageDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_CoverageEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>MailTemplatesView</display-name>
+		<web-resource-collection>
+			<web-resource-name>mail_templates_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/mail/template/TemplateEditorView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_MailTemplatesEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>QueueManagerView</display-name>
+		<web-resource-collection>
+			<web-resource-name>queue_manager_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/queue/QueueManagerView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_QueueManagerView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>PersonalAccountView</display-name>
+		<web-resource-collection>
+			<web-resource-name>personal_account_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/billing/account/PersonalAccountView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_PersonalAccountView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>SubscriptionView</display-name>
+		<web-resource-collection>
+			<web-resource-name>subscription_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/billing/subscription/SubscriptionCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_PersonalAccountView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>InvoiceView</display-name>
+		<web-resource-collection>
+			<web-resource-name>invoice_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/billing/invoice/InvoiceCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_InvoiceView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>TelephonyZoneDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>telephony_zone_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/tariff/TelephonyZoneDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_TelephonyZoneEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>UsageInvoiceSettingsView</display-name>
+		<web-resource-collection>
+			<web-resource-name>usage_invoice_settings_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/billing/invoice/UsageInvoiceSettingsView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_UsageInvoiceSettingsView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ProvisionTermsListView</display-name>
+		<web-resource-collection>
+			<web-resource-name>provision_terms_list_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/billing/provision/ProvisionTermsDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ProductManagment_ProvidingTermsEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+	
+	<security-constraint>
+		<display-name>ImportReestrView</display-name>
+		<web-resource-collection>
+			<web-resource-name>import_reestr_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/saldo/import/RegisterImportView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_SaldoImportView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+    <security-constraint>
+        <display-name>ChargeJobListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>charge_job_list_view_web_resource</web-resource-name>
+            <url-pattern>/views/env/billing/invoice/chargejob/ChargeJobListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Billing_ChargeJobView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>ChargeJobCardView</display-name>
+        <web-resource-collection>
+            <web-resource-name>charge_job_card_view_web_resource</web-resource-name>
+            <url-pattern>/views/env/billing/invoice/chargejob/ChargeJobCardView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Billing_ChargeJobView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>TariffView</display-name>
+        <web-resource-collection>
+            <web-resource-name>tariff_view_web_resource</web-resource-name>
+            <url-pattern>/views/env/telephony/tariff/TariffListView.xhtml</url-pattern>
+            <url-pattern>/views/env/telephony/tariff/TariffCardView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ProductManagment_TariffView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <!--TODO-->
+	<security-constraint>
+		<display-name>SaldoExportView</display-name>
+		<web-resource-collection>
+			<web-resource-name>saldo_export_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/saldo/export/SaldoExportView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<!--<role-name>Billing_SaldoExportView</role-name>-->
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ProductTypeDirectoryView</display-name>
+		<web-resource-collection>
+			<web-resource-name>product_type_directory_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/product/ProductTypeDirectoryView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ProductManagment_CatalogEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>PricelistView</display-name>
+		<web-resource-collection>
+			<web-resource-name>pricelist_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/pricing/PricelistCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/pricing/PricelistJournalView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ProductManagment_PriceListView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+
+	<security-constraint>
+		<display-name>CustomerView</display-name>
+		<web-resource-collection>
+			<web-resource-name>customer_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/customer/CustomerCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/customer/CustomerListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>CRM_CustomerView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+    <security-constraint>
+        <display-name>SupplierView</display-name>
+        <web-resource-collection>
+            <web-resource-name>supplier_view_web_resource</web-resource-name>
+            <url-pattern>/views/env/contractor/SupplierCardView.xhtml</url-pattern>
+            <url-pattern>/views/env/contractor/SupplierListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>PartnerManagement_SuppliersView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+	<security-constraint>
+		<display-name>OrderView</display-name>
+		<web-resource-collection>
+			<web-resource-name>order_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/order/OrderCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/order/OrderListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>CRM_OrderView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ContractView</display-name>
+		<web-resource-collection>
+			<web-resource-name>contract_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/contract/ContractCardView.xhtml</url-pattern>
+			<url-pattern>/views/env/contract/ContractListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>CRM_ContractView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ContractExtensionCardView</display-name>
+		<web-resource-collection>
+			<web-resource-name>contract_extension_card_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/contract/ContractExtensionCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>CRM_ContractExtensionView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>TaskListView</display-name>
+		<web-resource-collection>
+			<web-resource-name>task_list_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/task/TaskListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_TaskListView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>TaskCardView</display-name>
+		<web-resource-collection>
+			<web-resource-name>task_card_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/task/TaskCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_TaskListView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>NumerationPatternView</display-name>
+		<web-resource-collection>
+			<web-resource-name>numeration_pattern_view_web_resource</web-resource-name>
+			<url-pattern>/views/env/numerationpattern/NumerationPatternView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_NumRulesView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>BillCardView</display-name>
+		<web-resource-collection>
+			<web-resource-name>bill_card_view_resource</web-resource-name>
+			<url-pattern>/views/env/billing/bill/BillCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_BillView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>BillListView</display-name>
+		<web-resource-collection>
+			<web-resource-name>bill_list_view_resource</web-resource-name>
+			<url-pattern>/views/env/billing/bill/BillListView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Billing_BillView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ServiceListView</display-name>
+		<web-resource-collection>
+			<web-resource-name>service_list_view_resource</web-resource-name>
+			<url-pattern>/views/env/services/ServiceListView.xhtml</url-pattern>
+			<url-pattern>/views/env/services/ServiceCardView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_ServiceView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ReportTypeEditorView</display-name>
+		<web-resource-collection>
+			<web-resource-name>report_type_editor_view_resource</web-resource-name>
+			<url-pattern>/views/env/report/ReportTypeEditorView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_ReportTypesEdit</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<display-name>ReportTypeMapView</display-name>
+		<web-resource-collection>
+			<web-resource-name>report_type_map_view_resource</web-resource-name>
+			<url-pattern>/views/env/report/ReportTypeMapView.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>System_ReportsMapView</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+    <security-constraint>
+        <display-name>ConvertationListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>convertation_list_view_resource</web-resource-name>
+            <url-pattern>/views/env/mediation/ConvertationListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Mediation_UnsuitableCallsView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>AnalysisListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>analysis_list_view_resource</web-resource-name>
+            <url-pattern>/views/env/mediation/AnalysisListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Mediation_UnsuitableCallsView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>IdentificationListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>identification_list_view_resource</web-resource-name>
+            <url-pattern>/views/env/mediation/IdentificationListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Mediation_UnsuitableCallsView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>ChargingListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>charging_list_view_resource</web-resource-name>
+            <url-pattern>/views/env/mediation/ChargingListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Mediation_UnsuitableCallsView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <display-name>UnsuitableRatedOutgoingCallsListView</display-name>
+        <web-resource-collection>
+            <web-resource-name>unsuitable_rated_outgoing_calls_list_view_resource</web-resource-name>
+            <url-pattern>/views/env/billing/invoice/unsuitable/UnsuitableRatedOutgoingCallsListView.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Billing_RatedCallsWithoutInvoiceView</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+</web-fragment>

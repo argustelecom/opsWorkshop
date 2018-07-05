@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="pricelistBundle" basename="PricelistBundle"/>
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect simple-fb">
+				<h:form id="pricelist_products_form">
+
+					<f:event type="preRenderComponent" listener="#{pricelistProductOfferingsFm.preRender(pricelist)}"/>
+
+					<o:importConstants type="ru.argustelecom.box.env.pricing.lifecycle.AbstractPricelistLifecycle.Behaviors" var="behavior"/>
+
+					<div class="ui-dashboard-header">
+						<i class="icon-format_list_numbered"/>
+						<h:outputText styleClass="card-header"
+									  value="#{pricelistBundle['box.pricelist.offering']}"/>
+						<h:outputText  id="plpottp" class="icon-help_outline tooltip-help-15" position="top"
+									   title="#{pricelistBundle['box.pricelist.offering.hint']}"/>
+						<p:tooltip id="plpo_ttp" for="plpottp" />
+
+						<p:outputPanel id="pricelist_products_managed_buttons" styleClass="m-tex-al-right m-fright"
+									   rendered="#{!behaviorUtils.isForbidden(currentPricelist.value, behavior.modifyEntries)}">
+
+							<p:commandLink id="open_dlg_new_product_offering" styleClass="m-mar-left10" process="@this"
+										   action="#{productOfferingEditDm.onDialogOpen()}"
+										   title="#{overallBundle['box.overall.create']}"
+										   disabled="#{    (sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListEdit'))
+														or (sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListEdit'))}">
+								<i class="fa fa-edit icon-btn"/>
+								<f:setPropertyActionListener value="#{pricelistProductOfferingsFm.pricelist.id}"
+															 target="#{productOfferingEditDm.pricelistId}"/>
+								<f:setPropertyActionListener value="#{pricelistProductOfferingsFm.callback}"
+															 target="#{productOfferingEditDm.callback}"/>
+							</p:commandLink>
+
+							<p:commandLink styleClass="m-mar-left10" action="#{pricelistProductOfferingsFm.remove()}"
+										   update="pricelist_products_table" title="#{overallBundle['box.overall.delete']}"
+										   disabled="#{    (sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CustomPricelist') and !p:ifGranted('ProductManagment_CustomPriceListEdit'))
+														or (sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CommonPricelist') and !p:ifGranted('ProductManagment_CommonPriceListEdit'))
+														or pricelistProductOfferingsFm.selectedOfferings == null or empty pricelistProductOfferingsFm.selectedOfferings}">
+								<i class="fa fa-trash icon-btn"/>
+								<p:confirm header="#{pricelistBundle['box.pricelist.offering.delete_dialog']}"
+										   message="#{pricelistBundle['box.pricelist.offering.delete_dialog.details']}"/>
+							</p:commandLink>
+						</p:outputPanel>
+					</div>
+
+					<p:dataTable id="pricelist_products_table" value="#{pricelistProductOfferingsFm.offerings}"
+                                 var="productOffering" selection="#{pricelistProductOfferingsFm.selectedOfferings}"
+                                 editable="true" rowKey="#{productOffering.id}" paginator="true"
+                                 rowsPerPageTemplate="5,10,15" rows="5"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 emptyMessage="#{overallBundle['box.overall.empty']}" currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+                                 styleClass="paginator-top-hidden">
+
+						<p:ajax event="rowSelectCheckbox" update="pricelist_products_form-pricelist_products_managed_buttons"/>
+						<p:ajax event="rowUnselectCheckbox" update="pricelist_products_form-pricelist_products_managed_buttons"/>
+						<p:ajax event="rowSelect" update="pricelist_products_form-pricelist_products_managed_buttons"/>
+						<p:ajax event="rowUnselect" update="pricelist_products_form-pricelist_products_managed_buttons"/>
+						<p:ajax event="toggleSelect" update="pricelist_products_form-pricelist_products_managed_buttons"/>
+
+						<p:column selectionMode="multiple" styleClass="width-16 m-tex-al-center" rendered="#{!behaviorUtils.isForbidden(currentPricelist.value, behavior.modifyEntries)}"/>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.product']}">
+                            <h:outputText id="product_name" value="#{productOffering.productName}"/>
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.offering.provision_terms']}">
+							<h:outputText id="provision_terms" styleClass="m-mar-right3" value="#{productOffering.provisionTermsName}"/>
+							<h:outputText id="ptttp" class="icon-info_outline tooltip-help-3"
+										  position="top"
+										  title="#{pricelistBundle['box.pricelist.offering.provision_terms']}: #{productOffering.provisionTermsName}&#013;#{overallBundle['box.overall.comment']}: #{productOffering.provisionTermsDescription}"/>
+							<p:tooltip id="ttp" for="ptttp" />
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.offering.quantity']}">
+							<h:outputText id="amount" value="#{productOffering.amount}"/>
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.offering.measurement_unit']}">
+							<h:outputText id="measure" value="#{productOffering.measureName}"/>
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.offering.amount.include_vat']}">
+							<boxenv:money value="#{productOffering.price}" unicolour="true" size="fs14"/>
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.offering.amount.exclude_vat']}">
+							<boxenv:money value="#{productOffering.priceWithoutTax}" unicolour="true" size="fs14"/>
+						</p:column>
+
+						<p:column headerText="#{pricelistBundle['box.pricelist.privilege']}">
+							<h:outputText id="privilege_type" value="#{productOffering.privilegeType.name}" styleClass="m-mar-right3"/>
+							<h:outputText id="privilege_duration" value="#{productOffering.privilegeDuration}"/>
+						</p:column>
+
+						<p:column styleClass="width-20" rendered="#{((sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CustomPricelist') and p:ifGranted('ProductManagment_CustomPriceListEntry'))
+																	      or (sysinf:isEntity(pricelistProductOfferingsFm.pricelist, 'CommonPricelist') and p:ifGranted('ProductManagment_CommonPriceListEntry')))
+																	and !behaviorUtils.isForbidden(currentPricelist.value, behavior.editEntry)}">
+							<p:commandLink action="#{productOfferingEditDm.onDialogOpen()}" process="@this"
+										   title="#{overallBundle['box.overall.edit']}">
+											<i class="icon-create fs20 m-bold-gray"/>
+											<f:setPropertyActionListener value="#{pricelistProductOfferingsFm.pricelist.id}" target="#{productOfferingEditDm.pricelistId}"/>
+											<f:setPropertyActionListener value="#{pricelistProductOfferingsFm.callback}" target="#{productOfferingEditDm.callback}"/>
+											<f:setPropertyActionListener value="#{productOffering.id}" target="#{productOfferingEditDm.editableProductOfferingId}"/>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

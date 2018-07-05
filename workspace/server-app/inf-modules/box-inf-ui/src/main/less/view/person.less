@@ -1,0 +1,93 @@
+/* person */
+.person {
+	margin-bottom: 15px;
+}
+
+.personnel-attr {
+	overflow: hidden;
+	word-break: break-word;
+}
+
+/* person dialog */
+/* person dialog header */
+
+.personnel-dlg {
+
+	.ui-dashboard-header {
+		background-color: transparent !important;
+	}
+}
+
+/* person dialog body */
+.personnel-edit {
+	.personnel-attr {
+		input,
+		textarea {
+			width: 80%;
+			margin: 0 8px 8px 5px;
+			font-family: "robotoregular" !important;
+		}
+	}
+
+}
+.personnel-dlg .ui-selectonemenu {
+	display: block;
+	width: 84%;
+	margin: 0 8px 8px 5px;
+}
+
+.personnel-contact {
+	margin: 0 -20px;
+}
+
+/* avatar messages-error */
+.personnel-edit {
+
+	.avatar {
+		position: relative;
+
+		.ui-fileupload-content {
+
+			.ui-messages-error {
+				position: absolute;
+				bottom: 90px;
+				left: 0;
+				right: 0;
+				color:@avatar-ui-messages-error-color !important;
+				background: @avatar-ui-messages-error-bg !important;
+				border: none;
+				font-size: @avatar-ui-messages-error-font-size !important;
+				font-family: @avatar-ui-messages-error-font-family;
+				text-align: left;
+				border-radius: 0 0 5px 5px;
+
+				.ui-messages-error-icon {
+					display: none;
+				}
+
+				.ui-icon-close {
+					background-image: url("#{resource['modena-layout/images/delete-white.svg']}") !important;
+				}
+
+				ul {
+					margin: 9px !important;
+				}
+
+				.ui-messages-error-summary,
+				.ui-messages-error-detail {
+					display: inline-block;
+					margin-left: 0;
+				}
+				.ui-messages-error-detail {
+					width: 100%;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+			}
+		}
+	}
+}
+
+
+

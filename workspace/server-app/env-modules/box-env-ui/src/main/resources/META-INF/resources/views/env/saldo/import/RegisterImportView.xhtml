@@ -1,0 +1,73 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+    <ui:param name="viewModel" value="#{registerImportVM}" />
+    <ui:param name="pageTitle" value="#{saldoImportBundle['box.saldo.import']}" />
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css"/>
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <f:loadBundle basename="SaldoImportBundle" var="saldoImportBundle"/>
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{saldoImportBundle['box.saldo.import']}"/>
+    </ui:define>
+
+    <ui:define name="body">
+
+        <div class="m-container100 m-responsive100">
+
+            <div class="m-container-indent">
+
+                <div class="m-hei-auto-on-mobile">
+
+                    <h:form id="upload_file_form">
+
+                        <p:wizard id="saldo_register_wizard" flowListener="#{registerImportVM.handleRegisterImportFlow}"
+                                  backLabel="#{overallBundle['box.overall.back']}"
+                                  nextLabel="#{overallBundle['box.overall.forward']}" styleClass="box-wizard">
+
+                            <o:importConstants type="ru.argustelecom.box.env.saldo.imp.RegisterImportViewModel.Step" var="step"/>
+
+                            <p:tab id="#{step.UPLOAD.id}" title="#{saldoImportBundle['box.saldo.import.step.upload']}">
+                                <ui:include src="RegisterImportUploadFrame.xhtml"/>
+                            </p:tab>
+
+                            <p:tab id="#{step.PARSE.id}" title="#{saldoImportBundle['box.saldo.import.step.parse']}">
+                                <ui:include src="RegisterImportParseFrame.xhtml"/>
+                            </p:tab>
+
+                            <p:tab id="#{step.EDIT.id}" title="#{saldoImportBundle['box.saldo.import.step.edit']}">
+                                <ui:include src="RegisterImportEditFrame.xhtml"/>
+                            </p:tab>
+
+                            <p:tab id="#{step.IMPORT_FINISHED.id}" title="#{saldoImportBundle['box.saldo.import.step.finish']}">
+                                <ui:include src="RegisterImportFinishedFrame.xhtml"/>
+                            </p:tab>
+                        </p:wizard>
+
+                    </h:form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+    <ui:define name="dialogs">
+
+        <ui:include src="RegisterImportEditDialog.xhtml">
+            <ui:param name="update" value="upload_file_form-saldo_register_correction_table upload_file_form-aggregate_info_panel"/>
+        </ui:include>
+
+    </ui:define>
+
+</ui:composition>

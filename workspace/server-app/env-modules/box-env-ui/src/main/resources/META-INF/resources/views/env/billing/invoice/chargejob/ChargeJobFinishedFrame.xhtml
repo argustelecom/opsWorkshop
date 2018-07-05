@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+
+	<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+	<f:loadBundle var="serviceBundle" basename="ServiceBundle"/>
+
+	<o:importConstants
+			type="ru.argustelecom.box.env.billing.invoice.chargejob.ChargeJobCreationDialogModel.RechargeCause"/>
+
+	<ui:fragment rendered="#{!chargeJobCreationDm.newJob.cause.equals(RechargeCause.ERRORS_IN_PRE_BILLING_SETTINGS)}">
+
+		<ui:fragment rendered="#{!chargeJobCreationDm.noServicesForRecharging}">
+			<div class="m-container100 m-responsive100">
+				<div class="message message-icon message-icon-info">
+					<p>#{chargeJobBundle['box.charge_job.wizard.step.finished.tip']}</p>
+				</div>
+
+				<p:dataTable id="charge_job_services_table" var="service"
+							 value="#{chargeJobCreationDm.services ne null and !chargeJobCreationDm.services.isEmpty() ? chargeJobCreationDm.services : chargeJobCreationDm.newJob.service}"
+							 paginator="true" widgetVar="tariffEntryTableVar"
+							 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+							 rowsPerPageTemplate="5,10,15" styleClass="paginator-top-hidden"
+							 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+
+					<p:column headerText="#{serviceBundle['box.service']}">
+						<boxenv:linkToCard value="#{service.getIdentifiable()}" styleClass="ui-link"
+										   text="#{service.name}"/>
+					</p:column>
+
+					<p:column headerText="#{serviceBundle['box.service.base.doc']}">
+						<boxenv:linkToCard value="#{service.contract.getIdentifiable()}" styleClass="ui-link"
+										   text="#{service.contract.name}"/>
+					</p:column>
+
+				</p:dataTable>
+			</div>
+		</ui:fragment>
+
+		<ui:fragment rendered="#{chargeJobCreationDm.noServicesForRecharging}">
+			<div class="m-container100 m-responsive100">
+				<div class="message message-icon message-icon-error">
+					<p>#{chargeJobBundle['box.charge_job.wizard.step.finished.tip.error']}</p>
+				</div>
+			</div>
+		</ui:fragment>
+	</ui:fragment>
+
+	<ui:fragment rendered="#{chargeJobCreationDm.newJob.cause.equals(RechargeCause.ERRORS_IN_PRE_BILLING_SETTINGS)}">
+		<div class="m-container100 m-responsive100">
+			<div class="message message-icon message-icon-warn">
+				<p>#{chargeJobBundle['box.charge_job.wizard.step.finished.warning']}</p>
+			</div>
+		</div>
+	</ui:fragment>
+
+	<h:panelGroup id="finished_nav_panel" layout="block" styleClass="dialog-footer-buttons">
+		<p:commandButton id="back_button_contract_step" value="#{overallBundle['box.overall.back']}"
+						 oncomplete="PF('chargeJobWizardVar').back()"/>
+
+		<p:commandButton id="confirm_button" value="#{overallBundle['box.overall.create']}"
+						 action="#{chargeJobCreationDm.createJobs()}"
+						 rendered="#{!chargeJobCreationDm.noServicesForRecharging
+						 or chargeJobCreationDm.newJob.cause.equals(RechargeCause.ERRORS_IN_PRE_BILLING_SETTINGS)}"
+						 oncomplete="PF('chargeJobCreationDlgVar').hide();" update="#{update}"/>
+	</h:panelGroup>
+
+</ui:composition>

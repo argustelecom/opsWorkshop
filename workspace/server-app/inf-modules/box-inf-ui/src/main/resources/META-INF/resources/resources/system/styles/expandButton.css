@@ -1,0 +1,29 @@
+.ui-expand-button-icon-up {
+	background-image: url("#{resource['system/images/common/CUD/up.png']}") !important
+}
+
+.ui-state-hover>.ui-expand-button-icon-up, .ui-state-active>.ui-expand-button-icon-up {
+	background-image: url("#{resource['system/images/common/CUD/up_hover.png']}") !important
+}
+
+.ui-expand-button-icon-down {
+	background-image: url("#{resource['system/images/common/CUD/down.png']}") !important
+}
+
+.ui-state-hover>.ui-expand-button-icon-down, .ui-state-active>.ui-expand-button-icon-down {
+	background-image: url("#{resource['system/images/common/CUD/down_hover.png']}") !important
+}
+
+.ui-expand-button-icon-down, .ui-expand-button-icon-up {
+	float: left;
+	cursor: pointer
+}
+
+.ui-expand-button {
+	float: right;
+	position: absolute;
+	right: 0;
+	top: 2px;
+	height: 22px;
+	width: 22px
+}

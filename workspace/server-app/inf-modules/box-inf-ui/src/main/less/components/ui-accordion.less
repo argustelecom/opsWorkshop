@@ -1,0 +1,36 @@
+/* ui-accordion */
+
+.ui-accordion {
+
+	border: none !important;
+
+	.ui-tabs-outline {
+		background-color: #e6eaec !important;
+	}
+	.ui-accordion-header {
+		margin-bottom: 2px !important;
+		padding: 9px 9px 9px 29px !important;
+		color: #546e7a;
+		background-color: #f5f5f5;
+		font-size: 14px !important;
+
+		&.ui-state-hover,
+		&.ui-state-active {
+			background-color: #e6eaec;
+			color: #546e7a;
+		}
+
+		.ui-icon-triangle-1-s {
+			background-image: url("#{resource['modena-layout/images/downarrow-gray.svg']}");
+		}
+
+		.ui-icon-triangle-1-e {
+			background-image: url("#{resource['modena-layout/images/right-arrow.svg']}");
+		}
+	}
+	&.accordion-box {
+		.ui-accordion-content {
+			overflow: initial;
+		}
+	}
+}

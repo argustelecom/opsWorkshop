@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<h:form id="option_spec_edit_form">
+		<p:dialog id="option_spec_edit_dlg" header="#{serviceBundle['box.service.option.edit_dialog']}" width="600"
+				  widgetVar="telephonyOptionSpecEditDlg" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+			<p:outputPanel id="single_tariff_panel">
+			<dl class="name-value width-200">
+				<dt>
+					<p:selectBooleanCheckbox id="single_tariff" value="#{telephonyOptionSpecEditDm.singleTariff}" styleClass="m-mar-left7">
+						<p:ajax process="@this" update="option_spec_edit_form-option_specs_table option_spec_edit_form-single_tariff_panel single_tariff_select_id"/>
+					</p:selectBooleanCheckbox>
+					<p:outputLabel for="single_tariff" value="#{tariffBundle['box.telephony.tariff.single']}" styleClass="m-mar-left10"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="single_tariff_select_id" value="#{telephonyOptionSpecEditDm.selectedSingleTariff}" label="#{tariffBundle['box.telephony.tariff.single']}"
+							rendered="#{telephonyOptionSpecEditDm.singleTariff}" required="#{telephonyOptionSpecEditDm.singleTariff}">
+						<p:ajax process="@this" update="option_spec_edit_form-option_specs_table"/>
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{telephonyOptionSpecEditDm.possibleTariffs}" var="tariff" itemLabel="#{tariff.name}" itemValue="#{tariff}"/>
+					</p:selectOneMenu>
+				</dd>
+			</dl>
+			</p:outputPanel>
+
+			<p:dataTable id="option_specs_table" value="#{telephonyOptionSpecEditDm.optionSpecs}" var="optionSpec" rowKey="#{optionSpec.toString()}"
+						 selection="#{telephonyOptionSpecEditDm.selectedOptionSpecs}" emptyMessage="#{overallBundle['box.overall.empty']}">
+
+				<p:ajax event="rowSelectCheckbox" process="@this" update="@this"/>
+				<p:ajax event="rowUnselectCheckbox" process="@this" update="@this"/>
+				<p:ajax event="rowSelect" process="@this" update="@this"/>
+				<p:ajax event="rowUnselect" process="@this" update="@this"/>
+				<p:ajax event="toggleSelect" process="@this" update="@this"/>
+
+				<p:column selectionMode="multiple" styleClass="width-16"/>
+
+				<p:column headerText="#{serviceBundle['box.service.option']}">
+					<h:outputText id="optionType" value="#{optionSpec.optionType.name}"/>
+				</p:column>
+
+				<p:column headerText="#{tariffBundle['box.telephony.tariff']}">
+					<p:selectOneMenu value="#{optionSpec.tariff}" disabled="#{telephonyOptionSpecEditDm.singleTariff or not telephonyOptionSpecEditDm.selectedOptionSpecs.contains(optionSpec)}"
+						styleClass="width-100-percents" label="#{tariffBundle['box.telephony.tariff']}">
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{telephonyOptionSpecEditDm.possibleTariffs}" var="tariff" itemLabel="#{tariff.name}" itemValue="#{tariff}"/>
+					</p:selectOneMenu>
+				</p:column>
+
+			</p:dataTable>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_option_spec_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="option_spec_edit_dlg" action="#{telephonyOptionSpecEditDm.clear()}"
+								 process="@this" onclick="PF('telephonyOptionSpecEditDlg').hide()"/>
+				<p:commandButton id="save_option_spec_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('telephonyOptionSpecEditDlg').hide()}"
+								 process="option_spec_edit_dlg" action="#{telephonyOptionSpecEditDm.submit()}" update="option_spec_edit_form-option_specs_table single_tariff_select_id #{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

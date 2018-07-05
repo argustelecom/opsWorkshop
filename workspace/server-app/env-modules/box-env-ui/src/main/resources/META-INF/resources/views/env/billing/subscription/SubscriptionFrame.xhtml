@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env"
+                xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+    <f:loadBundle var="subscriptionBundle" basename="SubscriptionBundle"/>
+    <p:outputPanel rendered="#{p:ifGranted('Billing_SubscriptionView')}">
+        <div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+            <div class="m-container-indent">
+                <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                    <h:form id="subscription_form">
+
+                        <f:event type="preRenderComponent" listener="#{subscriptionFm.preRender(subscription)}"/>
+
+                        <div class="ui-dashboard-header">
+                            <i class="icon-dehaze"/>
+                            <h:outputText value="#{subscriptionBundle['box.subscription']}" styleClass="card-header"/>
+                        </div>
+
+                        <dl class="name-value width-150">
+                            <dt>
+                                <p:outputLabel for="subscription_id" value="#{overallBundle['box.overall.id']}:"/>
+                            </dt>
+                            <dd>
+                                <boxenv:linkToCard id="subscription_id" styleClass="m-mar-left-8"
+                                                   value="#{subscriptionFm.subscription.getIdentifiable()}"
+                                                   text="#{subscriptionFm.subscription.id}"/>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="product_type" value="#{subscriptionBundle['box.subscription.product']}:"/>
+                            </dt>
+                            <dd>
+                                <h:outputText id="product_type" styleClass="m-mar-left-8" value="#{subscriptionFm.subscription.productName}"/>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+                            </dt>
+                            <dd>
+                                <h:outputText id="state" styleClass="m-mar-left-8" value="#{subscriptionFm.subscription.state.name}"/>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="start_date" value="#{overallBundle['box.overall.valid_from']}:"/>
+                            </dt>
+                            <dd>
+                                <h:outputText id="start_date" styleClass="m-mar-left-8" value="#{subscriptionFm.subscription.validFrom}">
+                                	<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                                </h:outputText>
+                            </dd>
+
+                            <dt>
+                                <p:outputLabel for="end_date" value="#{overallBundle['box.overall.valid_to']}:"/>
+                            </dt>
+                            <dd>
+                                <h:outputText id="end_date" styleClass="m-mar-left-8" value="#{subscriptionFm.subscription.validTo}">
+                                	<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}"/>
+                                </h:outputText>
+                            </dd>
+                        </dl>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </p:outputPanel>
+    
+    <ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="icon-dehaze" />
+		<ui:param name="headerText" value="#{subscriptionBundle['box.subscription']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('Billing_SubscriptionView')}" />
+	</ui:include>
+
+</ui:composition>

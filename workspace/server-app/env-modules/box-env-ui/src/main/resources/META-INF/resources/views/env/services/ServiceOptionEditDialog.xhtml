@@ -1,0 +1,206 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:form id="tariff_entry_edit_form">
+		<f:loadBundle var="serviceBundle" basename="ServiceBundle"/>
+		<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+		<f:loadBundle var="contractBundle" basename="ContractBundle"/>
+		<f:loadBundle var="documentTypeBundle" basename="DocumentTypeBundle"/>
+
+		<o:importConstants type="ru.argustelecom.box.env.service.ServiceOptionEditDialogModel.Step" var="stepType"/>
+
+		<p:dialog id="service_option_edit_dlg"
+				  header="#{serviceBundle[serviceOptionEditDm.isEditMode() ? 'box.service.option.edit_dialog' : 'box.service.option.create_dialog']}"
+				  widgetVar="serviceOptionEditDlgVar" onHide="PF('serviceOptionWizard').back()"
+				  width="600" resizable="false" modal="true" dynamic="true" closable="false" styleClass="icon-creation">
+
+			<p:wizard id="option_create_wizard" widgetVar="serviceOptionWizard" showStepStatus="false"
+					  showNavBar="false">
+				<p:tab id="#{stepType.OPTION_CREATION.id}">
+					<dl class="name-value width-270">
+						<dt>
+							<p:outputLabel for="option" value="#{serviceBundle['box.service.option']}"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="option" value="#{serviceOptionEditDm.newOption.optionType}"
+											 required="true"
+											 label="#{serviceBundle['box.service.option']}"
+											 disabled="#{serviceOptionEditDm.isEditMode()}">
+								<f:selectItems value="#{serviceOptionEditDm.optionTypes}" var="option"
+											   itemValue="#{option}" itemLabel="#{option.name}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="contract" value="#{contractBundle['box.contract']}"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="contract" value="#{serviceOptionEditDm.newOption.contract}"
+											 required="#{!serviceOptionEditDm.needCreateContract}"
+											 label="#{contractBundle['box.contract']}"
+											 disabled="#{serviceOptionEditDm.isEditMode() or serviceOptionEditDm.needCreateContract}">
+								<f:selectItem itemValue="#{null}"/>
+								<f:selectItems value="#{serviceOptionEditDm.contracts}" var="contract"
+											   itemValue="#{contract}" itemLabel="#{contract.name}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="tariff" value="#{tariffBundle['box.telephony.tariff']}"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="tariff" value="#{serviceOptionEditDm.newOption.tariff}" required="true"
+											 label="#{tariffBundle['box.telephony.tariff']}">
+								<f:selectItems value="#{serviceOptionEditDm.tariffs}" var="tariff"
+											   itemValue="#{tariff}" itemLabel="#{tariff.name}"/>
+							</p:selectOneMenu>
+						</dd>
+						<ui:fragment rendered="#{!serviceOptionEditDm.isEditMode()}">
+							<dt>
+								<p:outputLabel for="need_create_new_contract"
+											   value="#{serviceBundle['box.service.option.need_new_contract']}"/>
+							</dt>
+							<dd>
+								<p:selectBooleanCheckbox id="need_create_new_contract"
+														 value="#{serviceOptionEditDm.needCreateContract}">
+									<p:ajax update="contract"/>
+								</p:selectBooleanCheckbox>
+							</dd>
+						</ui:fragment>
+
+
+					</dl>
+
+
+					<h:panelGroup layout="block" styleClass="m-disp-block" class="dialog-footer-buttons">
+						<p:commandButton id="cancel_button_option_step" value="#{overallBundle['box.overall.cancel']}"
+										 styleClass="m-blue-text-button" update="service_option_edit_dlg"
+										 process="@this" action="#{serviceOptionEditDm.cancel()}"
+										 onclick="PF('serviceOptionEditDlgVar').hide()"/>
+
+						<p:commandButton id="submit_button_option_step" value="#{overallBundle['box.overall.save']}"
+										 action="#{serviceOptionEditDm.submit(update)}"/>
+					</h:panelGroup>
+				</p:tab>
+
+				<!--CONTRACT CREATION-->
+
+				<p:tab id="#{stepType.CONTRACT_CREATION.id}">
+					<dl class="name-value width-150">
+						<dt>
+							<p:outputLabel for="contract_type" value="#{overallBundle['box.overall.type']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="contract_type" value="#{serviceOptionEditDm.newContract.contractType}"
+											 required="true"
+											 label="#{overallBundle['box.overall.type']}">
+
+								<p:ajax process="@this" update="provider broker_panel"
+										listener="#{serviceOptionEditDm.onContractTypeChanged()}"/>
+
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{serviceOptionEditDm.types}" var="type"
+											   itemLabel="#{type.objectName}"
+											   itemValue="#{type}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="valid_from" value="#{overallBundle['box.overall.valid_from']}:"/>
+						</dt>
+						<dd>
+							<p:calendar id="valid_from" value="#{serviceOptionEditDm.newContract.validFrom}"
+										required="true"
+										pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-40-percents"
+										locale="#{languageBean.locale.language}"
+										label="#{overallBundle['box.overall.valid_from']}">
+								<p:ajax event="dateSelect" process="@this" update="valid_to"/>
+							</p:calendar>
+
+							<p:outputLabel for="valid_to" value="#{overallBundle['box.overall.valid_to.short']}:"
+										   styleClass="m-tex-al-right width-17-percents"/>
+							<p:calendar id="valid_to" value="#{serviceOptionEditDm.newContract.validTo}"
+										pattern="#{dateUtils.DATE_DEFAULT_PATTERN}"
+										styleClass="width-40-percents"
+										mindate="#{serviceOptionEditDm.newContract.validFrom}"
+										locale="#{languageBean.locale.language}"/>
+						</dd>
+						<dt>
+							<p:outputLabel for="provider"
+										   value="#{documentTypeBundle['box.doc.type.contract.provider']}:"/>
+						</dt>
+						<dd>
+							<h:outputText id="provider" styleClass="m-mar-left-8"
+										  value="#{serviceOptionEditDm.newContract.contractType.getIdentifiable().provider.objectName}"/>
+						</dd>
+
+						<o:importConstants type="ru.argustelecom.box.env.contract.model.ContractCategory"
+										   var="contractCategory"/>
+						<p:outputPanel id="broker_panel">
+							<ui:fragment 
+									rendered="#{serviceOptionEditDm.newContract.contractType.getIdentifiable().contractCategory eq contractCategory.AGENCY}">
+								<dt>
+									<p:outputLabel for="broker" value="#{contractBundle['box.contract.broker']}:"/>
+								</dt>
+								<dd>
+									<p:selectOneMenu id="broker" value="#{serviceOptionEditDm.newContract.broker}"
+												 	required="true" label="#{contractBundle['box.contract.broker']}">
+										<f:selectItems value="#{serviceOptionEditDm.possibleBrokers}" var="broker"
+												   	itemLabel="#{broker.name}" itemValue="#{broker}"/>
+									</p:selectOneMenu>
+								</dd>
+							</ui:fragment>
+						</p:outputPanel>
+
+						<o:importConstants type="ru.argustelecom.box.env.contract.model.PaymentCondition"
+										   var="paymentCondition"/>
+
+						<dt>
+							<p:outputLabel for="payment_condition"
+										   value="#{contractBundle['box.contract.payment_condition']}:"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu id="payment_condition"
+											 value="#{serviceOptionEditDm.newContract.paymentCondition}">
+								<f:selectItem itemValue=""/>
+								<f:selectItems value="#{paymentCondition.values()}" var="pc" itemLabel="#{pc.getName()}"
+											   itemValue="#{pc}"/>
+							</p:selectOneMenu>
+						</dd>
+
+						<dt>
+							<p:outputLabel for="number" value="#{contractBundle['box.contract.number']}:"/>
+						</dt>
+						<dd>
+							<p:inputText id="number" value="#{serviceOptionEditDm.newContract.number}"
+										 styleClass="width-100-percents"
+										 placeholder="#{overallBundle['box.overall.numeration.hint']}"/>
+						</dd>
+					</dl>
+
+					<h:panelGroup layout="block" styleClass="m-disp-block" class="dialog-footer-buttons">
+						<p:commandButton id="cancel_button_contract_step" value="#{overallBundle['box.overall.cancel']}"
+										 styleClass="m-blue-text-button"
+										 process="@this" action="#{serviceOptionEditDm.cancel()}"
+										 onclick="PF('serviceOptionEditDlgVar').hide(); PF('serviceOptionWizard').back()"
+										 />
+
+						<p:commandButton id="back_button_contract_step" value="#{overallBundle['box.overall.back']}"
+										 process="@this" onclick="PF('serviceOptionWizard').back()"/>
+
+						<p:commandButton id="submit_button_contract_step" value="#{overallBundle['box.overall.save']}"
+										 action="#{serviceOptionEditDm.submitWithContract()}"
+										 process="service_option_edit_dlg" update="#{update}"
+										 oncomplete="if (args &amp;&amp; !args.validationFailed) PF('serviceOptionEditDlgVar').hide();"
+										 />
+					</h:panelGroup>
+
+				</p:tab>
+			</p:wizard>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

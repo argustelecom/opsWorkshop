@@ -1,0 +1,217 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui" xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <ui:define name="completeFilterFields">
+        <ul>
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="id" value="#{overallBundle['box.overall.id']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:inputText id="id" value="#{viewState.id}"/>
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="service_type" value="#{serviceBundle['box.service.type']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:selectOneMenu id="service_type" value="#{viewState.serviceType}">
+                            <f:selectItem itemValue=""/>
+                            <f:selectItems value="#{serviceListVm.serviceTypes}" var="serviceType"
+                                           itemLabel="#{serviceType.name}" itemValue="#{serviceType}"/>
+                        </p:selectOneMenu>
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:selectOneMenu id="state" value="#{viewState.state}">
+                            <f:selectItem itemValue=""/>
+                            <f:selectItems value="#{serviceListVm.states}" var="state"
+                                           itemLabel="#{state.name}" itemValue="#{state}"/>
+                        </p:selectOneMenu>
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="product_type" value="#{serviceBundle['box.service.product.type']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:autoComplete id="product_type" value="#{viewState.productType}" var="productType"
+                                        itemValue="#{productType}" itemLabel="#{productType.name}"
+                                        completeMethod="#{serviceListVm.completeProductType}"/>
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="base_document" value="#{serviceBundle['box.service.base.doc']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:inputText id="base_document" value="#{viewState.contractNumber}"/>
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name">
+                        <p:outputLabel for="customer_spec" value="#{serviceBundle['box.service.customer.type']}:"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:selectOneMenu id="customer_spec" value="#{viewState.customerType}">
+                            <p:ajax process="@this" update="#{filterFormId}-customer"/>
+                            <f:selectItem itemValue=""/>
+                            <f:selectItems value="#{serviceListVm.customerTypes}" var="customerType"
+                                           itemLabel="#{customerType.name}" itemValue="#{customerType}"/>
+                        </p:selectOneMenu>
+                    </span>
+                </div>
+
+                <p:outputPanel styleClass="width-100-percents">
+                    <div class="filter-item">
+                        <span class="filter-name">
+                            <p:outputLabel for="customer" value="#{serviceBundle['box.service.customer']}:"/>
+                        </span>
+                        <span class="filter-value">
+                            <p:autoComplete id="customer" value="#{viewState.customer}" var="customer"
+                                            itemValue="#{customer}" itemLabel="#{customer.name}"
+                                            disabled="#{viewState.customerType eq null}"
+                                            completeMethod="#{serviceListVm.completeCustomer}"/>
+                        </span>
+                    </div>
+                </p:outputPanel>
+            </li>
+
+            <ui:fragment rendered="#{viewState.propertyFilters ne null and not empty viewState.propertyFilters.accessors}">
+                <ui:repeat value="#{viewState.propertyFilters.accessors}" var="accessor">
+                    <li>
+                        <div class="filter-item">
+                            <span class="filter-name">
+                                <p:outputLabel for="prop_filter" value="#{accessor.property.name}:"/>
+                            </span>
+                            <span class="filter-value">
+                                <boxenv:inputProperty id="prop_filter" accessor="#{accessor}" required="false"/>
+                            </span>
+                        </div>
+                    </li>
+                </ui:repeat>
+            </ui:fragment>
+        </ul>
+    </ui:define>
+
+    <ui:define name="shortFilterFields">
+        <ul>
+            <ui:fragment rendered="#{viewState.id ne null}">
+                <li>
+                    <p:outputLabel value="#{overallBundle['box.overall.id']}:"/>
+                    <h:outputText value="#{viewState.id};"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.serviceType ne null}">
+                <li>
+                    <p:outputLabel value="#{serviceBundle['box.service.type']}:"/>
+                    <h:outputText value="#{viewState.serviceType.name};"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.state ne null}">
+                <li>
+                    <p:outputLabel value="#{overallBundle['box.overall.state']}:"/>
+                    <h:outputText value="#{viewState.state.name};"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.productType ne null}">
+                <li>
+                    <p:outputLabel value="#{serviceBundle['box.service.product.type']}:"/>
+                    <h:outputText value="#{viewState.productType.name};"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.contractNumber ne null}">
+                <li>
+                    <p:outputLabel value="#{serviceBundle['box.service.base.doc']}:"/>
+                    <h:outputText value="#{viewState.contractNumber}"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.customerType ne null}">
+                <li>
+                    <p:outputLabel value="#{serviceBundle['box.service.customer.type']}:"/>
+                    <h:outputText value="#{viewState.customerType.name};"/>
+                </li>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{viewState.customer ne null}">
+                <li>
+                    <p:outputLabel value="#{serviceBundle['box.service.customer.type']}:"/>
+                    <h:outputText value="#{viewState.customer.name};"/>
+                </li>
+            </ui:fragment>
+        </ul>
+    </ui:define>
+
+    <ui:define name="searchResult">
+        <h:form id="#{resultFormId}">
+
+            <div class="ui-dashboard-header">
+                <i class="fa fa-binoculars"/>
+                <h:outputText styleClass="card-header" value="#{overallBundle['box.overall.searching_results']}"/>
+            </div>
+
+            <o:importConstants type="org.primefaces.model.SortOrder"/>
+
+            <p:dataTable id="service_table" value="#{lazyDm}" var="service" tableStyle="table-layout: fixed;"
+                         lazy="true" paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}" rowsPerPageTemplate="25,50,100" sortMode="single"
+                         sortBy="#{ServiceSort.id}" sortOrder="descending" selectionMode="single">
+
+                <p:column headerText="#{overallBundle['box.overall.id']}" sortBy="#{ServiceSort.id}">
+                    <boxenv:linkToCard value="#{service.getIdentifiable()}" text="#{service.id}"/>
+                </p:column>
+
+                <p:column headerText="#{serviceBundle['box.service.type']}" sortBy="#{ServiceSort.serviceType}">
+                    <h:outputText value="#{service.serviceType.name}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['box.overall.state']}" sortBy="#{ServiceSort.state}">
+                    <h:outputText value="#{service.state.name}"/>
+                </p:column>
+
+                <p:column headerText="#{serviceBundle['box.service.commodity']}" sortBy="#{ServiceSort.productType}">
+                    <h:outputText value="#{service.productType.name}"/>
+                </p:column>
+
+                <p:column headerText="#{serviceBundle['box.service.base.doc']}" sortBy="#{ServiceSort.baseDocument}">
+                    <boxenv:linkToCard value="#{service.contract.identifiable}" text="#{service.contract.name}"/>
+                </p:column>
+
+                <p:column headerText="#{serviceBundle['box.service.customer']}" sortBy="#{ServiceSort.customer}">
+                    <boxenv:linkToCard value="#{service.customer.identifiable}" text="#{service.customer.name}"/>
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

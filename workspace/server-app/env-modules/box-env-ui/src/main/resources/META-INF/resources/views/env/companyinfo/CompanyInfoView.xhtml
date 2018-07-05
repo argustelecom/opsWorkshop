@@ -1,0 +1,147 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena">
+
+    <ui:param name="viewModel" value="#{companyInfoVm}" />
+    <ui:param name="pageTitle" value="#{companyInfoBundle['box.company_info']}" />
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="owner" value="#{currentPartyRole.value}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css" />
+        <h:outputStylesheet name="inf/styles/box-functional-block.css" />
+    </ui:define>
+
+    <ui:define name="pagePath">
+
+        <f:loadBundle basename="OverallBundle" var="overallBundle"/>
+        <f:loadBundle basename="CompanyInfoBundle" var="companyInfoBundle"/>
+
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{companyInfoBundle['box.company_info']}"/>
+    </ui:define>
+
+    <ui:define name="body">
+
+        <div class="m-container35 m-responsive100">
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect simple-fb">
+                        <h:form id="owner_tree_form">
+
+                            <div class="ui-dashboard-header">
+                                <i class="fa fa-group"/>
+
+                                <h:outputText value="#{companyInfoBundle['box.company_info.legal_entries_label']}" styleClass="card-header"/>
+
+                                <p:outputPanel id="tree_managed_buttons" styleClass="m-fright">
+                                    <p:commandLink process="@this" title="#{companyInfoBundle['box.company_info.create_owner_btn_title']}"
+                                                   action="#{ownerCreationDm.openDialog()}" disabled="#{!p:ifGranted('System_OwnerEdit')}">
+                                        <i class="fa fa-edit icon-btn"/>
+                                        <f:setPropertyActionListener value="#{companyInfoVm.callbackAfterCreation}"
+                                                                     target="#{ownerCreationDm.callbackAfterCreation}"/>
+                                    </p:commandLink>
+
+                                    <p:commandLink process="@this" title="#{companyInfoBundle['box.company_info.delete_owner_btn_title']}"
+                                                   action="#{companyInfoVm.removeSelectedOwner()}"
+                                                   disabled="#{not companyInfoVm.canRemoveSelectedOwner() or !p:ifGranted('System_OwnerEdit')}"
+                                                   update="owner_tree_form company_info_attributes_panel">
+                                        <i class="fa fa-trash icon-btn m-pad-left10" title=""/>
+                                        <p:confirm header="#{companyInfoBundle['box.company_info.delete_company_dialog']}"
+                                                   message="#{companyInfoBundle['box.company_info.delete_company_dialog.details']} '#{companyInfoVs.ownerDto.name}'?" />
+                                    </p:commandLink>
+                                </p:outputPanel>
+                            </div>
+
+                            <p:tree id="owner_tree" styleClass="tree-no-border width-100-percents m-ov-auto"
+                                    value="#{companyInfoVm.root}" var="node" dynamic="true" selectionMode="single"
+                                    selection="#{companyInfoVm.selectedNode}" highlight="true" cashe="false"
+                                    propagateSelectionUp="false" propagateSelectionDown="false">
+
+                                <p:ajax event="select" update="company_info_attributes_panel owner_tree_form-tree_managed_buttons -company_information_form owner_additional_params email_template_form"/>
+
+                                <p:treeNode type="owner">
+                                    <ui:fragment rendered="#{node.principal}">
+                                        <i class="m-mar-right5 icon-check m-green" title="#{companyInfoBundle['box.company_info.company_by_default']}"/>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{!node.principal}">
+                                        <i class="m-mar-right20"/>
+                                    </ui:fragment>
+                                    <h:outputText value="#{node.name}" styleClass="#{node.principal ? 'm-font-bold' : ''}"/>
+                                </p:treeNode>
+                            </p:tree>
+
+                            <script>
+                                $( document ).ready(function() {
+                                    Argus.System.AutoHeight.compute('owner_tree_form', 40);
+                                    Argus.System.AutoHeight.compute('owner_tree_form-owner_tree', 270);
+                                });
+                            </script>
+
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Информация по выбранному объекту -->
+        <div class="m-container65 m-responsive100">
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect">
+                        <ui:include src="CompanyInfoAttributesFrame.xhtml">
+                            <ui:param name="callbackAfterChangePrincipal" value="#{companyInfoVm.callbackAfterChangePrincipal}"/>
+                            <ui:param name="owner" value="#{companyInfoVs.ownerDto}"/>
+                            <ui:param name="update" value="owner_tree_form-owner_tree mark_principal"/>
+                        </ui:include>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <div class="m-card m-shadow-effect simple-fb">
+						<ui:include src="GeneralOptionsFrame.xhtml">
+							<ui:param name="owner" value="#{companyInfoVs.ownerDto.getIdentifiable()}"/>
+						</ui:include>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-container100">
+                <div class="m-container-indent">
+                    <ui:include src="OwnerAdditionalParamsFrame.xhtml">
+                        <ui:param name="ownerId" value="#{currentPartyRole.value.id}"/>
+                        <ui:param name="params" value="#{currentPartyRole.value.additionalParameters}"/>
+                    </ui:include>
+                </div>
+            </div>
+
+            <div class="m-container100">
+                <ui:include src="EmailTemplateFrame.xhtml">
+                    <ui:param name="owner" value="#{companyInfoVs.ownerDto.getIdentifiable()}"/>
+                </ui:include>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="OwnerCreationDialog.xhtml">
+            <ui:param name="update" value="owner_tree_form company_info_attributes_panel company_information_form owner_additional_params "/>
+        </ui:include>
+
+        <ui:include src="GeneralOptionEditDialog.xhtml"/>
+
+        <ui:include src="OnwerAdditionalParamsEditDialog.xhtml">
+            <ui:param name="update" value="owner_additional_params_form"/>
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

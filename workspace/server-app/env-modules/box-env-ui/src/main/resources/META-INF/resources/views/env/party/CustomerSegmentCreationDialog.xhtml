@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena">
+
+	<f:loadBundle var="segmentBundle" basename="SegmentBundle"/>
+	<h:form id="customer_segment_edit_dlg_form">
+
+		<p:dialog id="customer_segment_edit_dlg" styleClass="icon-creation"
+			header="#{customerSegmentCreationDlg.newSegment ? segmentBundle['box.segment.create_dialog'] : segmentBundle['box.segment.edit_dialog']}" width="700"
+			widgetVar="customerSegmentCreationDlgVar" resizable="false" modal="true" closable="false">
+
+
+			<dl class="name-value width-140">
+
+				<ui:fragment rendered="#{customerSegmentCreationDlg.newSegment}">
+					<dt>
+						<p:outputLabel for="segment_customer_type" value="#{segmentBundle['box.segment.customer.plural']}:" />
+					</dt>
+					<dd>
+						<p:selectOneMenu id="segment_customer_type" value="#{customerSegmentCreationDlg.segmentCustomerType}"
+							required="true" filter="true" filterMatchMode="startsWith" caseSensitive="false"
+							label="#{segmentBundle['box.segment.customer.plural']}">
+
+							<f:selectItem itemValue="" />
+							<f:selectItems value="#{customerSegmentCreationDlg.customerTypes}" var="cs" itemValue="#{cs}"
+										   itemLabel="#{cs.objectName}" />
+						</p:selectOneMenu>
+					</dd>
+				</ui:fragment>
+				
+				<dt>
+					<p:outputLabel for="segment_name" value="#{overallBundle['box.overall.name']}:" />
+				</dt>
+				<dd>
+					<p:inputText id="segment_name" value="#{customerSegmentCreationDlg.segmentName}" required="true" maxlength="64"
+								 label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+				<dt>
+					<p:outputLabel for="segment_desc" value="#{overallBundle['box.overall.desc']}:" />
+				</dt>
+				<dd>
+					<p:inputTextarea id="segment_desc" value="#{customerSegmentCreationDlg.segmentDesc}"
+						rows="3" counter="segment_desc_counter" maxlength="256"
+						counterTemplate="#{overallBundle['box.overall.chars_left']}" autoResize="false" />
+					<h:outputText id="segment_desc_counter" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+						 styleClass="m-blue-text-button" update="customer_segment_edit_dlg_form" process="@this"
+						 action="#{customerSegmentCreationDlg.onCancelSegment()}" onclick="PF('customerSegmentCreationDlgVar').hide()" />
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+						 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('customerSegmentCreationDlgVar').hide()}"
+						 action="#{customerSegmentCreationDlg.onSubmitSegment()}" update="#{update}" />
+			</div>
+
+		</p:dialog>
+
+	</h:form>
+
+</ui:composition>

@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<h:panelGroup id="employee_panel">
+	<ui:param name="personDataFrameModel" value="#{employeeDataFrameModel}" />
+
+	<f:event listener="#{employeeDataFrameModel.preRender(employee)}" type="preRenderComponent"/>
+
+
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb #{employeeDataFrameModel.employeeDataDto.fired ? 'warn-style':''}">
+
+                <div class="ui-dashboard-header">
+                    <i class="fa fa-user" />
+                    <h:outputText styleClass="card-header" value="#{personnelBundle['box.personnel.person_header']}"/>
+                    <h:outputText  id="settingsttp" class="icon-help_outline tooltip-help-15" position="top"
+                                   title="#{employeeDataFrameModel.employeeDataDto.fired ? personnelBundle['box.personnel.employee.fired.msg'] : personnelBundle['box.personnel.employee.hint']}"/>
+                    <p:tooltip id="sett_ttp" for="settingsttp" />
+                    <p:outputPanel id="settings_button" styleClass="m-fright">
+                        <h:form>
+                            <p:commandLink id="fire_employee" rendered="#{!employeeDataFrameModel.employeeDataDto.fired}"
+                                title="#{personnelBundle['box.personnel.employee.fire']} '#{employeeDataFrameModel.employeeDataDto.name}'"
+                                action="#{employeeDataFrameModel.fire()}" update="employee_panel employee_roles_form employee_login_form employee_info_form"
+                                disabled="#{!p:ifGranted('System_DeleteEmployee')}">
+                                <i class="fa fa-user-times fs25 m-vertical-al-middle m-bold-gray"/>
+                                <p:confirm header="#{personnelBundle['box.personnel.employee.fire_dialog']}"
+                                           message="#{personnelBundle['box.personnel.employee.fire_dialog.details']} '#{employeeDataFrameModel.employeeDataDto.name}'?"/>
+                            </p:commandLink>
+                            <p:commandLink styleClass="m-mar-left10" title="#{personnelBundle['box.personnel.edit']}"
+                                           action="#{employeeEditDM.open()}" process="@this" rendered="#{p:ifGranted('System_EmployeeEdit') and !employeeDataFrameModel.employeeDataDto.fired}">
+                                <i class="fa fa-pencil-square-o icon-btn" />
+                                <f:setPropertyActionListener value="#{employeeDataFrameModel.employeeDataDto}" target="#{employeeEditDM.editableEmployee}"/>
+                                <f:setPropertyActionListener value="#{employee}" target="#{employeeEditDM.employee}"/>
+                            </p:commandLink>
+                        </h:form>
+                    </p:outputPanel>
+                </div>
+
+                <h:form id="employee_info_form">
+                    <div class="person clearfix">
+
+                        <ui:include src="PersonAvatar.xhtml">
+                        	<ui:param name="personDataDto" value="#{employeeDataFrameModel.employeeDataDto}" />
+                            <ui:param name="canEdit" value="false"/>
+                        </ui:include>
+
+                        <div class="personnel-attr fs14">
+                            <ui:include src="EmployeeDataFrame.xhtml">
+                                <ui:param name="employeeDataDto" value="#{employeeDataFrameModel.employeeDataDto}"/>
+                            </ui:include>
+                        </div>
+
+                    </div>
+
+                    <div class="ui-dashboard-header">
+                        <i class="fa fa-phone-square"/>
+                        <h:outputText styleClass="card-header" value="#{contactBundle['box.contact.plural']}" />
+                    </div>
+
+                    <ui:include src="/views/env/contact/ContactFrame.xhtml">
+                    	<ui:param name="party" value="#{employee.party}"/>
+                    </ui:include>
+
+                </h:form>
+
+            </div>
+        </div>
+    </div>
+	</h:panelGroup>
+
+</ui:composition>

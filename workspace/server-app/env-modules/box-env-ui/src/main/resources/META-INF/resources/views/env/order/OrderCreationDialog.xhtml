@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="orderBundle" basename="OrderBundle"/>
+	<f:loadBundle var="personnelBundle" basename="PersonnelBundle"/>
+	<f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+	<h:form id="order_creation_form">
+		<p:dialog id="order_creation_dlg" header="#{orderCreationDialogModel.dialogHeader}" width="700" styleClass="icon-creation"
+				  widgetVar="orderCreationDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<ui:fragment rendered="#{orderCreationDialogModel.needCreateCustomer}">
+				<dl class="name-value width-170">
+					<dt>
+						<p:outputLabel for="new_type" value="#{overallBundle['box.overall.type']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="new_type" label="#{overallBundle['box.overall.type']}"
+							value="#{orderCreationDialogModel.newCustomerType}"
+							required="true">
+							<f:selectItem itemValue="" />
+							<f:selectItems
+								value="#{orderCreationDialogModel.possibleCustomerTypes}"
+								var="type" itemValue="#{type}" itemLabel="#{type.objectName}" />
+						</p:selectOneMenu>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderCreationDialogModel.needCreateCustomer and orderCreationDialogModel.orderForIndividual}">
+				<dl class="name-value width-170">
+					<dt>
+						<p:outputLabel for="new_last_name" value="#{personnelBundle['box.personnel.name.last']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_last_name" value="#{orderCreationDialogModel.newLastName}"
+									 required="#{orderCreationDialogModel.orderForIndividual}" maxlength="64"/>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_first_name" value="#{personnelBundle['box.personnel.name.first']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_first_name" value="#{orderCreationDialogModel.newFirstName}"
+									 required="#{orderCreationDialogModel.orderForIndividual}" maxlength="64"
+									 label="#{personnelBundle['box.personnel.name.first']}"/>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_second_name" value="#{personnelBundle['box.personnel.name.second']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_second_name" value="#{orderCreationDialogModel.newSecondName}"
+									 maxlength="64"/>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{orderCreationDialogModel.needCreateCustomer and !orderCreationDialogModel.orderForIndividual}">
+				<dl class="name-value width-170">
+					<dt>
+						<p:outputLabel for="new_legal_name" value="#{customerBundle['box.customer.legal_name']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_legal_name" value="#{orderCreationDialogModel.newLegalName}"
+									 required="#{!orderCreationDialogModel.orderForIndividual}" maxlength="256"
+									 label="#{customerBundle['box.customer.legal_name']}"/>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<ui:include src="/views/env/address/AddressInputFrame.xhtml">
+				<ui:param name="inputAddressValue" value="#{orderCreationDialogModel.newBuilding}"/>
+				<ui:param name="inputAddressValueLabel" value="#{orderBundle['box.order.address']}"/>
+				<ui:param name="isInputAddressDisabled" value="#{false}"/>
+				<ui:param name="isInputAddressRequired" value="#{true}"/>
+				<ui:param name="logingTypeValue" value="#{orderCreationDialogModel.newLodgingType}"/>
+				<ui:param name="logingTypeValueLabel" value="#{orderBundle['box.order.address.loging.type']}"/>
+				<ui:param name="isLogingTypeDisabled" value="#{false}"/>
+				<ui:param name="isLogingTypeRendered" value="#{true}"/>
+				<ui:param name="logingTypes" value="#{orderCreationDialogModel.lodgingTypes}"/>
+				<ui:param name="logingValue" value="#{orderCreationDialogModel.newLodging}"/>
+				<ui:param name="logingValueLabel" value="#{orderBundle['box.order.address.loging.number']}"/>
+				<ui:param name="isLogingValueDisabled" value="#{false}"/>
+				<ui:param name="isLogingValueRendered" value="#{true}"/>
+				<ui:param name="width" value="width-170"/>
+			</ui:include>
+
+			<dl class="name-value width-170">
+				<dt>
+					<p:outputLabel for="new_connection_address_comment" value="#{overallBundle['box.overall.comment']}:"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="new_connection_address_comment" value="#{orderCreationDialogModel.newConnectionAddressComment}"
+									 maxlength="512" counter="connection_address_comment_counter"
+									 counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+					<h:outputText id="connection_address_comment_counter" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="#{update} order_creation_dlg"
+								 process="@this" action="#{orderCreationDialogModel.cleanCreationParams()}" onclick="PF('orderCreationDlgVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('orderCreationDlgVar').hide()}"
+								 action="#{orderCreationDialogModel.onOrderCreated()}" process="order_creation_dlg"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

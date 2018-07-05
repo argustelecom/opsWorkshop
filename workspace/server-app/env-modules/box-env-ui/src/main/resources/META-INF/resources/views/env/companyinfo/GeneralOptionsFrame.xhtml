@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle basename="CompanyInfoBundle" var="companyInfoBundle"/>
+	<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+	<h:form id="company_information_form">
+		<f:event listener="#{companyInfoGeneralOptionsFm.preRender(owner)}" type="preRenderComponent"/>
+
+		<div class="ui-dashboard-header">
+			<i class="fa fa-tasks"/>
+			<h:outputText value="#{companyInfoBundle['box.company_info.general_options']}"/>
+		</div>
+
+		<h:panelGroup styleClass="m-disp-block m-mar-bot10 no-group}">
+
+			<p:dataTable id="params_table" rowKey="#{parameter.id}"
+						 value="#{typePropertyValuePm.getAccessorsWithoutGroupSeparation(companyInfoGeneralOptionsFm.typeInstance)}"
+						 var="parameter" emptyMessage="#{overallBundle['box.overall.empty']}"
+					>
+
+				<p:column headerText="#{overallBundle['box.overall.name']}">
+					<h:outputText value="#{parameter.property.name}"/>
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.keyword']}">
+					<h:outputText value="#{parameter.property.keyword}"/>
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.value']}">
+					<h:outputText value="#{parameter.value}"/>
+				</p:column>
+
+				<p:column styleClass="width-20" rendered="#{p:ifGranted('System_OwnerEdit')}">
+					<p:commandLink title="#{overallBundle['box.overall.edit']}" disabled="#{parameter.property.readonly or parameter.locked}"
+								   oncomplete="PF('generalInfoEditDlgVar').show()">
+						<i class="icon-create fs20 m-bold-gray"/>
+						<f:setPropertyActionListener value="#{parameter}"
+													 target="#{companyInfoGeneralOptionsFm.accessor}"/>
+					</p:commandLink>
+				</p:column>
+
+			</p:dataTable>
+		</h:panelGroup>
+	</h:form>
+
+
+</ui:composition>

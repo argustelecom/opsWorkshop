@@ -1,0 +1,26 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:boxenv="http://argustelecom.ru/box/env" xmlns:f="http://java.sun.com/jsf/core">
+	<f:event listener="#{ipAddressServiceInfoFrameModel.preRender(ip)}" type="preRenderComponent" />
+
+	<div class="m-container-indent">
+		<div id="ip_address_info_panel" class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+			<h:form id="ip_address_service_info">
+				<div class="ui-dashboard-header">
+					<i class="fa fa-info-circle"/>
+					<h:outputText id="ip_service_title" styleClass="card-header"
+								  value="#{serviceBundle['box.nri.service.service_info_header']}:"/>
+				</div>
+				<dl class="name-value width-250 m-font-roboto-regular">
+					<dt>
+						<p:outputLabel value="#{serviceBundle['box.nri.service.service']}:"/>
+					</dt>
+					<dd>
+						<boxenv:linkToCard value="#{ipAddressServiceInfoFrameModel.service}"
+										   text="#{ipAddressServiceInfoFrameModel.service.id}"/>
+					</dd>
+				</dl>
+			</h:form>
+		</div>
+	</div>
+</ui:composition>

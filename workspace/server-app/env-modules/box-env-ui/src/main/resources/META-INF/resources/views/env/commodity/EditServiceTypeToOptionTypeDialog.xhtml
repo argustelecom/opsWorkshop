@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="optionTypeBundle" basename="OptionTypeBundle"/>
+
+	<h:form id="edit_service_type_to_option_type_form">
+        <p:dialog id="edit_service_type_to_option_type_dlg" header="#{optionTypeBundle['box.optiontype.service_type_option_type_edit_dialog_header']}"
+                  width="600" styleClass="icon-creation" widgetVar="editServiceTypeToOptionTypeDlgVar"
+                  resizable="false" modal="true" closable="false" dynamic="true">
+
+			<!--Для того, чтобы фокус упал на этот input-->
+			<h:inputText styleClass="visibility-hidden width-0"/>
+
+            <p:selectManyMenu value="#{editServiceTypeToOptionTypeDm.selectedOptionTypes}" var="selectedOptionType"
+							  styleClass="width-100-percents" showCheckbox="true" converter="omnifaces.SelectItemsConverter">
+
+                <f:selectItems value="#{editServiceTypeToOptionTypeDm.optionTypes}"
+							   var="optionType" itemValue="#{optionType}" itemLabel="#{optionType.objectName}"/>
+
+				<p:column>
+					<h:outputText value="#{selectedOptionType.objectName}"/>
+				</p:column>
+
+            </p:selectManyMenu>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" update="edit_service_type_to_option_type_form"
+                                 process="@this" onclick="PF('editServiceTypeToOptionTypeDlgVar').hide()"/>
+
+                <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('editServiceTypeToOptionTypeDlgVar').hide()}"
+                                 action="#{editServiceTypeToOptionTypeDm.execute()}" process="edit_service_type_to_option_type_form" update="#{update}"/>
+            </div>
+
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

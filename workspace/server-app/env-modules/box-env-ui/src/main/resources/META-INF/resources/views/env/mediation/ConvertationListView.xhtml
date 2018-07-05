@@ -1,0 +1,18 @@
+<ui:composition template="UnsuitableCallsListView.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+    <ui:param name="pageTitle" value="#{mediationBundle['box.mediation.converter']}"/>
+    <ui:param name="resultFormId" value="convertation_search_result_form"/>
+	<ui:param name="filterFormId" value="convertation_search_form"/>
+	<ui:param name="page" value="ConvertationListView.xhtml"/>
+	<ui:param name="isConvertation" value="#{true}"/>
+
+    <ui:define name="pagePath">
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{mediationBundle['box.mediation.converter']}"/>
+    </ui:define>
+
+
+</ui:composition>

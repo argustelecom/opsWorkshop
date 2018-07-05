@@ -1,0 +1,99 @@
+/* columns - табличная css конструкция для отображения контента в виде колонок,
+где используется для класса columns - display: table,
+для класса column - display: table-cell и процентная ширина
+----------------------------
+вид конструкции
+----------------------------
+<div class="columns">
+   <div class="column  m-container50 либо width-<значение>"></div>
+   <div class="column  m-container50 либо width-<значение>"></div>
+   <div class="column  m-container50 либо width-<значение>"></div>
+</div>
+
+------------------------------------------------------------------*/
+td > .columns {
+	margin-bottom: 0;
+}
+
+.columns {
+	width: 100%;
+	display: table;
+
+	> h2 {
+		width: 100%;
+		margin-bottom: 10px;
+		color: #525252;
+		font-weight: bold;
+	}
+
+	> div,
+	> .column {
+		display: table-cell;
+		max-width: none;
+		padding: 0 8px;
+		box-sizing: border-box;
+		vertical-align: top;
+	}
+
+	> div:first-of-type,
+	> .column:first-of-type {
+		padding-left: 0;
+	}
+
+	> div:last-of-type,
+	> .column:last-of-type {
+		padding-right: 0;
+	}
+
+	&.padding-10 > .column {
+		padding-top: 10px;
+	}
+
+	&.padding-10 > div:first-of-type,
+	&.padding-10 > .column:first-of-type {
+		padding-left: 10px;
+	}
+
+	&.padding-10 > div:last-of-type,
+	&.padding-10 > .column:last-of-type {
+		padding-right: 10px;
+	}
+
+	> div > h3,
+	> h3 {
+		margin-top: 10px;
+	}
+
+	> div > p,
+	> p {
+		margin-bottom: 4px;
+	}
+
+	> div > ul,
+	> ul {
+		padding-left: 15px;
+		margin: 0 0 10px;
+	}
+}
+
+.column {
+	> ul:last-child {
+		margin-bottom: 0;
+	}
+
+	.name-value {
+		flex-grow: 1;
+	}
+
+	> .name-value {
+		margin-bottom: 10px;
+	}
+
+	.column-id {
+		width: 200px;
+	}
+}
+
+.col-2 {
+	columns: 2;
+}

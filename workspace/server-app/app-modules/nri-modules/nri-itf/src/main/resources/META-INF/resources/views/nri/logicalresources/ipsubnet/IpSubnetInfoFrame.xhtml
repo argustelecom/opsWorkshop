@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<f:event listener="#{ipSubnetFM.preRender(subnet)}" type="preRenderComponent"/>
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div id="subnet_info_panel" class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+				<div class="ui-dashboard-header">
+					<i class="fa fa-info-circle"/>
+					<h:outputText id="ip_subnet_title" styleClass="card-header"
+								  value="#{ipBundle['box.menu.nri.resources.logical.subnets.info']}"/>
+				</div>
+				<dl class="name-value width-250 m-font-roboto-regular">
+					<dt>
+						<p:outputLabel value="#{ipAddrBundle['box.nri.logicalresource.ip.subnet_addr_label']}"/>
+					</dt>
+					<dd>
+						<p:outputLabel value="#{ipSubnetFM.subnet.name}"/>
+					</dd>
+				</dl>
+				<sysinf:editableSection disabled="#{!p:ifGranted('Nri_IpSubnetEdit')}">
+					<p:ajax event="save" listener="#{ipSubnetFM.changeComment}"/>
+					<dl class="name-value width-250 m-font-roboto-regular">
+						<dt>
+							<p:outputLabel value="#{ipBundle['box.nri.resources.logical.subnets.comment']}"/>
+						</dt>
+						<dd class="auto-height min-height62">
+							<p:inputTextarea id="ip_subnet_comment" value="#{ipSubnetFM.subnet.comment}"
+											 rows="3" counter="ip_subnet_comment_display" maxlength="255"
+											 counterTemplate="#{ipBundle['box.nri.resources.logical.subnets.count_left']}: {0}"/>
+							<h:outputText id="ip_subnet_comment_display" styleClass="fs12"/>
+						</dd>
+					</dl>
+				</sysinf:editableSection>
+			</div>
+		</div>
+	</div>
+</ui:composition>

@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+	<h:form id="contract_extension_creation_form">
+
+		<p:dialog id="contract_extension_creation_dlg" header="#{contractBundle['box.contract.extension.create_dialog']}"
+				  width="650" styleClass="icon-creation"
+				  widgetVar="contractExtensionCreationDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value width-150">
+				<dt>
+					<p:outputLabel for="contract" value="#{contractBundle['box.contract']}:"/>
+				</dt>
+				<dd>
+					<ui:fragment rendered="#{canSelectContract}">
+						<p:selectOneMenu id="contract" value="#{contractExtensionCreationDialogModel.contract}"
+										 required="true" label="#{contractBundle['box.contract']}">
+
+							<p:ajax process="@this" update="contract_extension_creation_form-customer"/>
+
+							<f:selectItem itemValue=""/>
+							<f:selectItems value="#{contractExtensionCreationDialogModel.possibleContracts}" var="contract"
+										   itemLabel="#{contract.documentNumber}" itemValue="#{contract}"/>
+						</p:selectOneMenu>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{!canSelectContract}">
+						<h:outputText value="#{contractExtensionCreationDialogModel.contract.documentNumber}"/>
+					</ui:fragment>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="contract_type" value="#{overallBundle['box.overall.type']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="contract_type" value="#{contractExtensionCreationDialogModel.newType}" 
+							 required="true" label="#{overallBundle['box.overall.type']}">
+
+						<p:ajax process="@this" update="contract_extension_creation_form-customer"/>
+
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{contractExtensionCreationDialogModel.types}" var="type" itemLabel="#{type.objectName}"
+									   itemValue="#{type}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="customer" value="#{contractBundle['box.contract.customer']}:"/>
+				</dt>
+				<dd>
+					<p:autoComplete id="customer" value="#{contractExtensionCreationDialogModel.newCustomer}" var="customer"
+									itemValue="#{customer}" itemLabel="#{customer.objectName}" styleClass="width-100-percents"
+									disabled="#{!canSelectCustomer or contractExtensionCreationDialogModel.newType eq null}"
+									required="true" label="#{contractBundle['box.contract.customer']}"
+									completeMethod="#{contractExtensionCreationDialogModel.completeCustomer}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_document_date" value="#{overallBundle['box.overall.valid_from']}:"/>
+				</dt>
+				<dd>
+					<p:calendar id="new_document_date" value="#{contractExtensionCreationDialogModel.newDocumentDate}"
+								required="true" label="#{overallBundle['box.overall.valid_from']}"
+								pattern="#{dateUtils.DATE_DEFAULT_PATTERN}" styleClass="width-100-percents"
+								locale="#{languageBean.locale.language}"/>
+				</dd>
+				<dt>
+					<p:outputLabel for="number" value="#{overallBundle['box.overall.number']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="number" value="#{contractExtensionCreationDialogModel.newNumber}"
+								 styleClass="width-100-percents"
+								 placeholder="#{overallBundle['box.overall.numeration.hint']}"/>
+				</dd>
+			</dl>
+
+			<ui:fragment rendered="#{not empty contractExtensionCreationDialogModel.order.unmodifiableContracts}">
+				<ui:include src="/views/env/order/OrderOffersForContractFrame.xhtml">
+					<ui:param name="abstractContractCreationDialogMolde" value="#{contractExtensionCreationDialogModel}"/>
+				</ui:include>
+			</ui:fragment>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="contract_extension_creation_dlg"
+								 process="@this" action="#{contractExtensionCreationDialogModel.cleanCreationParams()}"
+								 onclick="PF('contractExtensionCreationDlgVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('contractExtensionCreationDlgVar').hide()}"
+								 action="#{contractExtensionCreationDialogModel.onCreated()}" process="contract_extension_creation_dlg"
+								 update="#{update}"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

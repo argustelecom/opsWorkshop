@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<p:dialog id="order_select_offers_dlg" header="#{orderBundle['box.order.offer.create_dialog']}"
+			  width="1200" styleClass="icon-creation"
+			  widgetVar="orderSelectOffersDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+		<h:form id="order_possible_offers_form">
+			<div class="m-container35 m-responsive100 m-pad-right10">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect custom-content-card simple-fb">
+						<div class="ui-dashboard-header">
+							<i class="fa fa-th-list fs25"/>
+							<h:outputText styleClass="card-header" value="#{orderBundle['box.order.offer.filter']}"/>
+						</div>
+
+						<p:dataScroller id="requirements" var="requirement" chunkSize="10" mode="inline" scrollHeight="300"
+										value="#{orderOffersFrameModel.order.unmodifiableRequirements}">
+							<div class="m-card ui-dashboard-card m-shadow-effect">
+								<div class="ui-dashboard-header">
+									<div class="m-fleft">
+										<p:selectBooleanCheckbox styleClass="m-mar-right10">
+											<p:ajax listener="#{orderOffersFrameModel.toggleFilters(requirement)}"
+													update="order_possible_offers_form-order_possible_offers"/>
+										</p:selectBooleanCheckbox>
+										<h:outputText value="#{requirement.objectName}"/>
+									</div>
+									<div class="m-clear-both"></div>
+								</div>
+							</div>
+						</p:dataScroller>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container60 m-responsive100 m-pad-left10">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect custom-content-card simple-fb">
+						<div class="ui-dashboard-header">
+							<i class="fa fa-th-list fs25"/>
+							<h:outputText styleClass="card-header" value="#{orderBundle['box.order.offer.suitable']}"/>
+						</div>
+
+						<p:dataScroller id="order_possible_offers" var="offer" chunkSize="10" mode="inline" scrollHeight="300"
+										value="#{orderOffersFrameModel.offers}">
+							<div class="m-card m-shadow-effect">
+								<div class="ui-dashboard-header">
+									<div class="m-fleft">
+										<p:selectBooleanCheckbox styleClass="m-mar-right10">
+											<p:ajax listener="#{orderOffersFrameModel.toggleOffers(offer)}"/>
+										</p:selectBooleanCheckbox>
+										<h:outputText value="#{offer.objectName}"/>
+									</div>
+									<div class="m-fright">
+										<boxenv:money value="#{offer.price}" unicolour="true" size="fs18"/>
+									</div>
+									<div class="m-clear-both"></div>
+								</div>
+
+								<ui:include src="/views/env/product/ProductTypeInfoFrame.xhtml">
+									<ui:param name="compositeProductType" value="#{offer.composite}"/>
+									<ui:param name="type" value="#{offer.productType}"/>
+								</ui:include>
+							</div>
+						</p:dataScroller>
+					</div>
+				</div>
+			</div>
+
+			<div class="m-container100 m-responsive100">
+				<div class="dialog-footer-buttons">
+					<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}" styleClass="m-blue-text-button"
+									 update="order_select_offers_dlg" process="@this" action="#{orderOffersFrameModel.cleanParams()}"
+									 onclick="PF('orderSelectOffersDlgVar').hide()"/>
+					<p:commandButton id="add_button" value="#{overallBundle['box.overall.add']}" process="order_select_offers_dlg"
+									 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('orderSelectOffersDlgVar').hide()}"
+									 action="#{orderOffersFrameModel.addOffers()}" update="#{update}"/>
+				</div>
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>

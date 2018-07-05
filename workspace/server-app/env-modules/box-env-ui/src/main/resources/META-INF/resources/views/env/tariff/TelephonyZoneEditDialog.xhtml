@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+				xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<h:form id="telephony_zone_creation_form">
+		<p:dialog id="telephony_zone_creation_dlg" header="#{telephonyZoneEditDm.header}" width="800"
+				  widgetVar="telephonyZoneEditDlg" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+
+			<dl class="name-value width-120">
+				<dt>
+					<p:outputLabel for="name" value="#{overallBundle['box.overall.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="name" value="#{telephonyZoneEditDm.editableObject.name}" required="true" maxlength="128"
+								 label="#{overallBundle['box.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="description" value="#{overallBundle['box.overall.desc']}:"/>
+				</dt>
+				<dd class="auto-height">
+						<p:inputTextarea id="description" value="#{telephonyZoneEditDm.editableObject.description}"
+										 maxlength="256" counterTemplate="#{overallBundle['box.overall.chars_left']}"  
+										 counter="type_desc_counter" />
+						<h:outputText id="type_desc_counter" styleClass="fs12"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_telephony_zone_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="telephony_zone_creation_dlg"
+								 process="@this" onclick="PF('telephonyZoneEditDlg').hide()" resetValues="true"/>
+				<p:commandButton id="save_telephony_zone_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('telephonyZoneEditDlg').hide()}"
+								 process="telephony_zone_creation_dlg" action="#{telephonyZoneEditDm.submit()}" update="name #{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

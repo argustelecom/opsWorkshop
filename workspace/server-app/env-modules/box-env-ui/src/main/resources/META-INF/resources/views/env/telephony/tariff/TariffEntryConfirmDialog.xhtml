@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	<h:form id="tariff_entry_deletion_confirm_form">
+		<p:dialog id="tariff_entry_deletion_confirm_dlg"
+				  header="#{tariffBundle['box.telephony.tariff.entry.delete_dialog']}"
+				  widgetVar="tariffEntryDeletionConfirmDlgVar"
+				  width="600" resizable="false" modal="true" closable="false" dynamic="true" styleClass="ui-icon-alert">
+
+			<ui:fragment rendered="#{tariffEntryFm.crossingTariffs.size() gt 0}">
+				<div class="columns">
+					<div>
+						<i class="fs30 icon-warning"/>
+					</div>
+
+					<div>
+						<h:outputText
+								value="#{tariffBundle['box.telephony.tariff.conf_dialog.entry.custom.found']} '#{tariffEntryFm.tariff.name}'."/>
+					</div>
+
+				</div>
+
+				<div class="m-pad-top20">
+					<p:accordionPanel>
+						<p:tab title="#{tariffBundle['box.telephony.tariff.custom']}">
+							<p:dataList var="tariff" value="#{tariffEntryFm.crossingTariffs}">
+								<p:column headerText="#{overallBundle['box.overall.name']}">
+									<h:outputText value="#{tariff}"/>
+								</p:column>
+							</p:dataList>
+						</p:tab>
+					</p:accordionPanel>
+				</div>
+
+				<div class="m-pad-top20">
+					<h:outputText
+							value="#{tariffBundle['box.telephony.tariff.conf_dialog.entry.common.remove']} '#{tariffEntryFm.tariff.name}'?"/>
+				</div>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{tariffEntryFm.crossingTariffs.isEmpty()}">
+
+				<ui:fragment rendered="#{!tariffEntryFm.prefixes.isEmpty()}">
+					<h:outputFormat value="#{tariffBundle['box.telephony.tariff.conf_dialog.custom.remove']}">
+						<f:param value="#{tariffEntryFm.prefixes}"/>
+						<f:param value="#{tariffCardVs.tariffDto.parent.name}"/>
+						<f:param value="#{tariffCardVs.tariffDto.name}"/>
+					</h:outputFormat>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{tariffEntryFm.prefixes.isEmpty()}">
+					<h:outputText value="#{tariffBundle['box.telephony.zone.delete_dialog.details']}"/>
+				</ui:fragment>
+
+			</ui:fragment>
+
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="tariff_entry_deletion_confirm_dlg"
+								 process="@this" action="#{tariffEntryFm.resetConfirmDialogContext()}"
+								 onclick="PF('tariffEntryDeletionConfirmDlgVar').hide()"/>
+				<p:commandButton id="submit_button" value="#{overallBundle['box.overall.delete']}"
+								 action="#{tariffEntryFm.remove()}" process="tariff_entry_deletion_confirm_dlg"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('tariffEntryDeletionConfirmDlgVar').hide()}"
+								 update="#{update}"/>
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

@@ -1,0 +1,46 @@
+<ui:composition xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets">
+	<h:outputScript>
+		//<![CDATA[
+		'use strict';
+
+		<!-- Маркер здания -->
+		if (typeof window.buildingLayerOptions === 'undefined') {
+			(function (nameSpace) {
+				var buildingIcon = L.icon({
+					iconUrl: '#{resource["box-env/images/location.png"]}',
+					iconAnchor:  [16, 32],
+					shadowUrl : '#{resource["system-inf/images/leaflet/marker-shadow.png"]}',
+					shadowSize:  [48 , 32]
+			});
+
+				nameSpace.markerClass = L.Marker.extend({
+					options: {
+						icon: buildingIcon
+					},
+					initialize: function (latlng, options) {
+						/*GeoJSON layer при создании маркеров стандартными средствами сам добавляет свойствово feature
+						  при создании маркера с помощью плагина Leaflet.Editable необхлдимо свойствово добавлять руками */
+						this.feature = {
+							type: "Feature",
+							id: options.id,
+							geometry: {
+								type: "Point",
+								coordinates: [latlng.lng, latlng.lat]
+							},
+							properties: {}
+						};
+						L.Marker.prototype.initialize.call(this, latlng, options)
+					}
+				});
+
+				nameSpace.layerOptions = {
+					pointToLayer: function (feature, latLng) {
+						return new nameSpace.markerClass(latLng, feature.properties);
+					}
+				};
+			})(window.buildingLayerOptions = window.buildingLayerOptions || {});
+		}
+		//]]>
+	</h:outputScript>
+</ui:composition>

@@ -1,0 +1,165 @@
+.BusinessDay>div, .BusinessDay a, .BusinessDay.ui-button.ui-state-disabled {
+	background-color: #fff;
+	color: #101010
+}
+
+.ShortBusinessDay>div, .ShortBusinessDay a, .ShortBusinessDay.ui-button.ui-state-disabled {
+	background-color: #e2d783 !important
+}
+
+.DayOff>div, .DayOff a, .DayOff.ui-button.ui-state-disabled {
+	background-color: #f6b9d5 !important
+}
+
+.PreHoliday>div, .PreHoliday a, .PreHoliday.ui-button.ui-state-disabled {
+	background-color: #f5c467 !important
+}
+
+.Holiday>div, .Holiday a, .Holiday.ui-button.ui-state-disabled {
+	background-color: #ea867b !important
+}
+
+.Vacation>div, .Vacation a, .Vacation.ui-button.ui-state-disabled.Vacation {
+	background-color: #d7b5f9 !important
+}
+
+.Sickness>div, .Sickness a, .Sickness.ui-button.ui-state-disabled {
+	background-color: #98a6e5 !important
+}
+
+.CompLeave>div, .CompLeave a, .CompLeave.ui-button.ui-state-disabled {
+	background-color: #90d1d4 !important
+}
+
+.ExtraWork>div, .ExtraWork a, .ExtraWork.ui-button.ui-state-disabled {
+	background-color: #82d785 !important
+}
+
+.SpecDayOff>div, .SpecDayOff a, .SpecDayOff.ui-button.ui-state-disabled {
+	background-color: #F6B9D5 !important
+}
+
+.GenericWork>div, .GenericWork a, .GenericWork.ui-button.ui-state-disabled {
+	background-color: #ccc !important
+}
+
+.legend div.DayOff::after, .legend a.DayOff::after {
+	content: "";
+	display: block;
+	clear: both;
+	border-bottom: 1px silver solid;
+	margin: 5px 0 6px 0
+}
+
+.shiftColorScheme .shift1 a.ui-state-hover, .shiftColorScheme .shift2 a.ui-state-hover, .shiftColorScheme .shift3 a.ui-state-hover,
+	.shiftColorScheme .shift4 a.ui-state-hover, .shiftColorScheme .noShift a.ui-state-hover {
+	background-color: #39c;
+	color: #fff
+}
+
+.legend .shift1, .shiftColorScheme .shift1 a {
+	background-color: #98A6E5
+}
+
+.legend .shift2, .shiftColorScheme .shift2 a {
+	background-color: #82D785
+}
+
+.legend .shift3, .shiftColorScheme .shift3 a {
+	background-color: #F6B9D5
+}
+
+.legend .shift4, .shiftColorScheme .shift4 a {
+	background-color: #EA867B
+}
+
+.legend .noShift, .shiftColorScheme .noShift a {
+	background-color: #E2D783
+}
+
+.legend {
+	width: 160px;
+	margin-bottom: 2px
+}
+
+.legend.ui-panel.ui-widget-content {
+	border: 1px solid #c4c4cd;
+	margin-left: 5px
+}
+
+.legend .ui-panel-content {
+	padding: 7px 10px;
+	white-space: nowrap
+}
+
+.legend .ui-outputlabel {
+	color: #101010
+}
+
+.legend .ui-panel-content .day {
+	width: 8px;
+	height: 22px;
+	display: inline-block;
+	padding: 0;
+	margin-right: 5px;
+	border: 1px solid #d4d4d4
+}
+
+.legend .ui-panel-content .day.ui-radiobutton {
+	width: 22px
+}
+
+.legend .ui-panel-content .day.ui-radiobutton>.ui-radiobutton-box {
+	margin-left: 2px;
+	margin-top: 2px
+}
+
+.legend .ui-radiobutton.day {
+	margin-bottom: 3px
+}
+
+.legend .ui-outputlabel {
+	margin-top: 3px
+}
+
+.legend.ui-panel>.ui-panel-titlebar {
+	padding-top: 2px;
+	padding-bottom: 2px
+}
+
+.ui-toolbar .ui-chkbox-label {
+	color: white
+}
+
+.ui-state-system, .ui-state-system a {
+	font-style: italic
+}
+
+.ui-state-system .ui-state-highlight, .ui-state-system.ui-state-highlight a {
+	font-style: italic
+}
+
+.ui-state-special, .ui-state-special a {
+	font-weight: bolder
+}
+
+.ui-state-special .ui-state-highlight, .ui-state-special.ui-state-highlight a {
+	font-weight: bolder
+}
+
+.table-button {
+	padding: 1px !important;
+	width: 20px !important;
+	height: 20px !important
+}
+
+.table-headless>thead {
+	display: none
+}
+
+.ui-datatable tbody td.icon-column {
+	padding: 1px;
+	text-align: center;
+	vertical-align: middle;
+	width: 1px
+}

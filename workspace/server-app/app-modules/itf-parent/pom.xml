@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>web-parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../../web-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>itf-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>itf-parent</name>
+
+	<properties>
+		<main.basedir>${project.parent.parent.parent.basedir}/..</main.basedir>
+		<main.module-name>itf-parent</main.module-name>
+		<main.skip.less-compilation>true</main.skip.less-compilation>
+        <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
+        <sonar.skip>true</sonar.skip>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-env</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-inf-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-env-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <!-- JAX-RS (REST) -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- бонусы RESTEasy -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <scope>provided</scope>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- запуск компилятора less -->
+			<plugin>
+				<groupId>org.lesscss</groupId>
+				<artifactId>lesscss-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,178 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="contractBundle" basename="ContractBundle"/>
+	<div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+				<h:form id="#{form_id}">
+
+					<f:event listener="#{abstractFm.preRender(contract)}" type="preRenderComponent"/>
+
+					<div class="ui-dashboard-header">
+						<i class="#{icon eq null ? 'fa fa-indent' : icon}"/>
+
+						<h:outputText value="#{isExcludedEntries ? (isIncludedEntries ?
+						contractBundle['box.contract.entry.included'] :
+						contractBundle['box.contract.entry.excluded']) : contractBundle['box.contract.entry']}" styleClass="card-header"/>
+
+						<p:outputPanel id="manage_buttons" styleClass="m-fright">
+							<ui:fragment rendered="#{canEditEntry}">
+								<p:commandLink id="create_entry_button" styleClass="m-mar-left10" title="#{overallBundle['box.overall.add']}">
+									<i class="fa fa-edit icon-btn"/>
+								</p:commandLink>
+
+								<p:overlayPanel id="entry_types_panel" widgetVar="entryTypesPanel" for="create_entry_button"
+												styleClass="select-one-item-overlay-panel">
+									<p:outputPanel styleClass="custom-split-button">
+										<p:commandLink id="create_product_offering_entry_button" styleClass="m-mar-left10 custom-split-button-item"
+													   value="#{contractBundle['box.contract.product']}" title="#{overallBundle['box.overall.add']}"
+													   action="#{contractEntryCreationDm.onCreationDialogOpen()}">
+											<f:setPropertyActionListener value="#{contract}" target="#{contractEntryCreationDm.contract}"/>
+											<f:setPropertyActionListener value="#{abstractFm.callback}" target="#{contractEntryCreationDm.callback}"/>
+										</p:commandLink>
+
+										<p:commandLink id="create_option_entry_button" styleClass="m-mar-left10 custom-split-button-item"
+													   value="#{contractBundle['box.contract.option_entry']}" title="#{overallBundle['box.overall.add']}"
+													   action="#{optionContractEntryCreationDm.openDialog()}">
+											<f:setPropertyActionListener value="#{contract}" target="#{optionContractEntryCreationDm.contract}"/>
+											<f:setPropertyActionListener value="#{abstractFm.callback}" target="#{optionContractEntryCreationDm.callback}"/>
+										</p:commandLink>
+									</p:outputPanel>
+								</p:overlayPanel>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{canEditExcludeEntry and abstractFm.showAddExcludedEntryButton()}">
+								<p:commandLink styleClass="m-mar-left10" title="#{overallBundle['box.overall.add']}" disabled="#{false}"
+											   action="#{contractAddExcludedEntryDm.onCreationDialogOpen()}" update="-#{form_id}-manage_buttons">
+									<i class="fa fa-edit icon-btn"/>
+									<f:setPropertyActionListener value="#{contract}" target="#{contractAddExcludedEntryDm.contractExtension}"/>
+									<f:setPropertyActionListener value="#{abstractFm.callback}" target="#{contractAddExcludedEntryDm.callback}"/>
+								</p:commandLink>
+							</ui:fragment>
+						</p:outputPanel>
+					</div>
+
+					<p:dataTable id="contact_entries_table" value="#{abstractFm.entries}" var="entry"
+								 rowsPerPageTemplate="5,10,15" rowKey="#{entry.id}" paginator="true" tableStyle="table-layout: auto;"
+								 styleClass="contract-entries-tbl paginator-top-hidden borderless header-border"
+								 rows="5" paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}"
+								 emptyMessage="#{overallBundle['box.overall.empty']}">
+
+						<p:column headerText="#{contractBundle['box.contract.entry.subject']}" width="20%" style="vertical-align: top;">
+							<h:outputText value="#{entry.subjectName}"/>
+						</p:column>
+
+						<p:column headerText="#{contractBundle['box.contract.entry.description']}" width="50%"  style="vertical-align: top;">
+							<ui:fragment rendered="#{not entry.optionContractEntry}">
+								<li>
+									<h:outputLabel value="#{contractBundle['box.contract.pricelist']}:"/>
+									<boxenv:linkToCard value="#{entry.pricelist.identifiable}" text="#{entry.pricelist.objectName}"/>
+								</li>
+								<li>
+									<h:outputLabel value="#{contractBundle['box.contract.personal_account']}:"/>
+									<boxenv:linkToCard value="#{entry.personalAccount.getIdentifiable()}" text="#{entry.personalAccount.number}"/>
+								</li>
+								<li>
+									<h:outputLabel value="#{contractBundle['box.contract.address']}:"/>
+									<ui:repeat value="#{entry.addresses}" var="location">
+										<h:outputText value="#{location}" styleClass="m-font-bold"/>
+									</ui:repeat>
+								</li>
+
+							</ui:fragment>
+
+							<ui:fragment rendered="#{entry.optionContractEntry}">
+								<p:outputLabel value="#{contractBundle['box.contract.entry.telephony_zone']}:"/>
+								<ui:repeat value="#{entry.zones}" var="zone">
+									<li>
+										<h:outputText value="#{zone.objectName}" styleClass="m-font-bold"/>
+									</li>
+								</ui:repeat>
+							</ui:fragment>
+						</p:column>
+
+						<p:column headerText="#{contractBundle['box.contract.entry.service.plural']}" style="vertical-align: top;">
+							<div class="m-disp-table">
+								<div class="m-disp-table-cell width-98-percents">
+									<ui:fragment rendered="#{not entry.optionContractEntry}">
+										<ui:fragment rendered="#{entry.hasOneService()}">
+											<ui:param name="singleService" value="#{entry.services.get(0)}"/>
+											<boxenv:linkToCard value="#{singleService.getIdentifiable()}" text="#{singleService.name}"/>
+											<ul class="service-option-list">
+											<ui:repeat value="#{singleService.options}" var="opt">
+												<li>
+													<h:outputText value="#{opt.name}"/>
+												</li>
+											</ui:repeat>
+											</ul>
+										</ui:fragment>
+
+										<ui:fragment rendered="#{entry.hasSeveralServices()}">
+											<h:outputText value="#{entry.firstService.name},..." styleClass="m-disp-block"/>
+											<p:commandLink id="imageBtn" title="#{contractBundle['box.contract.entry.show_all']}"
+														   value="#{overallBundle['box.overall.total']} #{entry.services.size()}" />
+
+											<p:overlayPanel id="imagePanel" for="imageBtn" hideEffect="fade" styleClass="panel" showCloseIcon="true">
+												<ui:repeat value="#{entry.services}" var="serviceItem">
+													<div style="display: flex">
+													<p:outputLabel value="#{contractBundle['box.contract.entry.service']}"/>
+													<boxenv:linkToCard value="#{serviceItem.getIdentifiable()}" text="#{serviceItem.name}"/>
+													</div>
+													<ul class="service-option-list">
+													<ui:repeat value="#{serviceItem.options}" var="opt">
+														<li>
+															<h:outputText value="#{opt.name}"/>
+														</li>
+													</ui:repeat>
+													</ul>
+												</ui:repeat>
+											</p:overlayPanel>
+										</ui:fragment>
+									</ui:fragment>
+
+									<ui:fragment rendered="#{entry.optionContractEntry}">
+										<li>
+											<h:outputLabel value="#{contractBundle['box.contract.entry.service']}:"/>
+											<boxenv:linkToCard value="#{entry.service.identifiable}" text="#{entry.service.objectName}"/>
+										</li>
+										<li>
+											<h:outputLabel value="#{contractBundle['box.contract.entry.service_contract']}:"/>
+											<boxenv:linkToCard value="#{entry.serviceContract.getIdentifiable()}" text="#{entry.serviceContract.objectName}"/>
+										</li>
+									</ui:fragment>
+								</div>
+							</div>
+						</p:column>
+
+						<p:column styleClass="width-20">
+							<p:commandLink styleClass="m-disp-table-cell m-pad-left10 m-vertical-top"
+										   action="#{servicePropertiesEditDm.onDialogOpened()}" rendered="#{entry.hasOneService() or entry.hasSeveralServices()}"
+										   title="#{contractBundle['box.contract.entry.edit_service_params_title']}">
+								<i class="icon-create fs20 m-bold-gray"/>
+								<f:setPropertyActionListener value="#{entry.services}" target="#{servicePropertiesEditDm.services}"/>
+							</p:commandLink>
+						</p:column>
+
+						<p:column styleClass="width-25">
+							<p:commandLink id="remove_button" title="#{overallBundle['box.overall.delete']}"
+										   action="#{abstractFm.remove(entry)}" update="#{form_id} #{update}"
+										   rendered="#{canEditEntry or canEditExcludeEntry}">
+								<i class="fa fa-trash icon-btn"/>
+								<p:confirm header="#{contractBundle['box.contract.entry.delete_dialog']}"
+										   message="#{contractBundle['box.contract.entry.delete_dialog.details']}"/>
+							</p:commandLink>
+						</p:column>
+					</p:dataTable>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

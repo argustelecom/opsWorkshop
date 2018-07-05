@@ -1,0 +1,115 @@
+<ui:composition template="/views/env/map/template/MapView.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui">
+
+	<ui:param name="viewModel" value="#{networkMapViewModel}"/>
+	<ui:param name="pageTitle" value="Карта сети"/>
+	<ui:param name="bodyStyleClass" value="nri"/>
+	<ui:define name="metadata">
+		<!-- Порядок параметров важен:
+		Сначала currentMapObject.
+		Затем viewport. При currentMapViewPort.set уже известен текущий объект и можно выбрать позиционироваться по
+		объекту или по значению viewPort.
+		Дальше aspect. Он уже видит и viewport и currentMapObject.
+		И aspectSettings - для определения класса должен быть уже определен aspect.
+		-->
+		<f:metadata>
+			<!-- Если надо показать карту в конкретном месте, укажи: Region или Street или Building.
+				 Иначе null, имеется достаточный дефолт.-->
+			<f:viewParam name="mapObject" value="#{mapViewModel.currentObject}"/>
+			<f:viewParam name="viewport" value="#{currentMapViewport.value}">
+				<o:converter converterId="sysinf.MapViewport" baseLayers="#{mapViewModel.mapModel.baseLayers}"/>
+			</f:viewParam>
+			<f:viewParam name="aspect" value="#{currentMapAspect.value}"/>
+			<!-- поленился делать читабельное значение aspectSettings, проще сериализация - надо сделать более удобный
+				конвертер для набора примитивов и енумов. Есть JsonConverter/Gson, надо использовать его. -->
+			<!-- o:viewParam, т.к. f:viewParam вызывает лишние setValue, что провоцирует лишние ререндеры карты -->
+			<o:viewParam name="aspectSettings" value="#{currentMapAspectSettings.value}"
+						 converter="SerializeObjectConverter"/>
+		</f:metadata>
+	</ui:define>
+
+	<!-- Здесь мы, как потомок MapView, задаём содержимое определённых им блоков, задавая этим поведение наших аспектов -->
+	<ui:define name="aspects">
+		<f:selectItem itemLabel="#{mapBundle['box.nri.map.resource_intallation']}" itemValue="resourceInstallationsAspect"/>
+		<f:selectItem itemLabel="#{mapBundle['box.nri.map.resources']}" itemValue="accessPortsAspect"/>
+	</ui:define>
+
+	<ui:define name="aspects_settings">
+		<!--Настройки могут быть не у всех аспектов, поэтому по умолчанию скрываем фрейм с настройкам
+			Если требуется отоюражение настроек, то надо переопределять переменную в отдельных инклудах
+		-->
+		<ui:param name="render_settings" value="false"/>
+		<pe:case value="accessPortsAspect">
+			<ui:include src="/views/nri/map/network/accessports/AccessPortsSettingsFrame.xhtml"/>
+			<!--Настройки аспекта не будут выведены, тк скрыты поумолчанию. Надо переопределить переменную, которая
+				отвечает за отображение фрейма. Но вынуждены делать это чере c:if тк pe:case все равно выполняет
+				присвоение переменной значения-->
+			<c:if test="#{currentMapAspect.value eq 'accessPortsAspect'}">
+				<ui:param name="render_settings" value="true"/>
+			</c:if>
+		</pe:case>
+	</ui:define>
+
+
+	<ui:define name="aspects_map">
+		<pe:case value="resourceInstallationsAspect">
+			<ui:include src="/views/env/address/BuildingLayerOptions.xhtml"/>
+		</pe:case>
+		<pe:case value="accessPortsAspect">
+			<ui:include src="/views/nri/map/network/accessports/AccessPortsMarkersFrame.xhtml"/>
+		</pe:case>
+	</ui:define>
+
+
+	<ui:define name="aspects_detail_info">
+		<pe:case value="resourceInstallationsAspect">
+			<ui:include src="/views/nri/map/network/coverage/BuidlingInstallationsDetailInfoFrame.xhtml">
+
+			</ui:include>
+		</pe:case>
+		<pe:case value="accessPortsAspect">
+			<ui:include src="/views/nri/map/network/accessports/ResourceDetailInfoFrame.xhtml">
+
+			</ui:include>
+		</pe:case>
+		<c:if test="#{p:ifGranted('TechService_NetworkMapPotentialClients')}">
+			<pe:case value="potentialClientsAspect">
+				<ui:include
+						src="/views/techservice/ptvmap/ptvb2b/potentialclients/PotentialClientsDetailInfoFrame.xhtml"/>
+			</pe:case>
+		</c:if>
+
+	</ui:define>
+
+	<!--<ui:define name="search_result_view">-->
+		<!--<c:if test="#{p:ifGranted('TechService_NetworkMapPotentialClients')}">-->
+			<!--<pe:case value="editNetDevSolutionMode">-->
+				<!--<ui:include-->
+						<!--src="/views/techservice/netdev/solution/solutioneditor/ForkingSpotSearchResultsFrame.xhtml"/>-->
+			<!--</pe:case>-->
+		<!--</c:if>-->
+	<!--</ui:define>-->
+
+
+	<!--<ui:define name="aspects_legend">-->
+		<!--<c:if test="#{p:ifGranted('TechService_NetworkMapNetworkCoverage')}">-->
+			<!--<pe:case value="networkCoverageAspect">-->
+				<!--<ui:include-->
+						<!--src="/views/techservice/networkmap/aspects/networkcoverage/NetworkCoverageLegendFrame.xhtml"/>-->
+			<!--</pe:case>-->
+		<!--</c:if>-->
+		<!--<c:if test="#{p:ifGranted('TechService_NetworkMapPotentialClients')}">-->
+			<!--<pe:case value="potentialClientsAspect">-->
+				<!--<ui:include src="/views/techservice/ptvmap/ptvb2b/potentialclients/PotentialClientsLegendFrame.xhtml"/>-->
+			<!--</pe:case>-->
+		<!--</c:if>-->
+		<!--<c:if test="#{p:ifGranted('TechService_NetworkMapAccessPorts')}">-->
+			<!--<pe:case value="accessPortsAspect">-->
+				<!--<ui:include src="/views/techservice/ptvmap/ptvb2c/accessports/AccessPortsLegendFrame.xhtml"/>-->
+			<!--</pe:case>-->
+		<!--</c:if>-->
+	<!--</ui:define>-->
+</ui:composition>

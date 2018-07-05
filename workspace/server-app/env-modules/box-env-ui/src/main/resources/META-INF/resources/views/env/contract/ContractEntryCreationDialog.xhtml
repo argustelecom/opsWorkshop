@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<h:form id="contract_entry_creation_form">
+
+		<p:dialog id="contract_entry_creation_dlg" header="#{contractBundle['box.contract.product_entry.create_dialog']}" width="700" styleClass="icon-creation"
+				  widgetVar="contractEntryCreationDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value width-110">
+				<dt>
+					<p:outputLabel for="new_pricelist" value="#{contractBundle['box.contract.pricelist']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_pricelist" value="#{contractEntryCreationDm.entryCreationDto.pricelist}" required="true"
+							label="#{contractBundle['box.contract.pricelist']}">
+
+						<p:ajax process="@this" update="new_pricelist_entry"/>
+
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{contractEntryCreationDm.pricelists}" var="pl"
+									   itemValue="#{pl}" itemLabel="#{pl.objectName}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="new_pricelist_entry" value="#{contractBundle['box.contract.product']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_pricelist_entry" value="#{contractEntryCreationDm.entryCreationDto.productOffering}"
+									 required="true" disabled="#{not contractEntryCreationDm.pricelistSelected()}"
+									 label="#{contractBundle['box.contract.product']}">
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{contractEntryCreationDm.pricelistEntries}" var="productOffering"
+									   itemValue="#{productOffering}" itemLabel="#{productOffering.objectName}"/>
+					</p:selectOneMenu>
+				</dd>
+			</dl>
+
+			<ui:include src="/views/env/address/AddressInputFrame.xhtml">
+				<ui:param name="inputAddressValue" value="#{contractEntryCreationDm.entryCreationDto.building}"/>
+				<ui:param name="inputAddressValueLabel" value="#{contractBundle['box.contract.address']}"/>
+				<ui:param name="isInputAddressDisabled" value="#{false}"/>
+				<ui:param name="isInputAddressRequired" value="#{true}"/>
+				<ui:param name="logingTypeValue" value="#{contractEntryCreationDm.entryCreationDto.lodgingType}"/>
+				<ui:param name="logingTypeValueLabel" value="#{overallBundle['box.overall.type']}"/>
+				<ui:param name="isLogingTypeDisabled" value="#{false}"/>
+				<ui:param name="isLogingTypeRendered" value="#{true}"/>
+				<ui:param name="logingTypes" value="#{contractEntryCreationDm.lodgingTypes}"/>
+				<ui:param name="logingValue" value="#{contractEntryCreationDm.entryCreationDto.lodgingNumber}"/>
+				<ui:param name="logingValueLabel" value="#{overallBundle['box.overall.number']}"/>
+				<ui:param name="isLogingValueDisabled" value="#{false}"/>
+				<ui:param name="isLogingValueRendered" value="#{true}"/>
+			</ui:include>
+
+			<dl class="name-value width-110">
+				<dt class="width-35-percents">
+					<p:outputLabel for="edit_types_chckbx" value="#{contractBundle['box.contract.service_spec.edit_dialog']}:"/>
+				</dt>
+				<dd class="width-65-percents">
+					<p:selectBooleanCheckbox id="edit_types_chckbx" value="#{contractEntryCreationDm.editServicesAfterEntryCreation}"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="contract_entry_creation_dlg"
+								 process="@this" action="#{contractEntryCreationDm.cancel()}"
+								 onclick="PF('contractEntryCreationDlgVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('contractEntryCreationDlgVar').hide()}"
+								 action="#{contractEntryCreationDm.createEntry()}" process="contract_entry_creation_dlg" update="#{update}"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

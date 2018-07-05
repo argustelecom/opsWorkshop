@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+	<p:outputPanel id="element_attribute_panel">
+
+		<f:event listener="#{buildingElementAttributesFM.preRender(element, rootElement)}" type="preRenderComponent" />
+
+		<h:panelGroup>
+			<div class="ui-dashboard-header">
+				<i class="fa #{buildingElementAttributesFM.currentElement.type.icon.faName}"/>
+				<h:outputText id="element_name" styleClass="card-header"
+							  value="#{buildingElementAttributesFM.currentElement.type.name}"/>
+			</div>
+
+			<sysinf:editableSection disabled="#{!p:ifGranted('Nri_BuildingStructureEdit')}">
+				<dl class="name-value width-250 m-font-roboto-regular">
+
+					<p:ajax event="save" process="@this"
+							update="building_elem_tree_form-building_elem_tree element_attributes_form"
+							oncomplete="Argus.System.AutoHeight.compute('building_elem_tree_form-building_elem_tree', 35);"
+							listener="#{buildingElementAttributesFM.changeNameAndType()}"/>
+					<dt>
+						<p:outputLabel value="#{buildingElementBundle['box.nri.building.name_label']}:"
+									   id="elem_name_lbl" for="elem_name"/>
+					</dt>
+					<dd>
+						<p:inputText value="#{buildingElementAttributesFM.currentElement.name}"
+									 validator="#{buildingStructureVM.nameValidator}"
+									 required="true" requiredMessage=""
+									 maxlength="128" styleClass="m-mar-left-8" id="elem_name"/>
+					</dd>
+					<dt>
+						<p:outputLabel value="#{buildingElementBundle['box.nri.building.type_label']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="type" value="#{buildingElementAttributesFM.currentElement.type}">
+							<f:converter converterId="nriDtoConverter"/>
+							<f:selectItems value="#{buildingElementAttributesFM.possibleTypes}" var="type"
+										   itemValue="#{type}" itemLabel="#{type.name}"/>
+						</p:selectOneMenu>
+					</dd>
+				</dl>
+			</sysinf:editableSection>
+			<sysinf:editableSection id="location_section"
+									disabled="#{empty buildingElementAttributesFM.freeLodgings}"
+									rendered="#{buildingElementAttributesFM.isAddressVisible()}">
+				<p:ajax event="save" listener="#{buildingElementAttributesFM.changeLocation()}"/>
+
+				<dl class="name-value width-250 m-font-roboto-regular" style="padding: 4px">
+					<dt>
+						<p:outputLabel value="#{buildingElementBundle['box.nri.building.location_label']}:"/>
+					</dt>
+					<dd>
+						<p:selectOneMenu id="new_building" filter="true" filterMatchMode="contains"
+										 value="#{buildingElementAttributesFM.currentElement.location}">
+							<f:selectItem itemValue="#{buildingElementAttributesFM.currentElement.location}"
+										  itemLabel="#{buildingElementAttributesFM.currentElement.location.fullName}"/>
+							<f:selectItems value="#{buildingElementAttributesFM.freeLodgings}" var="lodging"
+										   itemValue="#{lodging}" itemLabel="#{lodging.fullName}"/>
+						</p:selectOneMenu>
+						<h:outputLabel id="location" styleClass="sys-comp-editable-section-output"
+									   value="#{buildingElementAttributesFM.currentElement.location.fullName}"/>
+					</dd>
+				</dl>
+			</sysinf:editableSection>
+		</h:panelGroup>
+	</p:outputPanel>
+
+</ui:composition>

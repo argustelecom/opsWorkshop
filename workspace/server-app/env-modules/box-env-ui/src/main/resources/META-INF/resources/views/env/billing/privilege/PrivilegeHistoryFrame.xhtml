@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+                
+	<p:dataTable id="privilege_history_table" value="#{privileges}" var="privilege" paginator="true" tableStyle="table-layout: auto;"
+				 rowsPerPageTemplate="5,10,15" rows="5" styleClass="paginator-top-hidden borderless header-border"
+				 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 emptyMessage="#{overallBundle['box.overall.empty']}" currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}">
+
+		<p:column headerText="#{overallBundle['box.overall.type']}">
+			<h:outputText value="#{privilege.type eq privilegeType.DISCOUNT ? privilege.objectName : privilege.type.name}"/>
+		</p:column>
+
+		<p:column headerText="#{overallBundle['box.overall.valid_from.alt']}">
+			<h:outputText value="#{privilege.validFrom}">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" timeZone="#{TZ.userTimeZone}"/>
+			</h:outputText>
+		</p:column>
+
+		<p:column headerText="#{overallBundle['box.overall.valid_to.alt']}">
+			<h:outputText value="#{privilege.validTo}">
+				<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_DEFAULT_PATTERN}" timeZone="#{TZ.userTimeZone}"/>
+			</h:outputText>
+		</p:column>
+
+		<p:column headerText="#{overallBundle['box.overall.object']}">
+			<h:outputText value="#{privilege.subject.name}"/>
+		</p:column>
+
+	</p:dataTable>
+
+</ui:composition>

@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core">
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect">
+				<h:form id="logical_res_spec_attributes_form">
+					<f:loadBundle basename="LogicalResourceSpecBundle" var="logResSpecBundle"/>
+					<o:importConstants type="ru.argustelecom.box.nri.logicalresources.LogicalResNodeType" var="logicResSpecNodeType"/>
+
+					<f:event listener="#{logicalResourceSpecAttributesFrameModel.preRender()}" type="preRenderComponent"/>
+
+					<p:outputPanel id="unknown_spec_attributes_panel"
+								   rendered="#{logicalResourceSpecAttributesFrameModel.resourceType eq null}">
+						<div class="columns">
+							<div class="column m-pad-0">
+								<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+									<i class="fa fa-question fs60"/>
+									<h:outputText value="ID"/>
+								</p:panelGrid>
+							</div>
+						</div>
+					</p:outputPanel>
+
+					<p:outputPanel id="phone_number_spec_attributes_panel"
+								   rendered="#{logicalResourceSpecAttributesFrameModel.resourceType eq logicResSpecNodeType.PHONE_NUMBER}">
+
+						<div class="columns">
+							<div class="column m-pad-0">
+								<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+									<i class="#{logicalResourceSpecAttributesFrameModel.currentSpecIconValue} fs60"/>
+									<h:outputText value="ID #{logicalResourceSpecAttributesFrameModel.phoneNumberSpec.id}"/>
+								</p:panelGrid>
+							</div>
+
+							<div class="column width-100-percents">
+								<div class="columns">
+									<div class="column m-container60 m-responsive100">
+										<sysinf:editableSection disabled="#{!p:ifGranted('Nri_LogicalResourceSpecEdit')
+													or logicalResourceSpecAttributesFrameModel.phoneNumberSpec == null}">
+
+											<p:ajax event="save" update="#{update}"/>
+
+											<p:outputPanel rendered="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec ne null}">
+												<dl class="name-value width-140">
+													<dt>
+														<p:outputLabel for="name" value="#{logResSpecBundle['box.nri.logicalresource.name']}:"/>
+													</dt>
+													<dd>
+														<p:inputText id="name" value="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec.name}"
+																	 required="true" maxlength="64"
+																	 requiredMessage="#{commonBundle['box.nri.common.name_required']}"/>
+													</dd>
+													<dt>
+														<p:outputLabel for="mask" value="#{logResSpecBundle['box.nri.logicalresource.mask']}:"/>
+													</dt>
+													<dd>
+														<p:inputText id="mask" value="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec.mask}" title="#{logResSpecBundle['box.nri.logicalresource.mask_title']}"
+																	 required="true"
+																	 requiredMessage="#{commonBundle['box.nri.common.mask_required']}"
+																	 maxlength="64">
+															<f:validator validatorId="ru.argustelecom.box.nri.logicalresources.PhoneNumberMaskValidator"/>
+															<pe:keyFilter regEx="/[+\-)(\s\d\*]/"/>
+														</p:inputText>
+
+													</dd>
+													<dt>
+														<p:outputLabel for="new_blocked_interval" value="#{logResSpecBundle['box.nri.logicalresource.blocked_interval']}:"/>
+													</dt>
+													<dd style="columns: 8">
+														<p:inputText id="new_blocked_interval"
+																	 value="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec.blockedInterval}"
+																	 size="3" maxlength="3"
+																	 required="true"
+																	 requiredMessage="#{commonBundle['box.nri.common.block_interval_required']}">
+															<pe:keyFilter mask="pint"/>
+														</p:inputText>
+														<p:outputLabel
+																value="#{logResSpecBundle['box.nri.logicalresource.days']}"/>
+													</dd>
+												</dl>
+											</p:outputPanel>
+
+										</sysinf:editableSection>
+									</div>
+
+									<div class="column m-container40 m-responsive100">
+										<div class=" m-pos-relative">
+											<div class="hover-overlay-block">
+												<sysinf:editableSection disabled="#{!p:ifGranted('Nri_LogicalResourceSpecEdit')
+													or logicalResourceSpecAttributesFrameModel.phoneNumberSpec == null}">
+
+													<p:ajax event="save" update="#{update}"/>
+
+													<p:outputPanel rendered="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec ne null}">
+														<dl class="name-value width-100">
+															<dt>
+																<p:outputLabel for="description" value="#{logResSpecBundle['box.nri.logicalresource.description']}:"/>
+															</dt>
+															<dd class="auto-height">
+																<p:inputTextarea id="description" value="#{logicalResourceSpecAttributesFrameModel.phoneNumberSpec.description}"
+																				 rows="3" counter="description_display"
+																				 maxlength="255"
+																				 counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+																<h:outputText id="description_display" styleClass="fs12"/>
+															</dd>
+														</dl>
+													</p:outputPanel>
+												</sysinf:editableSection>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</p:outputPanel>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

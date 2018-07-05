@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<f:loadBundle var="saldoImportBundle" basename="SaldoImportBundle"/>
+	<h:form id="import_edit_data_form">
+
+		<p:dialog id="import_edit_data_dlg" header="#{saldoImportBundle['box.saldo.import.step.edit.edit_dialog']}"
+				  width="750" styleClass="icon-creation"
+				  widgetVar="importEditDataDlgVar" resizable="false" modal="true"
+				  closable="false">
+
+			<dl class="name-value width-255">
+				<dt>
+					<p:outputLabel for="problem" value="#{saldoImportBundle['box.saldo.import.step.edit.problem']}: "/>
+				</dt>
+				<dd>
+					<p:outputLabel id="problem" value="#{registerImportEditDM.error}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="datasource" value="#{saldoImportBundle['box.saldo.import.step.edit.data.source']}: "/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="datasource" value="#{registerImportEditDM.editableItemAdapter.value.rowData}" rows="3" disabled="true"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="personalaccount" value="#{saldoImportBundle['box.saldo.import.step.edit.personal_account']}: "/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="personalaccount" value="#{registerImportEditDM.newAccount}" required="true"
+									 filter="true" filterMatchMode="startsWith"
+									 label="#{saldoImportBundle['box.saldo.import.step.edit.personal_account']}">
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{registerImportEditDM.accounts}" var="account" itemValue="#{account}"
+									   itemLabel="#{account.number}"/>
+					</p:selectOneMenu>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="sum" value="#{saldoImportBundle['box.saldo.import.step.edit.amount']}: "/>
+				</dt>
+				<dd>
+					<p:inputText id="sum" value="#{registerImportEditDM.newSum}" required="true"
+								 label="#{saldoImportBundle['box.saldo.import.step.edit.amount']}">
+						<f:converter converterId="moneyConverter"/>
+						<f:validateDoubleRange minimum="0.01" maximum="9999999.99"/>
+					</p:inputText>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="payment_number" value="#{saldoImportBundle['box.saldo.import.step.edit.payment.number']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="payment_number" value="#{registerImportEditDM.newPaymentNumber}" required="true"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="payment_date" value="#{saldoImportBundle['box.saldo.import.step.edit.payment.date']}:"/>
+				</dt>
+				<dd>
+					<p:calendar id="payment_date" value="#{registerImportEditDM.newPaymentDate}" required="true"
+								pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}" locale="ru"/>
+				</dd>
+			</dl>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" process="@this"
+								 action="#{registerImportEditDM.cancel()}" onclick="PF('importEditDataDlgVar').hide()"/>
+				<p:commandButton id="save_item_button" value="#{overallBundle['box.overall.save']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('importEditDataDlgVar').hide()}"
+								 action="#{registerImportEditDM.save()}" update="#{update}"/>
+			</div>
+
+		</p:dialog>
+
+	</h:form>
+
+</ui:composition>

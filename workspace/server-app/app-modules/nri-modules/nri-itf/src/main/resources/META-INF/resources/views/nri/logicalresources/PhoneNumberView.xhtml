@@ -1,0 +1,64 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<ui:param name="viewModel" value="#{phoneNumberVM}"/>
+	<ui:param name="pageTitle" value="#{phoneNumberPoolBundle['box.nri.phone.page_title']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="phoneNumber" value="#{phoneNumberViewState.phoneNumber}"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="resources/box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="resources/inf/styles/box-functional-block.css"/>
+		<h:outputStylesheet name="resources/nri/styles/nri.css"/>
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="PhoneNumberPoolBundle" var="phoneNumberPoolBundle"/>
+		<f:loadBundle basename="LogicalResourceSpecBundle" var="logResSpecBundle"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{phoneNumberVM.phone.pool.name ne null ? phoneNumberVM.phone.pool.name :
+		 			phoneNumberPoolBundle['box.nri.phone.phone_number_pools']}"
+					url="http://localhost:8080/box/views/nri/logicalresources/PhoneNumberPoolView.xhtml?pool=PhoneNumberPool-#{phoneNumberVM.phone.pool.id}"/>
+		<p:menuitem value="#{phoneNumberViewState.phoneNumber.name}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<ui:include src="PhoneNumberAttributesFrame.xhtml"/>
+
+		<div class="m-container100 m-responsive100">
+			<div class="m-container50 m-responsive100">
+				<ui:include src="PhoneNumberDynamicParams.xhtml"/>
+				<ui:include src="PhoneNumberResourceInfo.xhtml"/>
+			</div>
+
+			<p:outputPanel rendered="#{phoneNumberVM.phoneNumber.pool ne null}"
+						   styleClass="m-container50 m-responsive100">
+				<ui:include src="PhoneNumberPoolInfo.xhtml"/>
+			</p:outputPanel>
+		</div>
+
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+					<ui:include src="/views/env/activity/ActivityFrame.xhtml">
+						<ui:param name="contextObject" value="#{phoneNumberVM.phone}"/>
+					</ui:include>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+	<!--Диалог для комментариев-->
+	<ui:define name="dialogs">
+		<ui:include src="/views/env/activity/comment/CommentEditDialog.xhtml"/>
+		<ui:include src="/views/nri/logicalresources/PoolChangingDialog.xhtml">
+			<ui:param name="phoneNumber" value="#{phoneNumberVM.phoneNumber}"/>
+		</ui:include>
+	</ui:define>
+</ui:composition>

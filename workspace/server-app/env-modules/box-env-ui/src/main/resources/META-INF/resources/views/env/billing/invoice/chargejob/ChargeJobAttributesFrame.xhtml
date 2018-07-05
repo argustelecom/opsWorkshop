@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+                <h:form id="charge_job_attributes_form">
+
+					<f:loadBundle var="chargeJobBundle" basename="ChargeJobBundle"/>
+
+                    <f:event listener="#{chargeJobAttrFm.preRender(chargeJob)}" type="preRenderComponent"/>
+
+                    <div class="columns">
+                        <div class="column m-pad-0 m-responsive100">
+                            <p:panelGrid id="contract_id_grid" columns="1" layout="grid"
+                                         styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+                                <i class="fs50 icon-assignment"/>
+                                <h:outputText value="ID #{chargeJobAttrFm.chargeJob.mediationId}"/>
+                            </p:panelGrid>
+                        </div>
+
+                        <div class="column m-container100 m-fnone m-responsive100">
+                            <div class="columns">
+                                <div class="column m-container50 m-responsive100">
+                                    <dl class="name-value width-150">
+                                        <dt>
+                                            <p:outputLabel for="data_type" value="#{chargeJobBundle['box.charge_job.type']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <h:outputText id="data_type" value="#{chargeJobAttrFm.chargeJob.dataType.nameToShow()}"/>
+                                        </dd>
+
+										<dt>
+											<p:outputLabel for="creation_date" value="#{overallBundle['box.overall.creation_date']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="creation_date" value="#{chargeJobAttrFm.chargeJob.creationDate}">
+												<sysinf:convertDateTime pattern="#{dateUtils.DATETIME_WITH_SECONDS_PATTERN}"/>
+											</h:outputText>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="state" value="#{chargeJobAttrFm.chargeJob.state.getName()}"/>
+										</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	<f:loadBundle var="currencyBundle" basename="CurrencyBundle"/>
+	<o:importConstants type="ru.argustelecom.box.env.telephony.tariff.TariffEntryImportResult" var="pattern"/>
+	<h:form id="tariff_entry_edit_form">
+		<p:dialog id="tariff_entry_edit_dlg"
+				  header="#{tariffBundle[tariffEntryEditDm.editableMode ? 'box.telephony.tariff.entry.edit_dialog' : 'box.telephony.tariff.entry.creation_dialog']}"
+				  widgetVar="tariffEntryEditDlgVar"
+				  width="600" resizable="false" modal="true" closable="false" dynamic="true" styleClass="icon-creation">
+
+			<dl class="name-value width-210">
+
+				<dt>
+					<p:outputLabel for="name" value="#{tariffBundle['box.telephony.tariff.entry.route']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="name" value="#{tariffEntryEditDm.editDto.name}" required="true"
+								 label="#{tariffBundle['box.telephony.tariff.entry.route']}">
+					</p:inputText>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="prefix" value="#{tariffBundle['box.telephony.tariff.entry.prefix']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="prefix" value="#{tariffEntryEditDm.editDto.prefix}" required="true"
+								 label="#{tariffBundle['box.telephony.tariff.entry.prefix']}"
+								 validator="#{tariffEntryEditDm.validatePrefixes}"/>
+				</dd>
+
+				<pe:keyFilter for="prefix" regEx="/[0-9,]/i">
+
+				</pe:keyFilter>
+
+				<dt>
+					<p:outputLabel for="cost" value="#{tariffBundle['box.telephony.tariff.entry.cost']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="cost" value="#{tariffEntryEditDm.editDto.cost}"
+								 required="true" styleClass="width-40-percents"
+								 label="#{tariffBundle['box.telephony.tariff.entry.cost']}">
+						<f:converter converterId="moneyConverter"/>
+						<f:validateDoubleRange minimum="0.01" maximum="9999999.99"/>
+					</p:inputText>
+
+					<p:outputLabel for="currency" value="#{currencyBundle['box.currency']}:"
+								   styleClass="m-pad-top-14 m-pad-left10"/>
+
+					<h:outputText styleClass="m-disp-inl-block m-pad-top-14" id="currency"
+								  value="#{moneyBeautifier.defaultCurrency.name}"/>
+
+				</dd>
+
+				<dt>
+					<p:outputLabel for="telephone_zone" value="#{tariffBundle['box.telephony.tariff.entry.zone']}"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="telephone_zone" value="#{tariffEntryEditDm.editDto.zone}"
+									 required="true"
+									 label="#{tariffBundle['box.telephony.tariff.entry.zone']}">
+						<f:selectItems value="#{tariffEntryEditDm.getTelephoneZones()}" var="zone"
+									   itemValue="#{zone}" itemLabel="#{zone.name}"/>
+					</p:selectOneMenu>
+				</dd>
+
+			</dl>
+
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="tariff_entry_edit_dlg"
+								 process="@this" action="#{tariffEntryEditDm.reset()}"
+								 onclick="PF('tariffEntryEditDlgVar').hide()"/>
+
+				<p:commandButton id="submit_button_with_confirm" value="#{overallBundle['box.overall.save']}"
+								 action="#{tariffEntryEditDm.submit()}" process="tariff_entry_edit_dlg"
+								 update="#{update} prefix">
+				</p:commandButton>
+
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

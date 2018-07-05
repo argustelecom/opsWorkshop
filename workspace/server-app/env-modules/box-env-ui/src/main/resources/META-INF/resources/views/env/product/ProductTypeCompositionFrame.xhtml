@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle basename="ProductBundle" var="productBundle"/>
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect custom-content-card simple-fb">
+				<h:form id="product_type_composition_form">
+
+					<f:event listener="#{productTypeCompositionFm.preRender()}" type="preRenderComponent"/>
+
+					<script>
+						$( document ).ready(function() {
+							Argus.System.AutoHeight.compute('product_type_composition_form', 23);
+						});
+					</script>
+
+					<div class="ui-dashboard-header">
+						<i class="fa fa-tasks"/>
+						<h:outputText styleClass="card-header"
+									  value="#{productBundle['box.product.dir.composition']}"/>
+
+						<p:outputPanel id="composition_managed_buttons" styleClass="m-tex-al-right m-fright">
+							<p:commandLink styleClass="m-mar-left10" process="@this" title="#{overallBundle['box.overall.create']}"
+											 action="#{productTypeCompositionFm.onAddProductTypeDialogOpen()}"
+											 rendered="#{productTypeCompositionFm.compositeProduct and not empty productTypeCompositionFm.possibleProductTypes}"
+											 disabled="#{!p:ifGranted('ProductManagment_ProductTypeEdit')}">
+											<i class="fa fa-edit icon-btn"/>
+							</p:commandLink>
+							<p:commandLink styleClass="m-mar-left10" process="@this" title="#{overallBundle['box.overall.create']}"
+											 action="#{productTypeCompositionFm.onAddCommodityTypeDialogOpen()}"
+											 rendered="#{!productTypeCompositionFm.compositeProduct and not empty productTypeCompositionFm.possibleCommodityTypes}"
+											 disabled="#{!p:ifGranted('ProductManagment_ProductTypeEdit')}">
+											<i class="fa fa-edit icon-btn"/>
+							</p:commandLink>
+						</p:outputPanel>
+					</div>
+
+					<ui:fragment rendered="#{productTypeCompositionFm.compositeProduct}">
+						<p:dataScroller var="type" scrollHeight="550" chunkSize="10" mode="inline"
+										value="#{productTypeCompositionFm.abstractProductType.compositeParts}">
+							<div class="m-card m-shadow-effect">
+								<div class="ui-dashboard-header">
+									<boxenv:linkToCard value="#{type}" text="#{type.name}"/>
+									<div class="m-fright">
+										<p:commandLink action="#{productTypeCompositionFm.removeProductType(type)}" 
+													   title="#{overallBundle['box.overall.delete']}"
+														 process="@this" styleClass="m-mar-left10" update="product_type_composition_form"
+														 rendered="#{p:ifGranted('ProductManagment_ProductTypeEdit')}">
+											<i class="fa fa-trash fs18 icon-btn"/>
+											<p:confirm header="#{productBundle['box.product.dir.composition.delete_dialog']}"
+													   message="#{productBundle['box.product.dir.composition.delete_dialog.details']} '#{type.name}'"/>
+										</p:commandLink>
+									</div>
+								</div>
+
+								<p:dataTable id="property_table" value="#{type.entries}" var="typeEntry" styleClass="contact-info"
+											 emptyMessage="#{overallBundle['box.overall.empty']}">
+									<p:column>
+										<h:outputText value="#{typeEntry.type.name}"/>
+									</p:column>
+
+									<p:column>
+										<dl class="name-value width-200">
+											<ui:include src="/views/env/type/GroupTypePropertyValueFrame.xhtml">
+												<ui:param name="instance" value="#{typeEntry}"/>
+												<ui:param name="editableSection" value="true"/>
+												<ui:param name="readonly" value="true"/>
+											</ui:include>
+										</dl>
+									</p:column>
+
+								</p:dataTable>
+							</div>
+						</p:dataScroller>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{!productTypeCompositionFm.compositeProduct}">
+						<p:dataScroller var="commoditySpec" chunkSize="10" mode="inline" scrollHeight="550"
+										value="#{productTypeCompositionFm.abstractProductType.entries}">
+							<div class="m-card m-shadow-effect">
+								<div class="ui-dashboard-header">
+									<h:outputText styleClass="card-header" value="#{commoditySpec.type.name}"/>
+
+									<div class="m-fright">
+										<ui:fragment rendered="#{moduleCheckingBean.isNriIntegrationEnabled() and sysinf:isEntity(commoditySpec, 'ServiceSpec')}">
+											<p:commandLink process="@this" title="#{productBundle['box.product.dir.resource_requiriments']}"
+														   action="#{productTypeCompositionFm.linkToServiceSpecificationView(commoditySpec)}">
+												<i class="fa fa-cogs fs18 icon-btn"/>
+											</p:commandLink>
+										</ui:fragment>
+										<p:commandLink action="#{productTypeCompositionFm.removeCommodityType(commoditySpec)}"
+													   process="@this" styleClass="remove-card-btn" update="product_type_composition_form"
+													   rendered="#{p:ifGranted('ProductManagment_ProductTypeEdit')}">
+											<i class="fa fa-trash fs18 icon-btn"/>
+											<p:confirm header="#{productBundle['box.product.dir.composition.delete_dialog']}"
+													   message="#{productBundle['box.product.dir.composition.delete_dialog.details']} '#{commoditySpec.type.name}'"/>
+										</p:commandLink>
+									</div>
+								</div>
+
+								<div class="m-container-indent">
+									<ui:include src="/views/env/type/GroupTypePropertyValueFrame.xhtml">
+										<ui:param name="instance" value="#{commoditySpec}"/>
+										<ui:param name="readonly" value="#{!p:ifGranted('ProductManagment_ProductTypeEdit')}" />
+										<ui:param name="editableSection" value="true"/>
+									</ui:include>
+								</div>
+
+								<ui:fragment rendered="#{sysinf:isEntity(commoditySpec, 'ServiceSpec') and not empty commoditySpec.type.optionTypes}">
+									<ui:include src="/views/env/telephony/TelephonyOptionSpecFrame.xhtml">
+										<ui:param name="serviceSpec" value="#{commoditySpec}"/>
+									</ui:include>
+								</ui:fragment>
+
+							</div>
+						</p:dataScroller>
+					</ui:fragment>
+
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

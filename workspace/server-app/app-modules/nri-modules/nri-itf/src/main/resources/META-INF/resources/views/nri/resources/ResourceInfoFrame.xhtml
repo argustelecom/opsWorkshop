@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<f:event listener="#{resourceInfoFrameModel.preRender(resourceInstance)}"
+			 type="preRenderComponent"/>
+	<o:importConstants type="ru.argustelecom.box.nri.resources.spec.model.ParameterDataType"/>
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<p:outputPanel id="info_panel" styleClass="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+				<div class="ui-dashboard-header">
+					<p:outputLabel styleClass="#{resourceInfoFrameModel.specification.image}"/>
+					<h:outputText id="specification_name" styleClass="card-header"
+								  value="#{resourceInfoFrameModel.specification.name}"/>
+				</div>
+				<sysinf:editableSection disabled="#{!p:ifGranted('Nri_ResourceInfoEdit')}">
+					<p:ajax event="save" process="@this"
+							listener="#{resourceInfoFrameModel.changeName()}"/>
+					<dl class="name-value width-250 m-font-roboto-regular">
+						<dt>
+							<p:outputLabel value="#{resourceBundle['box.nri.resource.resource_name']}"/>
+						</dt>
+						<dd>
+							<p:inputText value="#{resourceInfoFrameModel.resource.name}"
+										 required="true"
+										 requiredMessage="#{commonBundle['box.nri.common.name_required']}"/>
+						</dd>
+					</dl>
+				</sysinf:editableSection>
+				<sysinf:editableSection id="status_section" disabled="#{!p:ifGranted('Nri_ResourceInfoEdit')}">
+					<p:ajax event="save" process="@this"
+							listener="#{resourceInfoFrameModel.changeStatus()}"/>
+					<dl class="name-value width-250 m-font-roboto-regular">
+						<dt>
+							<p:outputLabel value="#{resourceBundle['box.nri.resource.resource_status']}"/>
+						</dt>
+						<dd>
+							<p:selectOneMenu value="#{resourceInfoFrameModel.resource.status}">
+								<f:selectItems value="#{resourceInfoFrameModel.allStatuses}" var="status"
+											   itemLabel="#{status.name}" itemValue="#{status}"/>
+							</p:selectOneMenu>
+							<h:outputLabel id="statusLabel" styleClass="sys-comp-editable-section-output"
+										   value="#{resourceInfoFrameModel.resource.status.name}"/>
+						</dd>
+					</dl>
+				</sysinf:editableSection>
+
+				<ui:repeat value="#{resourceInfoFrameModel.parameters}" var="parameter" >
+					<sysinf:editableSection disabled="#{!p:ifGranted('Nri_ResourceInfoEdit')}">
+						<p:ajax event="save" process="@this"
+								listener="#{resourceInfoFrameModel.changeParameter(parameter)}"/>
+						<dl class="name-value width-250 m-font-roboto-regular">
+							<dt>
+								<p:outputLabel
+										value="#{parameter.specification.name}:#{parameter.specification.required?' *':''}"/>
+							</dt>
+							<dd>
+								<p:inputText value="#{parameter.value}"
+											 rendered="#{parameter.specification.dataType eq ParameterDataType.STRING
+											 or parameter.specification.dataType eq ParameterDataType.INTEGER
+											 or parameter.specification.dataType eq ParameterDataType.FLOAT}"
+											 required="#{parameter.specification.required}"
+											 requiredMessage="#{commonBundle['box.nri.common.need_field']} '#{parameter.specification.name}'">
+									<o:validator validatorId="javax.faces.RegularExpression"
+												 message="#{parameter.specification.name}
+												 #{commonBundle['box.nri.common.reg_mismatch']} #{not empty parameter.specification.regex?
+										parameter.specification.regex : parameter.specification.dataType.regex}"
+												 pattern="#{not empty parameter.specification.regex?
+										parameter.specification.regex : parameter.specification.dataType.regex}"/>
+								</p:inputText>
+
+								<p:selectBooleanButton id="boolean_value" value="#{parameter.value}" styleClass="small-boolean-button boolean-param"
+													   onLabel="#{commonBundle['box.nri.common.true']}"
+													   offLabel="#{commonBundle['box.nri.common.false']}"
+													   rendered="#{parameter.specification.dataType == ParameterDataType.BOOLEAN}">
+								</p:selectBooleanButton>
+							</dd>
+						</dl>
+					</sysinf:editableSection>
+				</ui:repeat>
+			</p:outputPanel>
+		</div>
+	</div>
+</ui:composition>

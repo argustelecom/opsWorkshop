@@ -1,0 +1,171 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <f:loadBundle var="loginBundle" basename="LoginBundle"/>
+    <f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+    <f:loadBundle var="personalAreaBundle" basename="PersonalAreaBundle"/>
+    <f:loadBundle var="contactBundle" basename="ContactBundle"/>
+    <f:loadBundle var="locationBundle" basename="LocationBundle"/>
+    <ui:fragment rendered="#{p:ifGranted('CRM_PersonalAreaAccountView')}">
+        <div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+            <div class="m-container-indent">
+                <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                    <h:form id="personal_area_form" style="height: 200px;" styleClass="#{personalAreaFM.login eq null ? 'empty-card' : ''}">
+
+                        <f:event listener="#{personalAreaFM.preRender(customer)}" type="preRenderComponent"/>
+
+                        <div class="ui-dashboard-header">
+                            <i class="fa fa-key"/>
+                            <h:outputText value="#{personalAreaBundle['box.pa']}" styleClass="card-header"/>
+
+                            <p:outputPanel styleClass="m-fright">
+                                <p:commandLink title="#{contactBundle['box.contact.email.send']}" styleClass="m-mar-left10" rendered="#{personalAreaFM.haveAccount()}"
+                                               onclick="PF('sendPersonalAreaDataDlgVar').show();" update="send_personal_area_data_form">
+                                                <i class="fa fa-paper-plane-o fs20 icon-btn"/>
+                                </p:commandLink>
+                                <p:commandLink id="create_account_button" styleClass="m-mar-left10" title="#{overallBundle['box.overall.create']}"
+                                                 process="@this" onclick="PF('createPersonalAreaDlgVar').show();" update="create_personal_area_form"
+                                                 disabled="#{!p:ifGranted('CRM_PersonalAreaAccountCreateDelete') or personalAreaFM.haveAccount()}">
+                                                <i class="fa fa-edit icon-btn"/>
+                                </p:commandLink>
+
+                                <p:commandLink id="remove_account_button" styleClass="m-mar-left10"
+                                                 process="@this" action="#{personalAreaFM.remove()}" title="#{overallBundle['box.overall.delete']}"
+                                                 disabled="#{!p:ifGranted('CRM_PersonalAreaAccountCreateDelete') or !personalAreaFM.haveAccount()}"
+                                                 update="personal_area_form">
+                                                <i class="fa fa-trash icon-btn"/>
+                                                <p:confirm header="#{personalAreaBundle['box.pa.delete_dialog']}"
+                                                    message="#{personalAreaBundle['box.pa.delete_dialog.details']}"/>
+                                </p:commandLink>
+                            </p:outputPanel>
+                        </div>
+
+                        <ui:fragment rendered="#{personalAreaFM.haveAccount()}">
+                            <div class="columns">
+                                <div class="column width-80-persents">
+                                    <dl class="name-value width-100">
+                                        <dt>
+                                            <p:outputLabel for="login" value="#{loginBundle['box.login']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <h:outputText id="login" value="#{personalAreaFM.login.username}"/>
+                                        </dd>
+
+                                        <dt>
+                                            <p:outputLabel for="password" value="#{loginBundle['box.login.password']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <h:outputText id="password" value="#{personalAreaFM.login.password}"/>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </ui:fragment>
+
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </ui:fragment>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="fa fa-edit (alias)" />
+		<ui:param name="headerText" value="#{personalAreaBundle['box.pa']}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('CRM_PersonalAreaAccountView')}" />
+	</ui:include>
+
+		<p:dialog id="create_personal_area_dlg" widgetVar="createPersonalAreaDlgVar" header="#{personalAreaBundle['box.pa.create_dialog']}"
+                  modal="true" dynamic="true" resizable="false" closable="false" width="500" styleClass="icon-creation">
+			<h:form id="create_personal_area_form">
+
+                <dl class="name-value width-150">
+                    <dt>
+                        <p:outputLabel for="new_login" value="#{loginBundle['box.login']}:"/>
+                    </dt>
+                    <dd>
+                    	<p:inputText id="new_login" value="#{personalAreaFM.newLogin}" required="true"
+                                     label="#{loginBundle['box.login']}"/>
+                    </dd>
+
+                    <dt>
+                        <p:outputLabel for="new_password" value="#{loginBundle['box.login.password']}:"/>
+                    </dt>
+                    <dd>
+                        <p:password id="new_password" value="#{personalAreaFM.newPassword}" feedback="true"
+                                    label="#{loginBundle['box.login.password']}"
+                                    promptLabel="#{loginBundle['box.login.password.hint']}" 
+                                    weakLabel="#{loginBundle['box.login.password.strength.weak']}"
+                                    goodLabel="#{loginBundle['box.login.password.strength.good']}"
+                                    strongLabel="#{loginBundle['box.login.password.strength.strong']}"
+                                    match="password_confirmation" autocomplete="false"
+                                    validatorMessage="#{loginBundle['box.login.password.no_match']}" required="true"/>
+                    </dd>
+
+                    <dt>
+                        <p:outputLabel for="password_confirmation" value="#{loginBundle['box.login.password.confirmation']}:"/>
+                    </dt>
+                    <dd>
+                        <p:password id="password_confirmation" value="#{personalAreaFM.newPassword}" required="true" autocomplete="false"
+                        label="#{loginBundle['box.login.password.confirmation']}"/>
+                    </dd>
+                </dl>
+                <div class="dialog-footer-buttons">
+                    <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+                                     styleClass="m-blue-text-button" update="send_personal_area_data_dlg"
+                                     process="@this" action="#{personalAreaFM.cancelSend()}" onclick="PF('createPersonalAreaDlgVar').hide();"/>
+                    <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+                                     oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('createPersonalAreaDlgVar').hide()}"
+                                     action="#{personalAreaFM.create()}" process="create_personal_area_dlg" update="personal_area_form"/>
+                </div>
+			</h:form>
+        </p:dialog>
+
+    
+        <p:dialog id="send_personal_area_data_dlg" widgetVar="sendPersonalAreaDataDlgVar" header="#{personalAreaBundle['box.pa.send_dialog']}"
+                  modal="true" dynamic="true" resizable="false" closable="false" width="500" styleClass="send-personal-area-data">
+			<h:form id="send_personal_area_data_form">
+
+                <dl class="name-value width-130">
+                    <dt>
+                        <p:outputLabel for="address_type" value="#{overallBundle['box.overall.type']}:"/>
+                    </dt>
+                    <dd>
+                        <p:selectOneMenu id="address_type" value="#{personalAreaFM.selectedAddressType}">
+                            <p:ajax process="@this" update="address"/>
+                            <f:selectItem itemLabel=""/>
+                            <f:selectItems value="#{personalAreaFM.addressTypes}" var="type" itemValue="#{type}" itemLabel="#{type.objectName}"/>
+                        </p:selectOneMenu>
+                    </dd>
+
+                    <dt>
+                        <p:outputLabel for="address" value="#{locationBundle['box.location.address']}:"/>
+                    </dt>
+                    <dd>
+                        <p:selectOneMenu id="address" value="#{personalAreaFM.selectedAddress}" required="true" label="">
+                            <f:selectItems value="#{personalAreaFM.addresses}" var="address" itemValue="#{address}" itemLabel="#{address.objectName}"/>
+                        </p:selectOneMenu>
+                    </dd>
+
+                    <dt>
+                        <p:outputLabel for="additional_info" value="#{overallBundle['box.overall.comment']}:"/>
+                    </dt>
+                    <dd>
+                        <p:inputTextarea id="additional_info" value="#{personalAreaFM.additionalInfo}" rows="3"/>
+                    </dd>
+                </dl>
+                <div class="dialog-footer-buttons">
+                    <p:commandButton id="cancel_send_button" value="#{overallBundle['box.overall.cancel']}"
+                                     styleClass="m-blue-text-button" update="send_personal_area_data_dlg"
+                                     process="@this" action="#{personalAreaFM.cancelSend()}" onclick="PF('sendPersonalAreaDataDlgVar').hide();"/>
+                    <p:commandButton id="send_button" value="#{contactBundle['box.contact.send']}"
+                                     oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('sendPersonalAreaDataDlgVar').hide()}"
+                                     action="#{personalAreaFM.send()}" process="send_personal_area_data_dlg"/>
+                </div>
+			</h:form>
+        </p:dialog>
+
+</ui:composition>

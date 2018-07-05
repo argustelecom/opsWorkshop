@@ -1,0 +1,322 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<!-- Потомок должен: 
+		
+		Скопипастить себе ui:define name="metadata".
+		
+		Определить (ui:define) содержимое следующих блоков:
+		0. aspects
+		1. aspects_settings
+		2. aspects_map
+		3. aspects_detail_info 
+		4. aspects_legend
+		
+	
+	-->
+	<ui:param name="viewModel" value="#{mapViewModel}" />
+	<ui:param name="bodyStyleClass" value="nri" />
+
+	<ui:define name="head">
+		<h:outputStylesheet name="/resources/system/styles/map.css"/>
+		<h:outputStylesheet name="/resources/box-env/styles/networkmap.css" />
+		<h:outputStylesheet name="/resources/box-env/styles/common-map.css" />
+		<sysinf:lmapDeps />
+	</ui:define>
+
+	<!--<ui:define name="header">-->
+		<!--&lt;!&ndash;<h2>#{pageTitle}</h2>&ndash;&gt;-->
+
+		<!--&lt;!&ndash;<div class="float-right">&ndash;&gt;-->
+			<!--&lt;!&ndash;<h:form id="map_search_form">&ndash;&gt;-->
+				<!--&lt;!&ndash;<f:attribute name="updateEvent" value="#{currentMapObject.changedEvent}" />&ndash;&gt;-->
+				<!--&lt;!&ndash;<sys:inputAddress id="address" value="#{mapViewModel.searchedAddress}" styleClass="width-300 nri" maxResults="20"&ndash;&gt;-->
+					<!--&lt;!&ndash;restrictByHomeRegion="#{true}">&ndash;&gt;-->
+					<!--&lt;!&ndash;<p:ajax event="itemSelect"/>&ndash;&gt;-->
+				<!--&lt;!&ndash;</sys:inputAddress>&ndash;&gt;-->
+				<!--&lt;!&ndash;<p:commandButton value="X" action="#{currentMapObject.setValue(null)}" process="@this"&ndash;&gt;-->
+					<!--&lt;!&ndash;disabled="#{currentMapObject.isNull()}" />&ndash;&gt;-->
+			<!--&lt;!&ndash;</h:form>&ndash;&gt;-->
+		<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+		<!--&lt;!&ndash;<div class="ui-grid small-margin-bottom subheader">&ndash;&gt;-->
+			<!--&lt;!&ndash;<div class="ui-grid-row">&ndash;&gt;-->
+				<!--&lt;!&ndash;<div class="ui-grid-col-12">&ndash;&gt;-->
+
+				<!--&lt;!&ndash;</div>&ndash;&gt;-->
+			<!--&lt;!&ndash;</div>&ndash;&gt;-->
+		<!--&lt;!&ndash;</div>&ndash;&gt;-->
+	<!--</ui:define>-->
+
+	<ui:define name="pageHeader">
+		<h:form id="map_aspect_select_form">
+			<p:panel styleClass="map-aspects-panel">
+				<p:selectOneRadio value="#{currentMapAspect.value}" styleClass="small-margin-bottom">
+
+					<!-- Сюда потомок должен вставить selectItem аспектов -->
+					<ui:insert name="aspects" />
+
+					<!-- TASK-83495 process -map_form-map: восстановление MapViewport после неудачной валидации -->
+					<p:ajax update="-map_form -aspects_map_js -map_aspect_settings_form"
+							process="@this -map_form-map" />
+				</p:selectOneRadio>
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+	<ui:define name="body">
+
+		<p:layout id="main_layout" widgetVar="mainLayoutVar" >
+			<p:layoutUnit position="west" styleClassContent="panel nri" minSize="250" collapsible="true"
+						  resizable="true">
+				<f:facet name="header">
+					<!-- этот хедер никогда не нужно апдейтить, но оборачиваем в компонент, только чтобы RenderAllBean не
+						провоцировал ворнинги в логе (Can not update component "javax.faces.component.UIPanel" with id "j_id2"
+						without a attached renderer...) -->
+					<p:outputPanel id="updatable_header">
+						Параметры
+					</p:outputPanel>
+				</f:facet>
+
+				<h:form id="map_aspect_settings_form">
+
+					<pe:switch value="#{currentMapAspect.value}">
+						<!-- Сюда потомок должен вставить фрейм настроек (фильтров) для текущего аспекта -->
+						<ui:insert name="aspects_settings"/>
+					</pe:switch>
+				</h:form>
+			</p:layoutUnit>
+
+			<p:layoutUnit position="center" minSize="600">
+				<p:outputPanel id="aspects_map_js">
+					<f:attribute name="hasSettings" value="#{currentMapAspectSettings.changedEvent}" />
+
+					<pe:switch value="#{currentMapAspect.value}">
+						<!-- Сюда потомок должен вставить необходимое для отображения на карте.
+							Обычно это js маркеров. -->
+						<ui:insert name="aspects_map"/>
+					</pe:switch>
+				</p:outputPanel>
+				<h:form id="map_form" style="width:100%;height:800px">
+					<!-- применение изменений настроек аспекта делается апдейтом карты, при рендеринге увидятся настройки -->
+					<f:attribute name="updateEvent" value="#{currentMapAspectSettings.changedEvent} #{currentMapSearchResult.changedEvent} #{currentMapSearchResult.dataChangedEvent}" />
+
+					<sysinf:lmap id="map" widgetVar="#{mapViewModel.mapWidget.var}" model="#{mapViewModel.mapModel}"
+						viewport="#{currentMapViewport.value}" style="width:100%;height:100%">
+						<!--<f:attribute name="updateEvent" value="#{currentMapSearchResult.changedEvent}" />-->
+
+						<f:event type="preRenderComponent" listener="#{mapViewModel.preRenderMap}" />
+
+						<p:ajax event="click" listener="#{mapViewModel.onMapClick}" />
+
+						<p:ajax event="featureSelected" listener="#{mapViewModel.onFeatureSelected}"
+							oncomplete="mapView.showDetailInfo();" />
+						<p:ajax event="featureEdited" listener="#{mapViewModel.onFeatureEdited}"/>
+
+						<pe:javascript event="viewportEnvelopeChanged"
+							execute="if (PF('mapVar')) {
+								Argus.System.History.updateStateParam('viewport', PF('mapVar').getViewportStr()); }" />
+						<pe:javascript event="baseLayerChanged"
+							execute="if (PF('mapVar')) {
+								Argus.System.History.updateStateParam('viewport', PF('mapVar').getViewportStr()); }" />
+					</sysinf:lmap>
+
+					<script>
+						// TASK-78232 workaround
+						Argus.System.Ajax.offComplete('map.viewport_override').onComplete(function() {
+							Argus.System.History.updateStateParam('viewport', PF('mapVar').getViewportStr());
+						}, 'map.viewport_override');
+					</script>
+
+					<script>
+						$(function() {
+							if (typeof legendControl === 'undefined') {
+								var LegendControl = L.Control.extend({
+									initialize: function (showLegendFunction, options) {
+										L.Control.prototype.initialize.call(this, options);
+										this._showLegend = showLegendFunction;
+									},
+
+									onAdd: function(map) {
+										var container = this._container = L.DomUtil.create('div', 'map-legend-control');
+										L.DomEvent.on(container, 'click', this._showLegend);
+										return container;
+									},
+
+									onRemove: function() {}
+								});
+
+								var showLegendFunction = function (event) {
+									PF('mapVar').setOriginalEventAlreadyHandled(event);
+									if (PF("mapLegendVar") &amp;&amp; window.mapAspectSelected) {
+										PF("mapLegendVar").show();
+									}
+								};
+								window.legendControl = new LegendControl(showLegendFunction, { position: 'topleft' });
+							}
+							legendControl.addTo(PF('mapVar').getMap());
+						});
+					</script>
+					<p:outputPanel>
+						<f:attribute name="updateEvent" value="#{currentMapAspect.changedEvent}" />
+						<script>
+							$(function() {
+								window.mapAspectSelected = false;
+                                mapView.showAspectSettings(#{render_settings});
+								if (#{currentMapAspect.value != null}) {
+									window.mapAspectSelected = true;
+								}
+							});
+						</script>
+					</p:outputPanel>
+				</h:form>
+			</p:layoutUnit>
+		</p:layout>
+
+		<!--&lt;!&ndash; может быть, лучше реализовать легенду как контрол карты? с учетом событий типа overlayadd? 320 &ndash;&gt;-->
+		<p:overlayPanel id="map_legend" widgetVar="mapLegendVar" dismissable="false" my="left top"
+						at="left+10 top+10" for="-map_form-map" showCloseIcon="true"
+						showEvent="fakeeventtodisable" hideEvent="fakeeventtodisable" styleClass="nri map-legend nri-overlaypanel">
+
+
+			<p:outputPanel id="map_legend_content">
+				<f:attribute name="updateEvent" value="#{currentMapAspect.changedEvent} #{currentMapAspectSettings.changedEvent}" />
+
+				<pe:switch value="#{currentMapAspect.value}">
+					<!-- Сюда потомок должен задать содержимое легенды для аспекта -->
+					<ui:insert name="aspects_legend"/>
+				</pe:switch>
+			</p:outputPanel>
+		</p:overlayPanel>
+
+		<p:overlayPanel id="map_selection_detail" widgetVar="mapSelectionDetailVar" dismissable="false" style="width: 30%;"
+						my="right top" at="right-20 top+10" for="-map_form-map" styleClass="panel-details map-selection-details-panel"
+						showEvent="fakeeventtodisable"
+						hideEvent="fakeeventtodisable">
+
+			<h:form id="map_selection_detail_content_form">
+				<p:commandButton title="Закрыть окно" action="#{currentMapObject.setValue(null)}" process="@this"
+								 icon="fa fa-close" styleClass="ui-overlaypanel-close" />
+				<!-- Настройки влияют на содержимое детальных сведений.-->
+				<!-- Модификатор детальных сведений полностью заменяет детальне сведения -->
+				<f:attribute name="updateEvent" value="#{currentMapAspect.changedEvent} #{currentMapAspectSettings.changedEvent} #{currentMapObject.changedEvent} #{currentDetailInfoModifier.changedEvent}" />
+				<!-- Аспект хочет настроить состояние детальных сведений. Например взяв его из настроек -->
+				<f:event type="preRenderComponent" listener="#{mapViewModel.preRenderDetailInfo}" />
+				<p:outputPanel id="map_selection_detail_content">
+					<pe:switch value="#{currentMapAspect.value}">
+						<!-- Сюда потомок должен вставить контент детальных сведений для аспекта -->
+						<ui:insert name="aspects_detail_info">
+							<!-- params:
+									processOnFitToViewport: параметри, использующийся в CommonInfoFrame.xhtml. id элементов,
+									которым необходимо выполнить process, для корректного выполнения #{currentMapObject.fitToViewport} -->
+							<ui:param name="processOnFitToViewport" value="-map_form-map" />
+						</ui:insert>
+					</pe:switch>
+				</p:outputPanel>
+			</h:form>
+		</p:overlayPanel>
+
+		<!--<p:overlayPanel id="map_search_result_panel" widgetVar="mapSearchResultVar" dismissable="false"-->
+						<!--my="right top" at="right-20 top+10" for="-map_form-map" styleClass="nri panel-search-results panel-details nri-overlaypanel" showEvent="fakeeventtodisable"-->
+						<!--hideEvent="fakeeventtodisable">-->
+			<!--<h:form id="map_search_result_view_content_form">-->
+				<!--<p:commandButton title="Завершить поиск" action="#{currentMapSearchResult.setValue(null)}" process="@this" icon="ui-icon-closethick" styleClass="ui-overlaypanel-close" />-->
+				<!--<f:attribute name="updateEvent" value="#{currentMapAspectSettings.changedEvent} #{currentMapObject.changedEvent} #{currentMapSearchResult.dataChangedEvent}" />-->
+				<!--<p:outputPanel id="map_search_result_view_content">-->
+					<!--<f:attribute name="updateEvent" value="#{currentMapSearchResult.changedEvent}" />-->
+					<!--<pe:switch value="#{currentMapSearchResult.value}">-->
+						<!--&lt;!&ndash; Сюда потомок должен вставить контент результатов поиска для аспекта &ndash;&gt;-->
+						<!--<ui:insert name="search_result_view" />-->
+					<!--</pe:switch>-->
+				<!--</p:outputPanel>-->
+			<!--</h:form>-->
+		<!--</p:overlayPanel>-->
+
+		<!--<p:outputPanel>-->
+			<!--<f:attribute name="updateEvent" value="#{currentMapSearchResult.changedEvent}" />-->
+			<!--<script>-->
+				<!--$(function() {-->
+					<!--mapView.onCurrentMapSearchResultChanged(#{currentMapSearchResult.value != null});-->
+				<!--});-->
+			<!--</script>-->
+		<!--</p:outputPanel>-->
+
+		<p:outputPanel>
+			<f:attribute name="updateEvent" value="#{currentMapObject.changedEvent}" />
+			<script>
+				$(function() {
+					mapView.onCurrentMapObjectChanged(#{currentMapObject.value != null});
+				});
+			</script>
+		</p:outputPanel>
+
+		<script>
+			if (typeof window.mapView === 'undefined') {
+				(function (nameSpace) {
+					var _isResultViewShow = false;
+					var _isMapObjectSelected = false;
+
+					nameSpace.showDetailInfo = function () {
+						PF('mapSelectionDetailVar').show();
+				//		PF('mapSearchResultVar').hide();
+					};
+
+					nameSpace.showResultView = function () {
+						_isResultViewShow = true;
+						PF('mapSelectionDetailVar').hide();
+				//		PF('mapSearchResultVar').show();
+					};
+
+					nameSpace.showAspectSettings = function (isAspectSelectedAndHasSettings) {
+						if (isAspectSelectedAndHasSettings) {
+                            PF('mainLayoutVar').show("west");
+						} else {
+                            PF('mainLayoutVar').hide("west");
+						}
+                    }
+
+					var _hideResultView = function () {
+						PF('mapSearchResultVar').hide();
+						if (_isMapObjectSelected) {
+							PF('mapSelectionDetailVar').show();
+						}
+					};
+
+					nameSpace.onCurrentMapSearchResultChanged = function (isSearchResultViewSelected) {
+						if (isSearchResultViewSelected) {
+							nameSpace.showResultView();
+						} else {
+							_hideResultView();
+							_isResultViewShow = false;
+						}
+					};
+
+					nameSpace.onCurrentMapObjectChanged = function (isMapObjectSelected) {
+						_isMapObjectSelected = isMapObjectSelected;
+						if (!_isResultViewShow) {
+						//	PF('mapSearchResultVar').hide();
+						} else {
+						//	PF('mapSearchResultVar').show();
+						}
+						if (isMapObjectSelected) {
+							if(_isResultViewShow){
+						//		PF('mapSearchResultVar').hide();
+							}
+							PF('mapSelectionDetailVar').show();
+						} else {
+							PF('mapSelectionDetailVar').hide();
+						}
+					};
+				})(window.mapView = window.mapView || {});
+			}
+
+            window.onload = function () {
+				mapView.showAspectSettings(#{render_settings});
+			}
+		</script>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:boxenv="http://argustelecom.ru/box/env"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+
+    <div class="m-container100 m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+                <h:form id="service_attributes_form">
+                    <div class="columns">
+                        <f:event type="preRenderComponent" listener="#{serviceAttributesFm.preRender()}"/>
+
+                        <div class="column m-vertical-al-middle m-pad-0">
+                            <p:panelGrid id="service_id_grid" columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+                                <i class="fs50 icon-box"/>
+                                <h:outputText styleClass="fs16" value="#{overallBundle['box.overall.id']} #{serviceAttributesFm.serviceAttributesDto.id}"/>
+                            </p:panelGrid>
+                        </div>
+
+                        <div class="column width-100-percents">
+                            <div class="columns">
+                                <div class="column width-10-percents">
+                                    <dl class="name-value width-150">
+                                        <dt>
+                                            <p:outputLabel for="service_type" value="#{serviceBundle['box.service.type']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <h:outputText id="service_type" styleClass="m-mar-left-8" value="#{serviceAttributesFm.serviceAttributesDto.serviceType.name}"/>
+                                        </dd>
+
+                                        <dt>
+                                            <p:outputLabel for="state" value="#{overallBundle['box.overall.state']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <h:outputText id="state" styleClass="m-mar-left-8" value="#{serviceAttributesFm.serviceAttributesDto.state.name}"/>
+                                        </dd>
+
+                                        <dt>
+                                            <p:outputLabel for="base_document" value="#{serviceBundle['box.service.base.doc']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <boxenv:linkToCard id="base_document" styleClass="m-mar-left-8"
+                                                               value="#{serviceAttributesFm.serviceAttributesDto.contract.getIdentifiable()}"
+                                                               text="#{serviceAttributesFm.serviceAttributesDto.contract.name}"/>
+                                        </dd>
+
+                                        <dt>
+                                            <p:outputLabel for="product_type" value="#{serviceBundle['box.service.product.type']}:"/>
+                                        </dt>
+                                        <dd>
+                                            <boxenv:linkToCard id="product_type" styleClass="m-mar-left-8"
+                                                               value="#{serviceAttributesFm.serviceAttributesDto.product.getIdentifiable()}"
+                                                               text="#{serviceAttributesFm.serviceAttributesDto.product.name}"/>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="tariffBundle" basename="TariffBundle"/>
+	<h:form id="tariff_entry_creation_confirm_form">
+		<o:importConstants type="ru.argustelecom.box.env.telephony.tariff.TariffEntryEditDialogModel.TariffEntryCreationCase"/>
+
+		<p:dialog id="tariff_entry_creation_confirm_dlg"
+				  header="#{tariffBundle[tariffEntryEditDm.creationCase.equals(TariffEntryCreationCase.COMMON_CROSSING_ERROR) ? 'box.telephony.tariff.entry.confirm_dialog.header.error' : 'box.telephony.tariff.entry.confirm_dialog.header']}"
+				  widgetVar="tariffEntryCreationConfirmDlgVar"
+				  width="600" resizable="false" modal="true" closable="false" dynamic="true" styleClass="ui-icon-alert">
+
+
+			<pe:switch value="#{tariffEntryEditDm.creationCase}">
+
+				<pe:case value="#{TariffEntryCreationCase.COMMON_CROSSING_CORRECT}">
+					<div class="columns">
+						<div>
+							<i class="fs30 icon-info"/>
+						</div>
+
+						<div>
+							<h:outputFormat
+									value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.all_correct']}">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+						</div>
+
+					</div>
+
+					<div class="m-pad-top20">
+						<p:accordionPanel>
+							<p:tab title="#{tariffBundle['box.telephony.tariff.custom']}">
+								<p:dataList var="correctTariff" value="#{tariffEntryEditDm.correctTariffs}">
+									<p:column headerText="#{overallBundle['box.overall.name']}">
+										<h:outputText value="#{correctTariff.name}"/>
+									</p:column>
+								</p:dataList>
+							</p:tab>
+						</p:accordionPanel>
+					</div>
+				</pe:case>
+
+				<pe:case value="#{TariffEntryCreationCase.COMMON_CROSSING_WITH_WARNING}">
+					<div class="columns">
+						<div>
+							<i class="fs30 icon-error"/>
+						</div>
+
+						<div>
+							<h:outputFormat
+									value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.warning']}">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+						</div>
+					</div>
+
+
+					<div class="m-pad-top20">
+						<p:accordionPanel>
+							<p:tab title="#{tariffBundle['box.telephony.tariff.custom']}">
+								<p:dataList var="incorrectTariff" value="#{tariffEntryEditDm.incorrectTariffs}">
+									<p:column headerText="#{overallBundle['box.overall.name']}">
+										<h:outputText value="#{incorrectTariff.name}"/>
+									</p:column>
+								</p:dataList>
+							</p:tab>
+						</p:accordionPanel>
+					</div>
+
+					<div class="columns m-pad-top20">
+						<div>
+							<i class="fs30 icon-info"/>
+						</div>
+
+						<div>
+							<h:outputFormat
+									value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.correct_with_warning']} ">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+							<h:outputText
+									value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.correct_with_warning.add']}"/>
+						</div>
+					</div>
+					<div class="m-pad-top20">
+						<p:accordionPanel>
+							<p:tab title="#{tariffBundle['box.telephony.tariff.custom']}">
+								<p:dataList var="correctTariff" value="#{tariffEntryEditDm.correctTariffs}">
+									<p:column headerText="#{overallBundle['box.overall.name']}">
+										<h:outputText value="#{correctTariff.name}"/>
+									</p:column>
+								</p:dataList>
+							</p:tab>
+						</p:accordionPanel>
+					</div>
+				</pe:case>
+
+				<pe:case value="#{TariffEntryCreationCase.COMMON_CROSSING_ERROR_EXCLUDE_COMMON}">
+					<div class="columns">
+						<div>
+							<i class="fs30 icon-error"/>
+						</div>
+
+						<div>
+							<h:outputFormat
+									value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.warning']}">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+						</div>
+					</div>
+
+
+					<div class="m-pad-top20">
+						<p:accordionPanel>
+							<p:tab title="#{tariffBundle['box.telephony.tariff.custom']}">
+								<p:dataList var="incorrectTariff" value="#{tariffEntryEditDm.incorrectTariffs}">
+									<p:column headerText="#{overallBundle['box.overall.name']}">
+										<h:outputText value="#{incorrectTariff.name}"/>
+									</p:column>
+								</p:dataList>
+							</p:tab>
+						</p:accordionPanel>
+					</div>
+
+					<div class="columns m-pad-top20">
+						<div>
+							<i class="fs30 icon-info"/>
+						</div>
+
+						<div>
+							<h:outputFormat
+									value="#{tariffBundle['box.telephony.tariff.entry.creation_dialog.add_only_common']}">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+						</div>
+
+					</div>
+				</pe:case>
+
+				<pe:case value="#{TariffEntryCreationCase.COMMON_CROSSING_ERROR}">
+					<div class="columns">
+						<div>
+							<i class="fs30 icon-error"/>
+						</div>
+
+						<div>
+							<h:outputFormat value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.error']}">
+								<f:param value="#{tariffCardVs.tariffDto.name}"/>
+							</h:outputFormat>
+						</div>
+					</div>
+
+					<li class="m-pad-top20 m-pad-left50">
+						<p:commandLink title="#{overallBundle['box.overall.download']}" position="left" ajax="false">
+							<i class="icon-file_download fs25 m-bold-gray m-vertical-al-middle"/>
+							<p:fileDownload value="#{tariffEntryEditDm.download()}"/>
+						</p:commandLink>
+						<h:outputText value="#{tariffBundle['box.telephony.tariff.entry.export']}"
+									  styleClass="m-pad-left-5"/>
+					</li>
+				</pe:case>
+
+				<pe:case value="#{TariffEntryCreationCase.CUSTOM_CORRECT}">
+					<h:outputFormat value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.add_custom']}">
+						<f:param value="#{tariffCardVs.tariffDto.name}"/>
+					</h:outputFormat>
+				</pe:case>
+
+			</pe:switch>
+
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="tariff_entry_creation_confirm_dlg"
+								 process="@this" action="#{tariffEntryEditDm.reset()}"
+								 onclick="PF('tariffEntryCreationConfirmDlgVar').hide()"/>
+				<ui:fragment rendered="#{tariffEntryEditDm.creationCase.equals(TariffEntryCreationCase.COMMON_CROSSING_ERROR)}">
+					<p:commandButton id="close_button"
+									 value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.close_button']}"
+									 action="#{tariffEntryEditDm.reset()}"
+									 process="@this"
+									 onclick="PF('tariffEntryCreationConfirmDlgVar').hide()"/>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{!tariffEntryEditDm.creationCase.equals(TariffEntryCreationCase.COMMON_CROSSING_ERROR)}">
+					<p:commandButton id="submit_button"
+									 value="#{tariffBundle['box.telephony.tariff.entry.confirm_dialog.add_button']}"
+									 action="#{tariffEntryEditDm.submitAfterResolveCollisions()}"
+									 process="tariff_entry_creation_confirm_dlg"
+									 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('tariffEntryCreationConfirmDlgVar').hide()}"
+									 update="#{update} tariff_entry_creation_confirm_form"/>
+				</ui:fragment>
+
+			</div>
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

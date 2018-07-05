@@ -1,0 +1,104 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+    <ui:param name="viewModel" value="#{subscriptionCardVm}"/>
+    <ui:param name="pageTitle" value="#{subscriptionBundle['box.subscription']}"/>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="subscription" value="#{currentSubscription.value}" required="#{!facesContext.postback}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <h:outputStylesheet name="box-env/styles/box-env.css"/>
+        <h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+    </ui:define>
+
+    <ui:define name="pagePath">
+        <f:loadBundle basename="OverallBundle" var="overallBundle"/>
+        <f:loadBundle basename="SubscriptionBundle" var="subscriptionBundle"/>
+        <f:loadBundle basename="ServiceBundle" var="serviceBundle"/>
+        <o:importConstants type="ru.argustelecom.box.env.page.navigation.CardType" var="cardType"/>
+
+        <p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+        <p:menuitem value="#{subscriptionBundle['box.subscription.customer.plural']}" 
+                    url="/views/env/customer/CustomerListView.xhtml" />
+        <p:menuitem value="#{subscriptionCardVm.subscription.personalAccount.customer.objectName}" disabled="#{!p:ifGranted(cardType.CUSTOMER.permissionId)}"
+                    url="#{cardNavigator.getOutcome(subscriptionCardVm.subscription.personalAccount.customer)}"/>
+        <p:menuitem value="#{subscriptionCardVm.subscription.personalAccount.objectName}" disabled="#{!p:ifGranted(cardType.PERSONAL_ACCOUNT.permissionId)}"
+                    url="#{cardNavigator.getOutcome(subscriptionCardVm.subscription.personalAccount)}"/>
+        <p:menuitem value="#{subscriptionCardVm.subscription.objectName}"/>
+    </ui:define>
+
+    <ui:define name="body">
+        <ui:include src="SubscriptionAttributesFrame.xhtml"/>
+
+        <!--<ui:include src="/views/env/billing/invoice/demo/MainConcept.xhtml">-->
+            <!--<ui:param name="historyContext" value="#{subscriptionCardVm.subscription}"/>-->
+            <!--<ui:param name="subscription" value="#{subscriptionCardVm.subscription}"/>-->
+            <!--<ui:param name="entries" value="#{subscriptionCardVm.invoiceEntries}"/>-->
+        <!--</ui:include>-->
+
+        <div class="m-container100 m-responsive100">
+            <div class="m-container50 m-responsive100">
+                <ui:include src="InvoiceEntriesFrame.xhtml">
+                    <ui:param name="invoices" value="#{subscriptionCardVm.invoices}"/>
+                </ui:include>
+
+                <div class="m-container100 m-responsive100">
+                    <div class="m-container-indent">
+                        <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                            <ui:include src="/views/env/lifecycle2/LifecycleHistoryFrame.xhtml">
+                                <ui:param name="dashboardHeader" value="true"/>
+                                <ui:param name="scrollHeight" value="200"/>
+                                <ui:param name="historyContext" value="#{subscriptionCardVm.subscription}" />
+                            </ui:include>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="m-container50 m-responsive100">
+                <ui:include src="/views/env/address/AddressFrame.xhtml">
+                    <ui:param name="location" value="#{subscriptionCardVm.subscription.locations.get(0)}"/>
+                    <ui:param name="readOnly" value="true"/>
+                </ui:include>
+
+                <ui:include src="/views/env/billing/privilege/PrivilegeFrame.xhtml">
+                    <ui:param name="privilegeSubject" value="#{subscriptionCardVm.privilegeSubject}"/>
+                    <ui:param name="updateOnClose" value="invoice_entries_frame_form subscription_attributes_form"/>
+                </ui:include>
+
+                <ui:include src="/views/env/services/ServicesFrame.xhtml">
+                	<ui:param name="services" value="#{subscriptionCardVm.services}" />
+                </ui:include>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="dialogs">
+        <ui:include src="/views/env/lifecycle/LifecycleRoutingDialog.xhtml">
+            <ui:param name="update" value="subscription_attributes_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/billing/privilege/PrivilegeEditDialog.xhtml">
+            <ui:param name="update" value="privilege_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/billing/privilege/ExtendPrivilegeDialog.xhtml">
+            <ui:param name="update" value="privilege_form invoice_entries_frame_form"/>
+        </ui:include>
+
+        <ui:include src="/views/env/billing/privilege/PrivilegeRemoveDialog.xhtml">
+            <ui:param name="update" value="privilege_form invoice_entries_frame_form"/>
+        </ui:include>
+
+    </ui:define>
+
+</ui:composition>

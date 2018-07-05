@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+				xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<f:loadBundle basename="BuildingElementBundle" var="buildingElementBundle"/>
+
+	<ui:param name="building" value="#{currentMapObject.valueAsBuilding}" />
+
+	<div class="ui-dashboard-header map-selection-detail-panel-header">
+		<h:outputLink id="inst_address" value="../building/BuildingStructureView.xhtml?location=Building-#{building.id}">
+			<i class="fa fa-home"/>
+			#{building.fullName}
+		</h:outputLink>
+	</div>
+	<div class="panel-details-content">
+		<ui:include src="/views/nri/map/network/coverage/BuildingInfoInstallationsFrame.xhtml" />
+	</div>
+</ui:composition>
