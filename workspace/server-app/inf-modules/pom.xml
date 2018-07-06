@@ -19,7 +19,6 @@
 		<module>box-inf-ui</module>
 
 		<module>webui</module>
-		<module>webui-pa</module>
 
 		<module>box-persistence</module>
 		<module>box-enterprise</module>

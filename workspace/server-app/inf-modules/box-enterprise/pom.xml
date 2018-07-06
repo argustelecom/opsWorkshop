@@ -87,80 +87,10 @@
 			<type>ejb</type>
 		</dependency>
 
-		<!-- "Product Directory" module & features -->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>product-dir-dom</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>product-dir-app</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-
-		<!-- "CRM" module & features -->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>crm-dom</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>crm-app</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-
-		<!-- "Billing" module & features -->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>billing-dom</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>billing-app</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-
-		<!-- "Network Resource Inventory" module & features -->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>nri-dom</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>nri-app</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		
-		<!-- FIXME [elsis-gate]-->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>elsis-gate</artifactId>
-			<version>${project.version}</version>
-			<type>ejb</type>
-		</dependency>
-		
 		<!-- WAR -->
 		<dependency>
 			<groupId>ru.argustelecom.box</groupId>
 			<artifactId>webui</artifactId>
-			<version>${project.version}</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>webui-pa</artifactId>
 			<version>${project.version}</version>
 			<type>war</type>
 		</dependency>
@@ -255,11 +185,6 @@
 							<groupId>ru.argustelecom.box</groupId>
 							<artifactId>webui</artifactId>
 							<contextRoot>/box</contextRoot>
-						</webModule>
-						<webModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>webui-pa</artifactId>
-							<contextRoot>/</contextRoot>
 						</webModule>
 					</modules>
 				</configuration>

@@ -43,39 +43,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>product-dir-itf</artifactId>
-			<version>${project.version}</version>
-			<optional>${exclude.product-dir.core}</optional>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>crm-itf</artifactId>
-			<version>${project.version}</version>
-			<optional>${exclude.crm.core}</optional>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>billing-itf</artifactId>
-			<version>${project.version}</version>
-			<optional>${exclude.billing.core}</optional>
-		</dependency>
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>nri-itf</artifactId>
-			<version>${project.version}</version>
-			<optional>${exclude.nri.core}</optional>
-		</dependency>
-
-		<!-- FIXME [elsis-gate]-->
-		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>elsis-gate-ui</artifactId>
-			<version>${project.version}</version>
-			<optional>${exclude.elsis-gate}</optional>
-		</dependency>
-
 		<!-- ################################ -->
 		<!-- КОНЕЦ вебфрагментов (project-ui) -->
 		<!-- ################################ -->
