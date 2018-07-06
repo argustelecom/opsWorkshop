@@ -27,23 +27,7 @@
 		<jar-file>../box-inf-${box.app.version}.jar</jar-file>
 		<jar-file>../box-env-${box.app.version}.jar</jar-file>
 
-		<!-- "CRM" module & features -->
-		<jar-file>../crm-dom-${box.app.version}.jar</jar-file>
-
-		<!-- "Product Directory" module & features -->
-		<jar-file>../product-dir-dom-${box.app.version}.jar</jar-file>
-
-		<!-- "Billing" module & features -->
-		<jar-file>../billing-dom-${box.app.version}.jar</jar-file>
-
-		<!-- "Network Resource Inventory" module & features -->
-		<jar-file>../nri-dom-${box.app.version}.jar</jar-file>
-		
-		<!--  FIXME [elsis-gate] --> 
-		<jar-file>../elsis-gate-${box.app.version}.jar</jar-file>
-
-
-		<!-- 
+		<!--
 			Проверка что отсутствующий модуль не приводит к ошибке. Рассчитываем на это, т.к. перечень
 			выше не корректируется в зависимости от профиля сборки 
 		-->
