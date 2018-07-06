@@ -10,15 +10,7 @@
 	<name>app-modules</name>
 
 	<modules>
-		<module>dom-parent</module>
 		<module>app-parent</module>
-		<module>itf-parent</module>
-		
-		<module>crm-modules</module>
-		<module>nri-modules</module>
-		<module>billing-modules</module>
-		<module>product-dir-modules</module>
-		<module>pa-modules</module>
 	</modules>
 
     <properties>

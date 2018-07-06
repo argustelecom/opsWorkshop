@@ -1,6 +1,0 @@
-# enable APT (TASK-62198)
-!.settings
-.settings/*
-!.settings/org.eclipse.jdt.apt.core.prefs
-!.settings/org.eclipse.jdt.core.prefs
-/.apt_generated/
