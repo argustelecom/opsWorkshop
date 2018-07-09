@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 @PresentationModel
 public class MenuContentFrameModel  implements Serializable {
+	private static final long serialVersionUID = -8084190640187703883L;
 
 	/**
 	 * Доступен ли технический учёт

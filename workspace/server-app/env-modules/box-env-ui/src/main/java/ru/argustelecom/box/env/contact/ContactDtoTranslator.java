@@ -7,12 +7,8 @@ import ru.argustelecom.system.inf.exception.SystemException;
 public class ContactDtoTranslator {
 
 	public ContactDto translate(Contact<?> contact) {
-		if (contact instanceof PhoneContact)
-			return translateToPhone(contact);
-		else if (contact instanceof EmailContact)
+		if (contact instanceof EmailContact)
 			return translateToEmail(contact);
-		else if (contact instanceof SkypeContact)
-			return translateToSkype(contact);
 		else if (contact instanceof CustomContact)
 			return translateToCustom(contact);
 		else
@@ -33,20 +29,6 @@ public class ContactDtoTranslator {
 		//@formatter:on
 	}
 
-	private SkypeContactDto translateToSkype(Contact<?> contact) {
-		SkypeContact skypeContact = (SkypeContact) contact;
-		//@formatter:off
-		return SkypeContactDto.builder()
-				.id(skypeContact.getId())
-				.name(skypeContact.getObjectName())
-				.value(skypeContact.getValue().value())
-				.type(skypeContact.getType())
-				.category(skypeContact.getType().getCategory())
-				.comment(skypeContact.getComment())
-			.build();
-		//@formatter:on
-	}
-
 	private EmailContactDto translateToEmail(Contact<?> contact) {
 		EmailContact emailContact = (EmailContact) contact;
 		//@formatter:off
@@ -57,20 +39,6 @@ public class ContactDtoTranslator {
 				.type(emailContact.getType())
 				.category(emailContact.getType().getCategory())
 				.comment(emailContact.getComment())
-			.build();
-		//@formatter:on
-	}
-
-	private PhoneContactDto translateToPhone(Contact<?> contact) {
-		PhoneContact phoneContact = (PhoneContact) contact;
-		//@formatter:off
-		return PhoneContactDto.builder()
-				.id(phoneContact.getId())
-				.name(phoneContact.getObjectName())
-				.value(phoneContact.getValue().value())
-				.type(phoneContact.getType())
-				.category(phoneContact.getType().getCategory())
-				.comment(phoneContact.getComment())
 			.build();
 		//@formatter:on
 	}

@@ -19,8 +19,6 @@ public enum ContactCategory {
 
 	//@formatter:off
 	EMAIL  ("mailto:", "icon-email", EmailContact.class),
-	PHONE  ("callto:", "fa fa-phone", PhoneContact.class),
-	SKYPE  ("skype:", "fa fa-skype", SkypeContact.class),
 	CUSTOM ("", "fa fa-male", CustomContact.class);
 	//@formatter:on
 
@@ -35,12 +33,6 @@ public enum ContactCategory {
 
 		ContactMessagesBundle messages = LocaleUtils.getMessages(ContactMessagesBundle.class);
 		switch (this) {
-			case EMAIL:
-				return messages.contactTypeEmail();
-			case PHONE:
-				return messages.contactTypePhone();
-			case SKYPE:
-				return messages.contactTypeSkype();
 			case CUSTOM:
 				return messages.contactTypeCustom();
 			default:

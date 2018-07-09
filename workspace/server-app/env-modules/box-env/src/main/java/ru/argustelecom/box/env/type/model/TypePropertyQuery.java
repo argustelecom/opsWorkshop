@@ -24,10 +24,6 @@ import ru.argustelecom.box.env.type.model.properties.LongProperty;
 import ru.argustelecom.box.env.type.model.properties.LongPropertyFilter;
 import ru.argustelecom.box.env.type.model.properties.LookupProperty;
 import ru.argustelecom.box.env.type.model.properties.LookupPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.MeasuredIntervalProperty;
-import ru.argustelecom.box.env.type.model.properties.MeasuredIntervalPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.MeasuredProperty;
-import ru.argustelecom.box.env.type.model.properties.MeasuredPropertyFilter;
 import ru.argustelecom.box.env.type.model.properties.TextProperty;
 import ru.argustelecom.box.env.type.model.properties.TextPropertyFilter;
 import ru.argustelecom.system.inf.utils.ReflectionUtils;
@@ -60,14 +56,6 @@ public class TypePropertyQuery {
 
 	public LookupPropertyFilter of(LookupProperty property) {
 		return findOrCreateFilter(property, LookupPropertyFilter.class);
-	}
-
-	public MeasuredPropertyFilter of(MeasuredProperty property) {
-		return findOrCreateFilter(property, MeasuredPropertyFilter.class);
-	}
-
-	public MeasuredIntervalPropertyFilter of(MeasuredIntervalProperty property) {
-		return findOrCreateFilter(property, MeasuredIntervalPropertyFilter.class);
 	}
 
 	public TextPropertyFilter of(TextProperty property) {

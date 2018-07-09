@@ -10,9 +10,7 @@ import javax.inject.Inject;
 import com.google.common.base.Strings;
 
 import ru.argustelecom.box.env.contact.Contact;
-import ru.argustelecom.box.env.contact.ContactCategory;
 import ru.argustelecom.box.env.contact.EmailContact;
-import ru.argustelecom.box.env.contact.PhoneContact;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.role.ContactPerson;
@@ -41,11 +39,7 @@ public class ContactPersonDataDtoTranslator {
 			mailTo = new MailToLink().withRecipient(Recipient.of(email, person.getName().shortName(true))).href();
 		}
 
-		String phone = findFirstPhone(person);
 		String callTo = null;
-		if (!Strings.isNullOrEmpty(phone)) {
-			callTo = ContactCategory.PHONE.getPrefix() + phone;
-		}
 
 		//@formatter:off
 		ContactPersonDataDto contactPersonDataDto =  ContactPersonDataDto.builder()
@@ -56,7 +50,6 @@ public class ContactPersonDataDtoTranslator {
 			.companyId(company.getId())
 			.companyName(company.getObjectName())
 			.email(email)
-			.phone(phone)
 			.mailTo(mailTo)
 			.callTo(callTo)
 
@@ -88,12 +81,6 @@ public class ContactPersonDataDtoTranslator {
 		Optional<Contact<?>> firstEmail = person.getContactInfo().getContacts().stream()
 				.filter(c -> c instanceof EmailContact).findFirst();
 		return firstEmail.isPresent() ? firstEmail.get().getObjectName() : null;
-	}
-
-	private String findFirstPhone(Person person) {
-		Optional<Contact<?>> firstPhone = person.getContactInfo().getContacts().stream()
-				.filter(c -> c instanceof PhoneContact).findFirst();
-		return firstPhone.isPresent() ? firstPhone.get().getObjectName() : null;
 	}
 
 }

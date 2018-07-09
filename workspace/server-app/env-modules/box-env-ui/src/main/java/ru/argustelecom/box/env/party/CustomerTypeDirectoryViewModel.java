@@ -17,7 +17,6 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import ru.argustelecom.box.env.party.model.CustomerType;
-import ru.argustelecom.box.env.type.CurrentType;
 import ru.argustelecom.system.inf.page.PresentationModel;
 import ru.argustelecom.system.inf.page.ViewModel;
 
@@ -35,9 +34,6 @@ public class CustomerTypeDirectoryViewModel extends ViewModel {
 	@Inject
 	private CustomerTypeRepository customerTypeRepository;
 
-	@Inject
-	private CurrentType currentType;
-
 	private CustomerType customerType;
 
 	private TreeNode customerTypeNode;
@@ -50,7 +46,6 @@ public class CustomerTypeDirectoryViewModel extends ViewModel {
 	protected void postConstruct() {
 		super.postConstruct();
 		unitOfWork.makePermaLong();
-		refresh();
 		loadCustomerTypeNode();
 	}
 
@@ -80,13 +75,6 @@ public class CustomerTypeDirectoryViewModel extends ViewModel {
 	// Private methods
 	// *****************************************************************************************************************
 
-	private void refresh() {
-		if (currentType.changed(customerType)) {
-			customerType = (CustomerType) currentType.getValue();
-			log.debugv("postConstruct. customer_type_id={0}", customerType.getId());
-		}
-	}
-
 	private void loadCustomerTypeNode() {
 		customerTypeNode = new DefaultTreeNode(ROOT, null);
 		personNode = new DefaultTreeNode(PERSON.getKeyword(), PERSON, customerTypeNode);
@@ -113,7 +101,6 @@ public class CustomerTypeDirectoryViewModel extends ViewModel {
 
 	private void cleanCurrentCustomerType() {
 		customerType = null;
-		currentType.setValue(null);
 	}
 
 	public void sort(List<TreeNode> nodes) {
@@ -142,7 +129,6 @@ public class CustomerTypeDirectoryViewModel extends ViewModel {
 	public void setSelectedNode(TreeNode selectedNode) {
 		if (selectedNode != null && selectedNode.getData() instanceof CustomerType) {
 			customerType = (CustomerType) selectedNode.getData();
-			currentType.setValue(customerType);
 		} else {
 			cleanCurrentCustomerType();
 		}

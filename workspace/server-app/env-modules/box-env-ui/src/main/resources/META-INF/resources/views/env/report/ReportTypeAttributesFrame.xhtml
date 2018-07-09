@@ -114,13 +114,6 @@
                         <f:setPropertyActionListener value="#{reportTypeAttributesFm.reportParams}"
                                                      target="#{reportTypeExportDm.reportParams}"/>
                     </p:commandButton>
-
-                    <ui:include src="/views/env/lifecycle/LifecycleFrame.xhtml">
-                        <ui:param name="businessObject" value="#{reportTypeAttributesFm.reportTypeBODto.identifiable}"/>
-                        <ui:param name="update" value="#{update}"/>
-                        <ui:param name="styleClass" value="m-mar-bot10 width-100-percents"/>
-                        <ui:param name="readonly" value="#{!p:ifGranted('System_ReportTypesEdit')}"/>
-                    </ui:include>
                 </div>
             </div>
         </ui:fragment>

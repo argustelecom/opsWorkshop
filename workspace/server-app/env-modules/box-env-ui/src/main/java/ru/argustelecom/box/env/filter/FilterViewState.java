@@ -18,8 +18,6 @@ import org.hibernate.proxy.HibernateProxy;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import ru.argustelecom.box.env.dto.BusinessObjectDto;
-import ru.argustelecom.box.env.dto.BusinessObjectDtoTranslator;
 import ru.argustelecom.box.env.dto.DefaultDtoTranslator;
 import ru.argustelecom.box.env.dto.IdentifiableDto;
 import ru.argustelecom.box.env.filter.model.FilterParam;
@@ -90,12 +88,7 @@ public class FilterViewState implements Serializable {
 			FilterMapEntry entry = field.getAnnotation(FilterMapEntry.class);
 			if (entry != null && paramsAsMap.containsKey(entry.value())) {
 				Object filterValue = paramsAsMap.get(entry.value());
-				// TODO пофиксить, когда будут рефакторинг BusinessObjectDto
-				if (entry.isBusinessObjectDto()) {
-					filterValue = EntityManagerUtils.initializeAndUnproxy(filterValue);
-					filterValue = CDIHelper.lookupCDIBean(BusinessObjectDtoTranslator.class)
-							.translate((Identifiable & NamedObject) filterValue);
-				}
+
 				for (Class<? extends DefaultDtoTranslator> translatorClass : entry.translator()) {
 					if (!DefaultDtoTranslator.class.getName().equals(translatorClass.getName())) {
 						if (filterValue instanceof HibernateProxy) {
@@ -139,8 +132,6 @@ public class FilterViewState implements Serializable {
 			if (value instanceof IdentifiableDto) {
 				paramValue = ((IdentifiableDto) value).getIdentifiable();
 				// TODO FIXME когда будет рефакторинг BusinessObjectDto
-			} else if (value instanceof BusinessObjectDto) {
-				paramValue = ((BusinessObjectDto) value).getIdentifiable();
 			}
 			filterParams.add(FilterParam.create(key, paramValue));
 		});

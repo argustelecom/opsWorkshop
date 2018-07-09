@@ -85,15 +85,6 @@ public class TypeInstance<T extends Type> extends BusinessObject {
 		this.props = props;
 	}
 
-	public boolean isPropertyLocked(String propertyKeyword) {
-		TypeProperty<?> property = getType().getProperty(propertyKeyword);
-		return property != null && property.isValueLocked(this);
-	}
-
-	public boolean isPropertyLocked(TypeProperty<?> property) {
-		return property.isValueLocked(this);
-	}
-
 	public <V, P extends TypeProperty<V>> V getPropertyValue(P property) {
 		if (getType().hasProperty(property)) {
 			return property.getValue(this);

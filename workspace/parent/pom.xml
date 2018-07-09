@@ -298,26 +298,6 @@
 							<title>Shared domain</title>
 							<packages>ru.argustelecom.box.env*</packages>
 						</group>
-						<group>
-							<title>Product Directory</title>
-							<packages>ru.argustelecom.box.productdir*</packages>
-						</group>
-						<group>
-							<title>CRM</title>
-							<packages>ru.argustelecom.box.crm*</packages>
-						</group>
-						<group>
-							<title>Billing</title>
-							<packages>ru.argustelecom.box.billing*</packages>
-						</group>
-						<group>
-							<title>Network Resource Inventory</title>
-							<packages>ru.argustelecom.box.nri*</packages>
-						</group>
-						<group>
-							<title>Elsis Gate</title>
-							<packages>ru.argustelecom.box.elsis*</packages>
-						</group>
 					</groups>
 					<dependencySourceIncludes>
 						<dependencySourceInclude>ru.argustelecom.*</dependencySourceInclude>
@@ -414,57 +394,10 @@
 					<name>!box.dist.composition</name>
 				</property>
 			</activation>
-			<properties>
-				<!-- "Product Directory" module & features -->
-				<exclude.product-dir.core>false</exclude.product-dir.core>
-
-				<!-- "CRM" module & features -->
-				<exclude.crm.core>false</exclude.crm.core>
-
-				<!-- "Billing" module & features -->
-				<exclude.billing.core>false</exclude.billing.core>
-
-				<!-- "Network Resource Inventory" module & features -->
-				<exclude.nri.core>false</exclude.nri.core>
-
-				<!-- FIXME [elsis-gate]-->
-				<exclude.elsis-gate>false</exclude.elsis-gate>
-			</properties>
+			<properties />
 		</profile>
 
-		<!-- FIXME [Modularity] Исправить после рефакторинга зависимостей и разбиения продукта на модули -->
-		<!-- 
-			Профиль содержит только те модули, которые имеют смысл на текущий момент. Доджен быть удален 
-			после выполнения рефакторинга по разбиению системы на модули. Он включается, когда мы собираем
-			дистрибутив через make dist
-		-->
-		<profile>
-			<id>ear-composition-modularity-fall</id>
-			<activation>
-				<property>
-					<name>box.dist.composition</name>
-					<value>modularity-fall</value>
-				</property>
-			</activation>
-			<properties>
-				<!-- "Product Directory" module & features -->
-				<exclude.product-dir.core>true</exclude.product-dir.core>
-
-				<!-- "CRM" module & features -->
-				<exclude.crm.core>true</exclude.crm.core>
-
-				<!-- "Billing" module & features -->
-				<exclude.billing.core>true</exclude.billing.core>
-
-				<!-- "Network Resource Inventory" module & features -->
-				<exclude.nri.core>true</exclude.nri.core>
-
-				<!-- FIXME [elsis-gate]-->
-				<exclude.elsis-gate>false</exclude.elsis-gate>
-			</properties>
-		</profile>
-
-		<!-- 
+		<!--
 		==========================================================================================================
 		<<<  ПРОФИЛИ УПРАВЛЕНИЯ СОСТАВОМ СБОРКИ 
 		==========================================================================================================

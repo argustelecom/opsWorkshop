@@ -4,14 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Optional.ofNullable;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Stream.empty;
 import static javax.persistence.AccessType.FIELD;
 import static lombok.AccessLevel.PROTECTED;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -24,7 +22,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Access;
@@ -37,22 +34,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Maps;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.argustelecom.box.env.barcode.ST00012QrCodeDataFormatter.ST00012QrCodeItem;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.Party;
 import ru.argustelecom.box.env.party.model.PartyRole;
 import ru.argustelecom.box.env.report.api.Printable;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryLogicalFilter;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryNumericFilter;
-import ru.argustelecom.system.inf.exception.BusinessException;
 
 /**
  * Представляет <a href="http://boxwiki.argustelecom.ru:10753/pages/viewpage.action?pageId=3539371">владельца</a> или
@@ -129,9 +119,6 @@ public class Owner extends PartyRole implements Printable {
 	@Transient
 	private List<OwnerParameter> cachedAdditionalParameters;
 
-	@Transient
-	private Map<ST00012QrCodeItem, Pair<Characteristic, String>> parsedQrCodePattern;
-
 	public Owner(Long id, BigDecimal taxRate) {
 		super(id);
 		checkState(taxRate != null && taxRate.compareTo(MIN_TAX_RATE) >= 0 && taxRate.compareTo(MAX_TAX_RATE) <= 0);
@@ -182,7 +169,6 @@ public class Owner extends PartyRole implements Printable {
 
 	public void setQrCodePattern(String qrCodePattern) {
 		this.qrCodePattern = qrCodePattern;
-		clearParsedQrParameters();
 	}
 
 	/**
@@ -210,38 +196,6 @@ public class Owner extends PartyRole implements Printable {
 		return getCharacteristics(checkNotNull(characteristic)).get(checkNotNull(keyword));
 	}
 
-	/**
-	 * Парсит шаблон для QR-кода. Кэширует результат.
-	 * 
-	 * @return ассоциативный массив, ключем которого является {@link ST00012QrCodeItem}, а значением - пара
-	 *         {@link Characteristic} и ключевого слова для данной характеристики
-	 */
-	public Map<ST00012QrCodeItem, Pair<Characteristic, String>> parseQrCodePattern() {
-		if (parsedQrCodePattern == null) {
-			//@formatter:off
-			parsedQrCodePattern = unmodifiableMap(
-					ofNullable(getQrCodePattern())
-							.map(pattern -> stream(pattern.split(QR_CODE_PARAMETER_DELIMITER)))
-							.orElse(empty())
-							.collect(Maps::newTreeMap,
-									(map, expression) -> {
-										Matcher matcher = QR_CODE_PARAMETER.matcher(expression);
-										if (!matcher.matches()) {
-											throw new BusinessException(format("Невалидная шаблон \"%s\"", expression));
-										}
-										ST00012QrCodeItem item = ST00012QrCodeItem.findByKeyword(matcher.group(1));
-										Characteristic characteristic = Characteristic.findByKeyword(matcher.group(2));
-										String itemMapping = matcher.group(3);
-										map.put(item, ImmutablePair.of(characteristic, itemMapping));
-									},
-									Map::putAll
-							)
-			);
-			//@formatter:on
-		}
-		return parsedQrCodePattern;
-	}
-
 	protected boolean addAdditionalParameter(OwnerParameter parameter) {
 		checkNotNull(parameter);
 
@@ -252,10 +206,6 @@ public class Owner extends PartyRole implements Printable {
 			evictCachedAdditionalParameters();
 		}
 		return !contains;
-	}
-
-	private void clearParsedQrParameters() {
-		parsedQrCodePattern = null;
 	}
 
 	private void evictCachedAdditionalParameters() {

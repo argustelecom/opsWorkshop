@@ -14,7 +14,6 @@ import javax.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
-import ru.argustelecom.box.env.overall.nls.OverallMessagesBundle;
 import ru.argustelecom.box.env.person.PersonDataDto;
 import ru.argustelecom.box.inf.nls.LocaleUtils;
 import ru.argustelecom.system.inf.page.PresentationModel;
@@ -35,34 +34,6 @@ public class PersonAvatarFrameModel implements Serializable {
 
 	public void preRender(PersonDataDto personDataDto) {
 		this.personDataDto = personDataDto;
-	}
-
-	public void handleFileUpload(FileUploadEvent event) throws IOException {
-		String formatType = event.getFile().getContentType().split("/")[1];
-		uploadedAvatar = event.getFile().getContents();
-		UploadedFile file = event.getFile();
-
-		try (InputStream fileInputStream = file.getInputstream()) {
-			if(ImageIO.read(fileInputStream) == null) {
-				FacesContext context = FacesContext.getCurrentInstance();
-
-				OverallMessagesBundle overallMessages = LocaleUtils.getMessages(OverallMessagesBundle.class);
-
-				context.validationFailed();
-				context.addMessage(event.getComponent().getClientId(context), new FacesMessage(
-						FacesMessage.SEVERITY_ERROR,
-						overallMessages.error(),
-						overallMessages.fileIsCorrupted()
-				));
-				return;
-			}
-		}
-
-
-		avatarChanged = true;
-
-		personDataDto.setImageInputStream(event.getFile().getInputstream());
-		personDataDto.setImageFormatName(formatType);
 	}
 
 	public boolean canRemoveAvatar() {

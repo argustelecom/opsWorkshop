@@ -54,41 +54,6 @@
 								</p:commandLink>
 							</p:outputPanel>
 						</div>
-						<p:dataTable id="customer_segments_table" value="#{customerSegmentDirectoryViewModel.customerSegments}"
-							var="segment" selection="#{customerSegmentDirectoryViewModel.selectedSegments}" rowKey="#{segment.id}"
-							scrollable="true" scrollHeight="90%">
-
-							<p:ajax event="rowSelectCheckbox" update="customer_segments_form-remove_button" />
-							<p:ajax event="rowUnselectCheckbox" update="customer_segments_form-remove_button" />
-							<p:ajax event="rowSelect" update="customer_segments_form-remove_button" />
-							<p:ajax event="rowUnselect" update="customer_segments_form-remove_button" />
-							<p:ajax event="toggleSelect" update="customer_segments_form-remove_button" />
-
-							<p:column selectionMode="multiple" styleClass="width-16" />
-
-							<p:column headerText="#{segmentBundle['box.segment.customer.type']}" styleClass="width-300">
-								<h:outputText value="#{segment.customerType.objectName}" />
-							</p:column>
-
-							<p:column headerText="#{overallBundle['box.overall.name']}" styleClass="width-200">
-								<h:outputText value="#{segment.objectName}" />
-							</p:column>
-
-							<p:column headerText="#{overallBundle['box.overall.desc']}">
-								<h:outputText value="#{segment.description}" />
-							</p:column>
-
-							<p:column styleClass="width-20" rendered="#{p:ifGranted('System_CustomerSegmentsEdit')}">
-								<p:commandLink oncomplete="PF('customerSegmentCreationDlgVar').show()"
-												update="customer_segment_edit_dlg_form">
-												<i class="icon-create fs20 m-bold-gray"/>
-												<f:setPropertyActionListener value="#{customerSegmentDirectoryViewModel.callback}"
-													target="#{customerSegmentCreationDlg.callback}" />
-												<f:setPropertyActionListener value="#{segment}" target="#{customerSegmentCreationDlg.segment}" />
-								</p:commandLink>
-							</p:column>
-
-						</p:dataTable>
 					</h:form>
 				</div>
 			</div>

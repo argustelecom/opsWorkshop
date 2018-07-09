@@ -17,7 +17,6 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import ru.argustelecom.box.env.party.model.PartyType;
-import ru.argustelecom.box.env.type.CurrentType;
 import ru.argustelecom.system.inf.page.PresentationModel;
 import ru.argustelecom.system.inf.page.ViewModel;
 
@@ -35,9 +34,6 @@ public class PartyTypeDirectoryViewModel extends ViewModel {
 	@Inject
 	private PartyTypeRepository partyTypeRepository;
 
-	@Inject
-	private CurrentType currentType;
-
 	private PartyType partyType;
 
 	private TreeNode partyTypeNode;
@@ -50,7 +46,6 @@ public class PartyTypeDirectoryViewModel extends ViewModel {
 	protected void postConstruct() {
 		super.postConstruct();
 		unitOfWork.makePermaLong();
-		refresh();
 		loadPartyTypeNode();
 	}
 
@@ -81,13 +76,6 @@ public class PartyTypeDirectoryViewModel extends ViewModel {
 	// Private methods
 	// *****************************************************************************************************************
 
-	private void refresh() {
-		if (currentType.changed(partyType)) {
-			partyType = (PartyType) currentType.getValue();
-			log.debugv("postConstruct. party_type_id={0}", partyType.getId());
-		}
-	}
-
 	private void loadPartyTypeNode() {
 		partyTypeNode = new DefaultTreeNode(ROOT, null);
 		personNode = new DefaultTreeNode(PERSON.getKeyword(), PERSON, partyTypeNode);
@@ -113,7 +101,6 @@ public class PartyTypeDirectoryViewModel extends ViewModel {
 
 	private void cleanCurrentPartyType() {
 		partyType = null;
-		currentType.setValue(null);
 	}
 
 	public void sort(List<TreeNode> nodes) {
@@ -142,7 +129,6 @@ public class PartyTypeDirectoryViewModel extends ViewModel {
 	public void setSelectedNode(TreeNode selectedNode) {
 		if (selectedNode != null && selectedNode.getData() instanceof PartyType) {
 			partyType = (PartyType) selectedNode.getData();
-			currentType.setValue(partyType);
 		} else {
 			cleanCurrentPartyType();
 		}

@@ -4,14 +4,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.math.BigDecimal.valueOf;
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static ru.argustelecom.box.env.barcode.ST00012QrCodeDataFormatter.ST00012QrCodeItem.ownerCharacteristicItems;
 import static ru.argustelecom.box.env.party.PartyCategory.COMPANY;
-import static ru.argustelecom.box.inf.nls.LocaleUtils.getMessages;
 
 import java.io.Serializable;
 import java.sql.Blob;
@@ -24,11 +19,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import ru.argustelecom.box.env.barcode.ST00012QrCodeDataFormatter.ST00012QrCodeItem;
 import ru.argustelecom.box.env.party.model.PartyType;
 import ru.argustelecom.box.env.party.model.role.Owner;
 import ru.argustelecom.box.env.party.model.role.Owner.Characteristic;
-import ru.argustelecom.box.env.party.nls.OwnerMessageBundle;
 import ru.argustelecom.box.inf.service.ApplicationService;
 import ru.argustelecom.system.inf.dataaccess.hibernate.engine.spi.ArgusSessionImplementor;
 
@@ -209,18 +202,6 @@ public class OwnerAppService implements Serializable {
 		return checkNotNull(em.find(Owner.class, checkNotNull(ownerId))).getEmailTemplate();
 	}
 
-	/**
-	 * @return Возвращает подсказку как заполнять шаблон QR-кода
-	 */
-	public String getQrCodePatternTooltipHint() {
-		//@formatter:off
-		Map<Boolean, String> map = ownerCharacteristicItems().stream()
-				.collect(groupingBy(ST00012QrCodeItem::isRequired,
-						mapping(ST00012QrCodeItem::getKeyword, joining(", "))));
-		//@formatter:on
-
-		return getMessages(OwnerMessageBundle.class).qrCodePatternTooltipHint(map.get(true), map.get(false));
-	}
 
 	private static final long serialVersionUID = 6663491540877357648L;
 }

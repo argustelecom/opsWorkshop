@@ -23,9 +23,6 @@ public class CustomerSegmentCreationDialogModel implements Serializable {
 	@Inject
 	private CustomerTypeRepository customerTypeRp;
 
-	@Inject
-	private CustomerSegmentRepository customerSegmentRepo;
-
 	private List<CustomerType> customerTypes;
 
 	private CustomerSegment segment;
@@ -40,18 +37,6 @@ public class CustomerSegmentCreationDialogModel implements Serializable {
 			customerTypes = customerTypeRp.getAllCustomerTypes();
 		}
 		return customerTypes;
-	}
-
-	public void onSubmitSegment() {
-		if (isNewSegment()) {
-			segment = customerSegmentRepo.createSegment(segmentCustomerType, segmentName, segmentDesc);
-			if (callback != null) {
-				callback.execute(segment);
-			}
-		} else {
-			segment.setObjectName(segmentName);
-			segment.setDescription(segmentDesc);
-		}
 	}
 
 	public void onCancelSegment() {

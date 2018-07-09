@@ -19,14 +19,8 @@ import ru.argustelecom.box.env.type.model.properties.LogicalProperty;
 import ru.argustelecom.box.env.type.model.properties.LogicalPropertyFilter;
 import ru.argustelecom.box.env.type.model.properties.LongProperty;
 import ru.argustelecom.box.env.type.model.properties.LongPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.LookupArrayProperty;
 import ru.argustelecom.box.env.type.model.properties.LookupProperty;
 import ru.argustelecom.box.env.type.model.properties.LookupPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.MeasuredIntervalProperty;
-import ru.argustelecom.box.env.type.model.properties.MeasuredIntervalPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.MeasuredProperty;
-import ru.argustelecom.box.env.type.model.properties.MeasuredPropertyFilter;
-import ru.argustelecom.box.env.type.model.properties.TextArrayProperty;
 import ru.argustelecom.box.env.type.model.properties.TextProperty;
 import ru.argustelecom.box.env.type.model.properties.TextPropertyFilter;
 import ru.argustelecom.box.env.type.nls.TypeMessagesBundle;
@@ -54,24 +48,6 @@ public enum TypePropertyRef {
 		DateIntervalProperty.class,
 		DateIntervalPropertyFilter.class,
 		TypeMessagesBundle::dateIntervalProperty
-	),
-
-	/**
-	 * @see MeasuredProperty
-	 */
-	MEASURED(
-		MeasuredProperty.class,
-		MeasuredPropertyFilter.class,
-		TypeMessagesBundle::measuredProperty
-	),
-
-	/**
-	 * @see MeasuredIntervalProperty
-	 */
-	MEASURED_INTERVAL(
-		MeasuredIntervalProperty.class,
-		MeasuredIntervalPropertyFilter.class,
-		TypeMessagesBundle::measuredIntervalProperty
 	),
 
 	/**
@@ -111,32 +87,14 @@ public enum TypePropertyRef {
 	),
 
 	/**
-	 * @see LookupArrayProperty
-	 */
-	LOOKUP_ARRAY(
-		LookupArrayProperty.class,
-		null,
-		TypeMessagesBundle::lookupArrayProperty
-	),
-
-	/**
 	 * @see TextProperty
 	 */
 	TEXT(
 		TextProperty.class,
 		TextPropertyFilter.class,
 		TypeMessagesBundle::textProperty
-	),
-
-	/**
-	 * @see TextArrayProperty
-	 */
-	TEXT_ARRAY(
-		TextArrayProperty.class,
-		null,
-		TypeMessagesBundle::textArrayProperty
 	);
-	
+
 	//@formatter:on
 
 	@Getter

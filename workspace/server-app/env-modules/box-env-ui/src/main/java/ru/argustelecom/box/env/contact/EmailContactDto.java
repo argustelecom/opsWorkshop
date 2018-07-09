@@ -2,7 +2,6 @@ package ru.argustelecom.box.env.contact;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import ru.argustelecom.box.env.validator.Email;
 
 @NoArgsConstructor
 public class EmailContactDto extends ContactDto {
@@ -14,7 +13,6 @@ public class EmailContactDto extends ContactDto {
 	}
 
 	@Override
-	@Email(canBeNull = true)
 	public String getValue() {
 		return super.getValue();
 	}

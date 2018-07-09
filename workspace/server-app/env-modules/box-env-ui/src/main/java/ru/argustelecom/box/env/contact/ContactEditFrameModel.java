@@ -114,12 +114,6 @@ public class ContactEditFrameModel implements Serializable {
 		case EMAIL:
 			contactDto = new EmailContactDto();
 			break;
-		case PHONE:
-			contactDto = new PhoneContactDto();
-			break;
-		case SKYPE:
-			contactDto = new SkypeContactDto();
-			break;
 		case CUSTOM:
 			contactDto = new CustomContactDto();
 			break;

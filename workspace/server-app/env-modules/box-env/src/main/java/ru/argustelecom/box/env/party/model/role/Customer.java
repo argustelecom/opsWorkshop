@@ -1,11 +1,6 @@
 package ru.argustelecom.box.env.party.model.role;
 
-import static ru.argustelecom.box.env.billing.account.model.PersonalAccountState.ACTIVE;
 import static ru.argustelecom.box.env.contact.ContactCategory.EMAIL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -14,29 +9,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ru.argustelecom.box.env.billing.account.model.PersonalAccount;
-import ru.argustelecom.box.env.billing.account.model.PersonalAccount_;
 import ru.argustelecom.box.env.contact.Contact;
 import ru.argustelecom.box.env.contact.ContactInfo_;
 import ru.argustelecom.box.env.contact.ContactType;
 import ru.argustelecom.box.env.contact.Contact_;
 import ru.argustelecom.box.env.contact.CustomContact;
 import ru.argustelecom.box.env.contact.EmailContact;
-import ru.argustelecom.box.env.contact.PhoneContact;
-import ru.argustelecom.box.env.contact.SkypeContact;
-import ru.argustelecom.box.env.contract.model.Contract;
-import ru.argustelecom.box.env.contract.model.Contract_;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.CompanyRdo;
 import ru.argustelecom.box.env.party.model.CustomerType;
@@ -66,10 +52,6 @@ public class Customer extends PartyRole implements Printable {
 	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = { CascadeType.ALL })
 	@JoinColumn(name = "type_instance_id", nullable = false)
 	private CustomerTypeInstance typeInstance;
-
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "customer_id")
-	private List<PersonalAccount> personalAccounts = new ArrayList<>();
 
 	@Column(nullable = false)
 	private boolean vip;
@@ -101,11 +83,6 @@ public class Customer extends PartyRole implements Printable {
 		//@formatter:on
 	}
 
-	public List<PersonalAccount> getActivePersonalAccounts() {
-		return personalAccounts.stream().filter(account -> account.getState().equals(ACTIVE))
-				.collect(Collectors.toList());
-	}
-
 	public EmailContact getCorrespondenceEmail() {
 		return mainEmail != null ? mainEmail : findFirstEmail();
 	}
@@ -125,14 +102,6 @@ public class Customer extends PartyRole implements Printable {
 
 	public void setTypeInstance(CustomerTypeInstance typeInstance) {
 		this.typeInstance = typeInstance;
-	}
-
-	public List<PersonalAccount> getPersonalAccounts() {
-		return personalAccounts;
-	}
-
-	public void setPersonnelAccounts(List<PersonalAccount> personnelAccounts) {
-		this.personalAccounts = personnelAccounts;
 	}
 
 	public boolean isVip() {
@@ -162,11 +131,8 @@ public class Customer extends PartyRole implements Printable {
 		private Join<Customer, Contact> contactJoin;
 		private Join<Customer, Party> partyJoin;
 		private Join<Party, PartyTypeInstance> partyTypeInstanceJoin;
-		private Join<Customer, PhoneContact> telephoneNumberContactJoin;
 		private Join<Customer, EmailContact> emailAddressContactJoin;
-		private Join<Customer, SkypeContact> skypeLoginContactJoin;
 		private Join<Customer, CustomContact> customContactJoin;
-		private Join<Customer, PersonalAccount> personalAccountJoin;
 
 		private EntityQueryEntityFilter<T, CustomerType> customerType;
 		private EntityQueryPropertiesFilter<T> customerProperties;
@@ -189,15 +155,6 @@ public class Customer extends PartyRole implements Printable {
 					criteriaBuilder().literal(value))
 			);
 			//@formatter:on
-		}
-
-		public Predicate byContract(String value) {
-			return root().in(contractSubquery(value));
-		}
-
-		public Predicate byPersonalAccount(String value) {
-			return criteriaBuilder().equal(personalAccountJoin().get(PersonalAccount_.number),
-					createParam(PersonalAccount_.number, value));
 		}
 
 		public EntityQueryEntityFilter<T, CustomerType> customerType() {
@@ -227,25 +184,11 @@ public class Customer extends PartyRole implements Printable {
 			customerType = createEntityFilter(customerTypePath, CustomerTypeInstance_.type);
 		}
 
-		private Join<Customer, PhoneContact> phoneContactJoin() {
-			if (telephoneNumberContactJoin == null) {
-				telephoneNumberContactJoin = typedContactJoin();
-			}
-			return telephoneNumberContactJoin;
-		}
-
 		private Join<Customer, EmailContact> emailContactJoin() {
 			if (emailAddressContactJoin == null) {
 				emailAddressContactJoin = typedContactJoin();
 			}
 			return emailAddressContactJoin;
-		}
-
-		private Join<Customer, SkypeContact> skypeContactJoin() {
-			if (skypeLoginContactJoin == null) {
-				skypeLoginContactJoin = typedContactJoin();
-			}
-			return skypeLoginContactJoin;
 		}
 
 		private Join<Customer, CustomContact> customContactJoin() {
@@ -274,21 +217,6 @@ public class Customer extends PartyRole implements Printable {
 				partyTypeInstanceJoin = partyJoin().join(Party_.typeInstance);
 			}
 			return partyTypeInstanceJoin;
-		}
-
-		private Join<Customer, PersonalAccount> personalAccountJoin() {
-			if (personalAccountJoin == null) {
-				personalAccountJoin = root().join(Customer_.personalAccounts.getName());
-			}
-			return personalAccountJoin;
-		}
-
-		private Subquery<Customer> contractSubquery(String value) {
-			Subquery<Customer> subquery = criteriaQuery().subquery(Customer.class);
-			Root<Contract> root = subquery.from(Contract.class);
-			subquery.select(root.get(Contract_.customer));
-			subquery.where(criteriaBuilder().equal(root.get(Contract_.documentNumber), value));
-			return subquery;
 		}
 
 		private <CT extends Contact> Join<Customer, CT> typedContactJoin() {

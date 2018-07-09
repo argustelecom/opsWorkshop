@@ -18,12 +18,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Formula;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 import ru.argustelecom.box.env.contact.ContactInfo;
 import ru.argustelecom.box.env.report.api.Printable;
 import ru.argustelecom.box.inf.modelbase.BusinessObject;

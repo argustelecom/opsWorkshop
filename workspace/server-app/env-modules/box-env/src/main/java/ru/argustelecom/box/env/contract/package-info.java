@@ -1,1 +1,0 @@
-package ru.argustelecom.box.env.contract;

@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,10 +32,7 @@ import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.PersonName;
 import ru.argustelecom.box.env.party.model.role.ContactPerson;
 import ru.argustelecom.box.env.party.model.role.ContactPerson.ContactPersonQuery;
-import ru.argustelecom.box.env.party.model.role.Customer;
 import ru.argustelecom.box.env.party.model.role.Employee;
-import ru.argustelecom.box.env.party.model.role.Individual;
-import ru.argustelecom.box.env.party.model.role.Organization;
 import ru.argustelecom.box.env.type.TypeFactory;
 import ru.argustelecom.box.env.util.QueryWrapper;
 import ru.argustelecom.box.inf.service.Repository;
@@ -118,25 +114,6 @@ public class PartyRepository implements Serializable {
 		return newEmployee;
 	}
 
-	public Individual createIndividual(String prefix, @NotNull String lastName, @NotNull String firstName,
-			String secondName, String suffix, ContactInfo contactInfo, @NotNull CustomerType customerType) {
-		Individual newIndividual = new Individual(idSequence.nextValue(Individual.class));
-		createCustomerTypeInstance(newIndividual, customerType);
-		createPerson(prefix, lastName, firstName, secondName, suffix,null, contactInfo,
-				customerType.getPartyType(), newIndividual);
-		em.persist(newIndividual);
-		return newIndividual;
-	}
-
-	public Organization createOrganization(@NotNull String legalName, String brandName, ContactInfo contactInfo,
-			@NotNull CustomerType customerType) {
-		Organization newOrganization = new Organization(idSequence.nextValue(Organization.class));
-		createCustomerTypeInstance(newOrganization, customerType);
-		createCompany(legalName, brandName, contactInfo, customerType.getPartyType(), newOrganization);
-		em.persist(newOrganization);
-		return newOrganization;
-	}
-
 	public List<ContactPerson> getCompanyContactPersons(Company company) {
 		if (company == null) {
 			return Collections.emptyList();
@@ -164,11 +141,6 @@ public class PartyRepository implements Serializable {
 		}
 		employee.setFired(true);
 		em.merge(employee);
-	}
-
-	@NamedQuery(name = ALL_CUSTOMERS, query = "from Customer")
-	public List<Customer> getAllCustomers() {
-		return em.createNamedQuery(ALL_CUSTOMERS, Customer.class).getResultList();
 	}
 
 	public boolean hasCompanyWith(String legalName) {
@@ -235,11 +207,6 @@ public class PartyRepository implements Serializable {
 	private void createPartyTypeInstance(Party party, PartyType partyType) {
 		PartyTypeInstance result = typeFactory.createInstance(partyType, PartyTypeInstance.class);
 		party.setTypeInstance(result);
-	}
-
-	private void createCustomerTypeInstance(Customer customer, CustomerType customerType) {
-		CustomerTypeInstance result = typeFactory.createInstance(customerType, CustomerTypeInstance.class);
-		customer.setTypeInstance(result);
 	}
 
 	// *****************************************************************************************************************

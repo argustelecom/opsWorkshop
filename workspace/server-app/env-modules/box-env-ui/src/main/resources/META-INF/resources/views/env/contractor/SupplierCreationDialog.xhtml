@@ -27,18 +27,6 @@
 								 required="true"
 								 maxlength="256" label="#{contractorBundle['box.contractor.brand_name']}"/>
 				</dd>
-
-				<dt>
-					<p:outputLabel for="new_party_type" value="#{overallBundle['box.overall.party_type']}:"/>
-				</dt>
-				<dd>
-					<p:selectOneMenu id="new_party_type" value="#{supplierCreationDm.newSupplierDto.type}"
-									 required="true" maxlength="256">
-						<f:selectItems value="#{supplierCreationDm.getPossiblePartyTypes()}" var="type"
-									   itemLabel="#{type.name}"
-									   itemValue="#{type}"/>
-					</p:selectOneMenu>
-				</dd>
 			</dl>
 
 			<div class="dialog-footer-buttons">

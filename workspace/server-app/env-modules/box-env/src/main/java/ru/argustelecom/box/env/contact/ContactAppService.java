@@ -15,8 +15,6 @@ import com.google.common.base.Objects;
 import ru.argustelecom.box.env.idsequence.IdSequenceService;
 import ru.argustelecom.box.env.party.model.Party;
 import ru.argustelecom.box.env.stl.EmailAddress;
-import ru.argustelecom.box.env.stl.PhoneNumber;
-import ru.argustelecom.box.env.stl.SkypeLogin;
 import ru.argustelecom.box.inf.service.ApplicationService;
 
 @ApplicationService
@@ -77,16 +75,8 @@ public class ContactAppService implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private <T, V> V convertContactValue(Class<T> contactValueClass, String value) {
-		if (contactValueClass.equals(PhoneNumber.class)) {
-			return (V) PhoneNumber.create(value);
-		}
-
 		if (contactValueClass.equals(EmailAddress.class)) {
 			return (V) EmailAddress.create(value);
-		}
-
-		if (contactValueClass.equals(SkypeLogin.class)) {
-			return (V) SkypeLogin.create(value);
 		}
 
 		return (V) value;

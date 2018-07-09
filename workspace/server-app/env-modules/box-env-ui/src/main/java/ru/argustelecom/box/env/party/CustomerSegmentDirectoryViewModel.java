@@ -3,7 +3,6 @@ package ru.argustelecom.box.env.party;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -18,9 +17,6 @@ public class CustomerSegmentDirectoryViewModel extends ViewModel {
 	@PersistenceContext
 	private EntityManager em;
 
-	@Inject
-	private CustomerSegmentRepository customerSegmentRepo;
-
 	private List<CustomerSegment> customerSegments;
 	private List<CustomerSegment> selectedSegments;
 
@@ -31,13 +27,6 @@ public class CustomerSegmentDirectoryViewModel extends ViewModel {
 	protected void postConstruct() {
 		super.postConstruct();
 		unitOfWork.makePermaLong();
-	}
-
-	public List<CustomerSegment> getCustomerSegments() {
-		if (customerSegments == null) {
-			customerSegments = customerSegmentRepo.findAllSegments();
-		}
-		return customerSegments;
 	}
 
 	public List<CustomerSegment> getSelectedSegments() {

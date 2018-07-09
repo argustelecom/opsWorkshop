@@ -42,11 +42,7 @@
                         </p:outputPanel>
 
                         <ui:fragment rendered="#{ownerEmailTemplateFm.owner.templateName eq null}">
-                            <p:fileUpload fileUploadListener="#{ownerEmailTemplateFm.handleFileUpload}" mode="advanced" auto="true"
-                                          sizeLimit="30728640" onstart="Argus.System.BlockUI.block();" oncomplete="Argus.System.BlockUI.unblock();"
-                                          label="#{overallBundle['box.overall.upload']}" allowTypes="/(\.|\/)(html)$/" required="true"
-                                          update="email_template_form-email_template_output_panel manage_buttons" style="display: inline-block"/>
-							<h:outputText value="#{companyInfoBundle['box.company_info.template.bill.hint']}" style="display: inline-block"/>
+                            <h:outputText value="#{companyInfoBundle['box.company_info.template.bill.hint']}" style="display: inline-block"/>
 							<script type="text/javascript">
 								$( document ).ready(function() {
 									Argus.System.Tooltip.tooltip('','#email_template_form-email_template_panel .ui-button');

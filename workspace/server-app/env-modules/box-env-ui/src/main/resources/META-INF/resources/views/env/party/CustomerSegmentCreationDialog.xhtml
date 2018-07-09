@@ -52,9 +52,6 @@
 				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
 						 styleClass="m-blue-text-button" update="customer_segment_edit_dlg_form" process="@this"
 						 action="#{customerSegmentCreationDlg.onCancelSegment()}" onclick="PF('customerSegmentCreationDlgVar').hide()" />
-				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
-						 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('customerSegmentCreationDlgVar').hide()}"
-						 action="#{customerSegmentCreationDlg.onSubmitSegment()}" update="#{update}" />
 			</div>
 
 		</p:dialog>

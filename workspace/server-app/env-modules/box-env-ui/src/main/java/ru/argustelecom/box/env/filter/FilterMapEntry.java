@@ -1,12 +1,11 @@
 package ru.argustelecom.box.env.filter;
 
+import ru.argustelecom.box.env.dto.DefaultDtoTranslator;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import ru.argustelecom.box.env.dto.DefaultDtoTranslator;
-import ru.argustelecom.box.env.task.TaskListViewState;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
