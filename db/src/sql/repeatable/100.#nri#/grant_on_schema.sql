@@ -1,1 +1,0 @@
-GRANT USAGE ON SCHEMA nri TO box_reports;

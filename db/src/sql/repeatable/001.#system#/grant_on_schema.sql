@@ -1,1 +1,0 @@
-GRANT USAGE ON SCHEMA system TO box_reports;
