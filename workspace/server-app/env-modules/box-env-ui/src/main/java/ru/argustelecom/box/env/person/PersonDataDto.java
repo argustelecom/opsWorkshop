@@ -24,7 +24,6 @@ public class PersonDataDto {
 	@NotBlank
 	private String lastName;
 	private String suffix;
-	private String note;
 	private InputStream imageInputStream;
 	private String imageFormatName;
 

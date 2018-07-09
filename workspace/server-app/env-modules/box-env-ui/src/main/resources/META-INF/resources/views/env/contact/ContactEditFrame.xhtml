@@ -58,7 +58,6 @@
 
                         <p:outputPanel id="contact_note_panel" class="m-disp-table-cell width-30-percents">
                             <p:inputTextarea rows="1" id="contact_note" maxlength="64" styleClass="width-80-percents"
-                                             placeholder="#{contactBundle['box.contact.note']}"
                                          value="#{contact.comment}" title="#{contactBundle['box.contact.note']}">
                                          <p:ajax event="blur" process="@this" update="contact_note_panel"/>
                             </p:inputTextarea>
