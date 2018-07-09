@@ -125,61 +125,6 @@
 							<artifactId>box-env</artifactId>
 						</ejbModule>
 
-						<!-- "Product Directory" module & features -->
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>product-dir-dom</artifactId>
-							<excluded>${exclude.product-dir.core}</excluded>
-						</ejbModule>
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>product-dir-app</artifactId>
-							<excluded>${exclude.product-dir.core}</excluded>
-						</ejbModule>
-
-						<!-- "CRM" module & features -->
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>crm-dom</artifactId>
-							<excluded>${exclude.crm.core}</excluded>
-						</ejbModule>
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>crm-app</artifactId>
-							<excluded>${exclude.crm.core}</excluded>
-						</ejbModule>
-
-						<!-- "Billing" module & features -->
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>billing-dom</artifactId>
-							<excluded>${exclude.billing.core}</excluded>
-						</ejbModule>
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>billing-app</artifactId>
-							<excluded>${exclude.billing.core}</excluded>
-						</ejbModule>
-
-						<!-- "Network Resource Inventory" module & features -->
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>nri-dom</artifactId>
-							<excluded>${exclude.nri.core}</excluded>
-						</ejbModule>
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>nri-app</artifactId>
-							<excluded>${exclude.nri.core}</excluded>
-						</ejbModule>
-						
-						<!-- FIXME [elsis-gate]-->
-						<ejbModule>
-							<groupId>ru.argustelecom.box</groupId>
-							<artifactId>elsis-gate</artifactId>
-							<excluded>${exclude.elsis-gate}</excluded>
-						</ejbModule>
-
 						<!-- собираются webui с разным составом для разных заказчиков -->
 						<webModule>
 							<groupId>ru.argustelecom.box</groupId>
