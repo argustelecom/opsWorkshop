@@ -161,14 +161,6 @@ public class Customer extends PartyRole implements Printable {
 			return customerType;
 		}
 
-		public EntityQueryPropertiesFilter<T> partyProperties() {
-			if (partyProperties == null) {
-				Path<JsonNode> propsPath = partyTypeInstanceJoin().get(PartyTypeInstance_.props);
-				partyProperties = new EntityQueryPropertiesFilter<>(this, propsPath, PartyTypeInstance_.props);
-			}
-			return partyProperties;
-		}
-
 		public EntityQueryPropertiesFilter<T> customerProperties() {
 			if (customerProperties == null) {
 				Path<JsonNode> propsPath = customerTypeInstanceJoin.get(CustomerTypeInstance_.props);
@@ -210,13 +202,6 @@ public class Customer extends PartyRole implements Printable {
 				partyJoin = root().join(Customer_.party.getName());
 			}
 			return partyJoin;
-		}
-
-		private Join<Party, PartyTypeInstance> partyTypeInstanceJoin() {
-			if (partyTypeInstanceJoin == null) {
-				partyTypeInstanceJoin = partyJoin().join(Party_.typeInstance);
-			}
-			return partyTypeInstanceJoin;
 		}
 
 		private <CT extends Contact> Join<Customer, CT> typedContactJoin() {

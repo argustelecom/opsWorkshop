@@ -32,16 +32,6 @@
 			<!-- Наличие компонента с id top_menu обязательно по требованию структуры modena-layout -->
 			<ul id="top_menu">
 		
-				<!-- Заготовка для поиска в mobile окружении -->
-				<!--<li class="m-show-on-mobile">-->
-					<!--<a class="ripplelink"><i class="icon-search" /><span>#{overallBundle['box.overall.search_everywhere']}</span></a>-->
-					<!--<ul>-->
-						<!--<li class="ui-search-ew-mobile">-->
-							<!--<ui:include src="SearchEverywereFrame.xhtml" />-->
-						<!--</li>-->
-					<!--</ul>-->
-				<!--</li>-->
-		
 				<!-- За наполнение всего остального контента отвечает среда -->
 				<ui:fragment rendered="#{p:ifGranted('User')}">
 					<ui:insert name="topMenuContent">
@@ -49,27 +39,6 @@
 					</ui:insert>
 				</ui:fragment>
 
-				<!-- Cмена локали -->
-				<!-- BOX-2482 -->
-				<!-- <h:panelGroup layout="block" rendered="true">
-					<li>
-						<a class="ripplelink" title="#{topBarBundle['box.top_bar.language']}" >
-							<p:graphicImage name="inf/images/nls/flag_#{languageBean.localeIcons[languageBean.locale]}.png" />
-						</a>
-						<ul>
-							<ui:repeat value="#{of:setToList(languageBean.localeIcons.entrySet())}" var="entry">
-								<li>
-									<p:commandLink styleClass="ripplelink">
-										<p:graphicImage name="inf/images/nls/flag_#{entry.value}.png" styleClass="m-fleft" />
-										<h:outputText value="#{languageBean.getDisplayName(entry.key)}" style="margin-left: 5px;" />
-										<p:ajax process="@this" update="@all" listener="#{languageBean.setLocale(entry.key)}"/>
-									</p:commandLink>
-								</li>
-							</ui:repeat>
-						</ul>
-					</li>
-				</h:panelGroup> -->
-				
 				<!-- Выход из системы -->
 				<li>
 					<p:commandLink id="logout" styleClass="ripplelink" title="#{topBarBundle['box.top_bar.log_out']}"
@@ -79,13 +48,7 @@
 				</li>
 			</ul>
 		
-			<!-- Заготовка для поиска в desktop окружении -->
-			<div class="ui-search-ew-desktop m-show-on-desktop">
-				<ui:include src="SearchEverywereFrame.xhtml" />
-			</div>
 		</h:form>
 	</div>
 	
-	<!-- /f:view -->
-
 </ui:composition>
