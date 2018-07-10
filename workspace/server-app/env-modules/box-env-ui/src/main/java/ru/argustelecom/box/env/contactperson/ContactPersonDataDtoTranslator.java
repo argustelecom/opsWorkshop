@@ -60,7 +60,6 @@ public class ContactPersonDataDtoTranslator {
 			.secondName(person.getName().secondName())
 			.lastName(person.getName().lastName())
 			.suffix(person.getName().suffix())
-			.note(person.getNote())
 		.build();
 		//@formatter:on
 

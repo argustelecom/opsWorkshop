@@ -1,9 +1,6 @@
 package ru.argustelecom.box.env.party.model;
 
-import java.util.Date;
 import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +20,11 @@ public class PersonRdo extends PartyRdo {
 	private String fullName;
 	private String fullInitials;
 
-	private String note;
-
 	@Builder
-	public PersonRdo(Long id, Map<String, String> properties, String namePrefix, String firstName, String secondName,
+	public PersonRdo(Long id, String namePrefix, String firstName, String secondName,
 			String lastName, String nameSuffix, String shortName, String shortInitials, String fullName,
-			String fullInitials, String note) {
-		super(id, properties);
+			String fullInitials) {
+		super(id);
 		this.namePrefix = namePrefix;
 		this.firstName = firstName;
 		this.secondName = secondName;
@@ -39,7 +34,6 @@ public class PersonRdo extends PartyRdo {
 		this.shortInitials = shortInitials;
 		this.fullName = fullName;
 		this.fullInitials = fullInitials;
-		this.note = note;
 	}
 
 }

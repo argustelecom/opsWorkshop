@@ -116,15 +116,6 @@
             </div>
 
             <div class="m-container100">
-                <div class="m-container-indent">
-                    <ui:include src="OwnerAdditionalParamsFrame.xhtml">
-                        <ui:param name="ownerId" value="#{currentPartyRole.value.id}"/>
-                        <ui:param name="params" value="#{currentPartyRole.value.additionalParameters}"/>
-                    </ui:include>
-                </div>
-            </div>
-
-            <div class="m-container100">
                 <ui:include src="EmailTemplateFrame.xhtml">
                     <ui:param name="owner" value="#{companyInfoVs.ownerDto.getIdentifiable()}"/>
                 </ui:include>
@@ -133,15 +124,7 @@
     </ui:define>
 
     <ui:define name="dialogs">
-        <ui:include src="OwnerCreationDialog.xhtml">
-            <ui:param name="update" value="owner_tree_form company_info_attributes_panel company_information_form owner_additional_params "/>
-        </ui:include>
-
         <ui:include src="GeneralOptionEditDialog.xhtml"/>
-
-        <ui:include src="OnwerAdditionalParamsEditDialog.xhtml">
-            <ui:param name="update" value="owner_additional_params_form"/>
-        </ui:include>
     </ui:define>
 
 </ui:composition>

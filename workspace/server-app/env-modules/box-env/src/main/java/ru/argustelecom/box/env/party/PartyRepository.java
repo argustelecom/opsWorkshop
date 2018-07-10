@@ -22,12 +22,8 @@ import ru.argustelecom.box.env.login.model.Login;
 import ru.argustelecom.box.env.party.model.Appointment;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.Company.CompanyQuery;
-import ru.argustelecom.box.env.party.model.CustomerType;
-import ru.argustelecom.box.env.party.model.CustomerTypeInstance;
-import ru.argustelecom.box.env.party.model.Party;
 import ru.argustelecom.box.env.party.model.PartyRole;
 import ru.argustelecom.box.env.party.model.PartyType;
-import ru.argustelecom.box.env.party.model.PartyTypeInstance;
 import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.PersonName;
 import ru.argustelecom.box.env.party.model.role.ContactPerson;
@@ -75,7 +71,7 @@ public class PartyRepository implements Serializable {
 		.build();	
 		//@formatter:on
 
-		createPerson(prefix, lastName, firstName, secondName, suffix,null, contactInfo, null, newContactPerson);
+		createPerson(prefix, lastName, firstName, secondName, suffix, null, contactInfo, null, newContactPerson);
 
 		em.persist(newContactPerson);
 
@@ -84,7 +80,9 @@ public class PartyRepository implements Serializable {
 		return newContactPerson;
 	}
 
-	@NamedQuery(name = FIND_EMPLOYEE_BY_PERSONNEL_NUMBER, query = "select e from Employee e where e.personnelNumber = :personnelNumber")
+	@NamedQuery(
+			name = FIND_EMPLOYEE_BY_PERSONNEL_NUMBER,
+			query = "select e from Employee e where e.personnelNumber = :personnelNumber")
 	public Employee findEmployeeByPersonnelNumber(String personnelNumber) {
 		checkArgument(StringUtils.isNotBlank(personnelNumber));
 		try {
@@ -150,16 +148,13 @@ public class PartyRepository implements Serializable {
 		return !companyQuery.and(companyQuery.legalName().equal(legalName)).getResultList(em).isEmpty();
 	}
 
-	Company createCompany(@NotNull String legalName, String brandName, ContactInfo contactInfo,
-			@NotNull PartyType partyType, PartyRole partyRole) {
+	Company createCompany(@NotNull String legalName, String brandName, ContactInfo contactInfo, PartyRole partyRole) {
 		Company newCompany = new Company(idSequence.nextValue(Company.class));
 		newCompany.setLegalName(legalName);
 		newCompany.setBrandName(brandName);
 
 		newCompany.addRole(partyRole);
 		partyRole.setParty(newCompany);
-
-		createPartyTypeInstance(newCompany, partyType);
 
 		if (contactInfo != null) {
 			newCompany.setContactInfo(contactInfo);
@@ -192,9 +187,6 @@ public class PartyRepository implements Serializable {
 		newPerson.addRole(partyRole);
 		partyRole.setParty(newPerson);
 
-		if (partyType != null)
-			createPartyTypeInstance(newPerson, partyType);
-
 		if (contactInfo != null) {
 			newPerson.setContactInfo(contactInfo);
 			contactInfo.getContacts().forEach(em::persist);
@@ -202,11 +194,6 @@ public class PartyRepository implements Serializable {
 
 		em.persist(newPerson);
 		return newPerson;
-	}
-
-	private void createPartyTypeInstance(Party party, PartyType partyType) {
-		PartyTypeInstance result = typeFactory.createInstance(partyType, PartyTypeInstance.class);
-		party.setTypeInstance(result);
 	}
 
 	// *****************************************************************************************************************

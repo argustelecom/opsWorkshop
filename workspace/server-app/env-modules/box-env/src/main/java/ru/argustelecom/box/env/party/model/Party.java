@@ -7,14 +7,11 @@ import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.AssociationOverride;
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -49,10 +46,6 @@ public class Party extends BusinessObject implements Printable {
 	//@formatter:on
 	private ContactInfo contactInfo = new ContactInfo();
 
-	@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = { CascadeType.ALL })
-	@JoinColumn(name = "type_instance_id", nullable = false)
-	private PartyTypeInstance typeInstance;
-
 	@Version
 	private Long version;
 
@@ -82,7 +75,7 @@ public class Party extends BusinessObject implements Printable {
 
 	@Override
 	public PartyRdo createReportData() {
-		return new PartyRdo(getId(), getTypeInstance().getPropertyValueMap());
+		return new PartyRdo(getId());
 	}
 
 	// *****************************************************************************************************************
@@ -105,14 +98,6 @@ public class Party extends BusinessObject implements Printable {
 
 	public void setContactInfo(ContactInfo contactInfo) {
 		this.contactInfo = contactInfo;
-	}
-
-	public PartyTypeInstance getTypeInstance() {
-		return typeInstance;
-	}
-
-	public void setTypeInstance(PartyTypeInstance typeInstance) {
-		this.typeInstance = typeInstance;
 	}
 
 	public static class PartyQuery<T extends Identifiable> extends EntityQuery<T> {

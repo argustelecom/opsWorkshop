@@ -52,7 +52,6 @@ public class Company extends Party {
 		//@formatter:off
 		return CompanyRdo.builder()
 					.id(getId())
-					.properties(getTypeInstance().getPropertyValueMap())
 					.legalName(getLegalName())
 					.brandName(getBrandName())
 				.build();

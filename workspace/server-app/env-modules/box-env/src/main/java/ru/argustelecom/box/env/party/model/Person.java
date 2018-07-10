@@ -3,16 +3,12 @@ package ru.argustelecom.box.env.party.model;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -31,10 +27,6 @@ public class Person extends Party {
 	@Embedded
 	private PersonName name;
 
-	@Getter
-	@Column(length = 512)
-	private String note;
-
 	@Override
 	public String getObjectName() {
 		return name.fullInitials();
@@ -45,7 +37,6 @@ public class Person extends Party {
 		//@formatter:off
 		return PersonRdo.builder()
 					.id(getId())
-					.properties(getTypeInstance().getPropertyValueMap())
 					.namePrefix(getName().prefix())
 					.firstName(getName().firstName())
 					.secondName(getName().secondName())
@@ -55,7 +46,6 @@ public class Person extends Party {
 					.shortInitials(getName().shortInitials())
 					.fullName(getName().fullName())
 					.fullInitials(getName().fullInitials())
-					.note(getNote())
 				.build();
 		//@formatter:on
 	}
@@ -67,11 +57,6 @@ public class Person extends Party {
 			// TODO [события предметной области]
 			// DomainEvents.instance().fire(new PersonChangedEvent<PersonName>(this, "name", oldName, newName));
 		}
-	}
-
-	public void changeNote(String newNote) {
-		// Действие не настолько важное, чтобы по нему файрить событие
-		this.note = newNote;
 	}
 
 	/**
@@ -87,7 +72,6 @@ public class Person extends Party {
 	protected Person(@NonNull Long id, @NonNull PersonName name, String note) {
 		super(id);
 		this.name = checkNotNull(name);
-		this.note = note;
 	}
 
 }

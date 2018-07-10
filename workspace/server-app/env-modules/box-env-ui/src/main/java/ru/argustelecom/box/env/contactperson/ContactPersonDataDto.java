@@ -28,10 +28,10 @@ public class ContactPersonDataDto extends PersonDataDto {
 	@Builder
 	protected ContactPersonDataDto(Long contactPersonId, Long companyId, String companyName, String appointment,
 			String email, String phone, Long personId, String prefix, String firstName, String secondName,
-			String lastName, String suffix, String note, InputStream imageInputStream,
+			String lastName, String suffix, InputStream imageInputStream,
 			String imageFormatName, String mailTo, String callTo) {
 
-		super(personId, prefix, firstName, secondName, lastName, suffix, note, imageInputStream,
+		super(personId, prefix, firstName, secondName, lastName, suffix, imageInputStream,
 				imageFormatName);
 
 		this.contactPersonId = contactPersonId;

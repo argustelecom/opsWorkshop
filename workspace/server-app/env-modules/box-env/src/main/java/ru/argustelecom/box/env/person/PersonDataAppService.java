@@ -31,7 +31,6 @@ public class PersonDataAppService implements Serializable {
 		checkArgument(personId != null, "personId is required");
 
 		Person person = em.find(Person.class, personId);
-		person.changeNote(note);
 	}
 
 	private static final long serialVersionUID = -6184398717699947398L;
