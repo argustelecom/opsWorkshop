@@ -17,6 +17,7 @@
 	<modules>
 		<module>box-env</module>
 		<module>box-env-ui</module>
+		<module>ops-workshop</module>
 	</modules>
 
 </project>
