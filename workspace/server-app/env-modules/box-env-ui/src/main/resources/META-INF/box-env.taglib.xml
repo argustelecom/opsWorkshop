@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<facelet-taglib xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
-	version="2.2">
-
-	<namespace>http://argustelecom.ru/box/env</namespace>
-	<composite-library-name>resources/env/components</composite-library-name>
-
-</facelet-taglib>
