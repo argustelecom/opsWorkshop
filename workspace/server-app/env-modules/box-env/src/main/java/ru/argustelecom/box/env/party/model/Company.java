@@ -47,17 +47,6 @@ public class Company extends Party {
 		return brandName == null ? legalName : brandName;
 	}
 
-	@Override
-	public CompanyRdo createReportData() {
-		//@formatter:off
-		return CompanyRdo.builder()
-					.id(getId())
-					.legalName(getLegalName())
-					.brandName(getBrandName())
-				.build();
-		//@formatter:on
-	}
-
 	// *****************************************************************************************************************
 	// Simple getters and setters
 	// *****************************************************************************************************************

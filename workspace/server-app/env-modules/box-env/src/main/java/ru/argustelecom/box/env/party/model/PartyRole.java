@@ -12,7 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import ru.argustelecom.box.env.party.model.role.Employee;
-import ru.argustelecom.box.env.report.api.Printable;
 import ru.argustelecom.box.inf.modelbase.BusinessObject;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQuery;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryEntityFilter;
@@ -28,7 +27,7 @@ import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryEntityFilter
 @Table(schema = "system")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "dtype")
-public class PartyRole extends BusinessObject implements Printable {
+public class PartyRole extends BusinessObject {
 
 	private static final long serialVersionUID = 5723085702147240527L;
 
@@ -75,13 +74,6 @@ public class PartyRole extends BusinessObject implements Printable {
 		public EntityQueryEntityFilter<T, Party> party() {
 			return party;
 		}
-	}
-
-	@Override
-	public PartyRoleRdo createReportData() {
-		PersonRdo personRdo = getParty() instanceof Person ? (PersonRdo) getParty().createReportData() : null;
-		CompanyRdo companyRdo = getParty() instanceof Company ? (CompanyRdo) getParty().createReportData() : null;
-		return new PartyRoleRdo(id, personRdo, companyRdo);
 	}
 
 }

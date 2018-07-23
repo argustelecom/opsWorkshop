@@ -32,24 +32,6 @@ public class Person extends Party {
 		return name.fullInitials();
 	}
 
-	@Override
-	public PersonRdo createReportData() {
-		//@formatter:off
-		return PersonRdo.builder()
-					.id(getId())
-					.namePrefix(getName().prefix())
-					.firstName(getName().firstName())
-					.secondName(getName().secondName())
-					.lastName(getName().lastName())
-					.nameSuffix(getName().suffix())
-					.shortName(getName().shortName())
-					.shortInitials(getName().shortInitials())
-					.fullName(getName().fullName())
-					.fullInitials(getName().fullInitials())
-				.build();
-		//@formatter:on
-	}
-
 	public void rename(PersonName newName) {
 		checkArgument(newName != null, "Person Name is required for renaming");
 		if (!Objects.equals(this.name, newName)) {

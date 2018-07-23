@@ -4,18 +4,13 @@ import static ru.argustelecom.box.env.contact.ContactCategory.EMAIL;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import ru.argustelecom.box.env.contact.Contact;
 import ru.argustelecom.box.env.contact.ContactInfo_;
@@ -23,35 +18,19 @@ import ru.argustelecom.box.env.contact.ContactType;
 import ru.argustelecom.box.env.contact.Contact_;
 import ru.argustelecom.box.env.contact.CustomContact;
 import ru.argustelecom.box.env.contact.EmailContact;
-import ru.argustelecom.box.env.party.model.Company;
-import ru.argustelecom.box.env.party.model.CompanyRdo;
-import ru.argustelecom.box.env.party.model.CustomerType;
-import ru.argustelecom.box.env.party.model.CustomerTypeInstance;
-import ru.argustelecom.box.env.party.model.CustomerTypeInstance_;
 import ru.argustelecom.box.env.party.model.Party;
 import ru.argustelecom.box.env.party.model.PartyRole;
-import ru.argustelecom.box.env.party.model.PartyTypeInstance;
-import ru.argustelecom.box.env.party.model.PartyTypeInstance_;
 import ru.argustelecom.box.env.party.model.Party_;
-import ru.argustelecom.box.env.party.model.Person;
-import ru.argustelecom.box.env.party.model.PersonRdo;
-import ru.argustelecom.box.env.report.api.Printable;
-import ru.argustelecom.box.env.type.model.TypeInstance.EntityQueryPropertiesFilter;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQuery;
-import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryEntityFilter;
 
 /**
  * Роль описывающая {@linkplain ru.argustelecom.box.env.party.model.Party участника} как клиента.
  */
 @Entity
 @Access(AccessType.FIELD)
-public class Customer extends PartyRole implements Printable {
+public class Customer extends PartyRole {
 
 	private static final long serialVersionUID = -8817800186801461924L;
-
-	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = { CascadeType.ALL })
-	@JoinColumn(name = "type_instance_id", nullable = false)
-	private CustomerTypeInstance typeInstance;
 
 	@Column(nullable = false)
 	private boolean vip;
@@ -67,22 +46,6 @@ public class Customer extends PartyRole implements Printable {
 		super(id);
 	}
 
-	@Override
-	public CustomerRdo createReportData() {
-		PersonRdo personRdo = getParty() instanceof Person ? (PersonRdo) getParty().createReportData() : null;
-		CompanyRdo companyRdo = getParty() instanceof Company ? (CompanyRdo) getParty().createReportData() : null;
-
-		//@formatter:off
-		return CustomerRdo.builder()
-					.id(getId())
-					.person(personRdo)
-					.company(companyRdo)
-					.vip(isVip())
-					.properties(getTypeInstance().getPropertyValueMap())
-				.build();
-		//@formatter:on
-	}
-
 	public EmailContact getCorrespondenceEmail() {
 		return mainEmail != null ? mainEmail : findFirstEmail();
 	}
@@ -95,15 +58,6 @@ public class Customer extends PartyRole implements Printable {
 	// *****************************************************************************************************************
 	// Simple getters and setters
 	// *****************************************************************************************************************
-
-	public CustomerTypeInstance getTypeInstance() {
-		return typeInstance;
-	}
-
-	public void setTypeInstance(CustomerTypeInstance typeInstance) {
-		this.typeInstance = typeInstance;
-	}
-
 	public boolean isVip() {
 		return vip;
 	}
@@ -127,20 +81,13 @@ public class Customer extends PartyRole implements Printable {
 	@SuppressWarnings("rawtypes")
 	public static class CustomerQuery<T extends Customer> extends EntityQuery<T> {
 
-		private Join<T, CustomerTypeInstance> customerTypeInstanceJoin;
 		private Join<Customer, Contact> contactJoin;
 		private Join<Customer, Party> partyJoin;
-		private Join<Party, PartyTypeInstance> partyTypeInstanceJoin;
 		private Join<Customer, EmailContact> emailAddressContactJoin;
 		private Join<Customer, CustomContact> customContactJoin;
 
-		private EntityQueryEntityFilter<T, CustomerType> customerType;
-		private EntityQueryPropertiesFilter<T> customerProperties;
-		private EntityQueryPropertiesFilter<T> partyProperties;
-
 		public CustomerQuery(Class<T> entityClass) {
 			super(entityClass);
-			initCustomerType();
 		}
 
 		public Predicate byContactType(ContactType type) {
@@ -155,25 +102,6 @@ public class Customer extends PartyRole implements Printable {
 					criteriaBuilder().literal(value))
 			);
 			//@formatter:on
-		}
-
-		public EntityQueryEntityFilter<T, CustomerType> customerType() {
-			return customerType;
-		}
-
-		public EntityQueryPropertiesFilter<T> customerProperties() {
-			if (customerProperties == null) {
-				Path<JsonNode> propsPath = customerTypeInstanceJoin.get(CustomerTypeInstance_.props);
-				customerProperties = new EntityQueryPropertiesFilter<>(this, propsPath, CustomerTypeInstance_.props);
-			}
-			return customerProperties;
-		}
-
-		@SuppressWarnings("unchecked")
-		private void initCustomerType() {
-			customerTypeInstanceJoin = root().join(Customer_.typeInstance, JoinType.INNER);
-			Path<CustomerType> customerTypePath = customerTypeInstanceJoin.get(CustomerTypeInstance_.type);
-			customerType = createEntityFilter(customerTypePath, CustomerTypeInstance_.type);
 		}
 
 		private Join<Customer, EmailContact> emailContactJoin() {

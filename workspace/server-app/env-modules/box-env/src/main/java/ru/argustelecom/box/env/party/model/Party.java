@@ -20,7 +20,6 @@ import org.hibernate.annotations.Formula;
 import lombok.Getter;
 import lombok.Setter;
 import ru.argustelecom.box.env.contact.ContactInfo;
-import ru.argustelecom.box.env.report.api.Printable;
 import ru.argustelecom.box.inf.modelbase.BusinessObject;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQuery;
 import ru.argustelecom.system.inf.modelbase.Identifiable;
@@ -31,7 +30,7 @@ import ru.argustelecom.system.inf.modelbase.Identifiable;
 @Entity
 @Access(AccessType.FIELD)
 @Table(schema = "system")
-public class Party extends BusinessObject implements Printable {
+public class Party extends BusinessObject {
 
 	private static final long serialVersionUID = -1214548598507344900L;
 
@@ -71,11 +70,6 @@ public class Party extends BusinessObject implements Printable {
 	 */
 	public void addRole(PartyRole role) {
 		roles.add(role);
-	}
-
-	@Override
-	public PartyRdo createReportData() {
-		return new PartyRdo(getId());
 	}
 
 	// *****************************************************************************************************************

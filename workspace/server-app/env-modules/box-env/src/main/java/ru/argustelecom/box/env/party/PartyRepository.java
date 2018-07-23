@@ -23,13 +23,11 @@ import ru.argustelecom.box.env.party.model.Appointment;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.Company.CompanyQuery;
 import ru.argustelecom.box.env.party.model.PartyRole;
-import ru.argustelecom.box.env.party.model.PartyType;
 import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.PersonName;
 import ru.argustelecom.box.env.party.model.role.ContactPerson;
 import ru.argustelecom.box.env.party.model.role.ContactPerson.ContactPersonQuery;
 import ru.argustelecom.box.env.party.model.role.Employee;
-import ru.argustelecom.box.env.type.TypeFactory;
 import ru.argustelecom.box.env.util.QueryWrapper;
 import ru.argustelecom.box.inf.service.Repository;
 import ru.argustelecom.system.inf.dataaccess.namedquery.NamedQuery;
@@ -56,9 +54,6 @@ public class PartyRepository implements Serializable {
 	@Inject
 	private ILoginService loginService;
 
-	@Inject
-	private TypeFactory typeFactory;
-
 	public ContactPerson createContactPerson(Company company, String prefix, String lastName, String firstName,
 			String secondName, String suffix, String appointment, ContactInfo contactInfo) {
 		checkArgument(company != null, "Company is required");
@@ -71,7 +66,7 @@ public class PartyRepository implements Serializable {
 		.build();	
 		//@formatter:on
 
-		createPerson(prefix, lastName, firstName, secondName, suffix, null, contactInfo, null, newContactPerson);
+		createPerson(prefix, lastName, firstName, secondName, suffix, null, contactInfo, newContactPerson);
 
 		em.persist(newContactPerson);
 
@@ -105,7 +100,7 @@ public class PartyRepository implements Serializable {
 		newEmployee.setAppointment(appointment);
 		newEmployee.setFired(false);
 
-		createPerson(prefix, lastName, firstName, secondName, suffix, note, contactInfo, null, newEmployee);
+		createPerson(prefix, lastName, firstName, secondName, suffix, note, contactInfo, newEmployee);
 
 		em.persist(newEmployee);
 		em.flush();
@@ -170,7 +165,7 @@ public class PartyRepository implements Serializable {
 	// *****************************************************************************************************************
 
 	private Person createPerson(String prefix, String lastName, String firstName, String secondName, String suffix,
-			String note, ContactInfo contactInfo, PartyType partyType, PartyRole partyRole) {
+			String note, ContactInfo contactInfo, PartyRole partyRole) {
 
 		checkArgument(StringUtils.isNotBlank(lastName));
 		checkArgument(StringUtils.isNotBlank(firstName));
