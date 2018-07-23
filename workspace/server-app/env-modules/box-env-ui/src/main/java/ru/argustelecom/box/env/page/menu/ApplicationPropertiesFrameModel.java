@@ -12,7 +12,7 @@ import javax.inject.Named;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import ru.argustelecom.box.env.billing.bill.PrefTableRepository;
+import ru.argustelecom.box.inf.pref.PrefTableRepository;
 import ru.argustelecom.system.inf.configuration.ServerRuntimeProperties;
 
 @Named(value = "applicationPropertiesFm")

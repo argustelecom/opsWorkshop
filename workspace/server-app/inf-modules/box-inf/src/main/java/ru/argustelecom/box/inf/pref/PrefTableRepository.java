@@ -1,4 +1,4 @@
-package ru.argustelecom.box.env.billing.bill;
+package ru.argustelecom.box.inf.pref;
 
 import java.io.Serializable;
 
