@@ -40,8 +40,7 @@ public class ContactPersons implements Serializable {
 	public void remove(ContactPerson contactPerson) {
 		Preconditions.checkNotNull(contactPerson);
 
-		if (persons.contains(contactPerson))
-			persons.remove(contactPerson);
+		persons.remove(contactPerson);
 	}
 
 }

@@ -1,5 +1,6 @@
 package ru.argustelecom.box.env.party.model.role;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,8 +15,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import ru.argustelecom.box.env.party.model.Appointment;
 import ru.argustelecom.box.env.party.model.PartyRole;
+import ru.argustelecom.box.env.person.Person;
 import ru.argustelecom.box.env.security.model.Role;
 
 /**
@@ -23,6 +27,7 @@ import ru.argustelecom.box.env.security.model.Role;
  */
 @Entity
 @Access(AccessType.FIELD)
+@EqualsAndHashCode(callSuper = true, exclude = { "name", "appointment", "personnelNumber", "fired" })
 public class Employee extends PartyRole {
 
 	private static final long serialVersionUID = -4206745377739673861L;
@@ -97,6 +102,17 @@ public class Employee extends PartyRole {
 
 	public List<Role> getRoles() {
 		return Collections.unmodifiableList(roles);
+	}
+
+	public Employee(Long employeeId, String employeeName, Appointment appointment, String personnelNumber,
+			boolean fired, Long personId, String prefix, String firstName, String secondName, String lastName,
+			String suffix, String note) {
+
+		this.person = new Person(personId, prefix, firstName, secondName, lastName, suffix, note);
+
+		this.appointment = appointment;
+		this.personnelNumber = personnelNumber;
+		this.fired = fired;
 	}
 
 }

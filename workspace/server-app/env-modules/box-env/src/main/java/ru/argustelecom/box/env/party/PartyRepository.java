@@ -23,7 +23,6 @@ import ru.argustelecom.box.env.party.model.Appointment;
 import ru.argustelecom.box.env.party.model.Company;
 import ru.argustelecom.box.env.party.model.Company.CompanyQuery;
 import ru.argustelecom.box.env.party.model.PartyRole;
-import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.PersonName;
 import ru.argustelecom.box.env.party.model.role.ContactPerson;
 import ru.argustelecom.box.env.party.model.role.ContactPerson.ContactPersonQuery;

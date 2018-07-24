@@ -7,7 +7,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
-import ru.argustelecom.box.env.party.model.Person;
 import ru.argustelecom.box.env.party.model.PersonName_;
 import ru.argustelecom.box.env.party.model.Person_;
 

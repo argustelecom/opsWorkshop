@@ -9,7 +9,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.argustelecom.box.inf.modelbase.BusinessObject;
+import ru.argustelecom.system.inf.modelbase.NamedObject;
 
 /**
  * Класс вводящий понятие контакта, базовый класс для всех видов контактов.
@@ -17,7 +23,8 @@ import ru.argustelecom.box.inf.modelbase.BusinessObject;
 @Entity
 @Access(AccessType.FIELD)
 @Table(schema = "system")
-public abstract class Contact<T> extends BusinessObject {
+@EqualsAndHashCode(of = { "id" })
+public abstract class Contact<T> extends BusinessObject implements NamedObject {
 
 	private static final long serialVersionUID = 764789879075783495L;
 
@@ -29,6 +36,7 @@ public abstract class Contact<T> extends BusinessObject {
 
 	@Column(length = 512)
 	private String comment;
+
 
 	protected Contact() {
 	}
@@ -71,5 +79,9 @@ public abstract class Contact<T> extends BusinessObject {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
+
+
+
 
 }
