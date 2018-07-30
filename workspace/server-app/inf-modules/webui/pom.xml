@@ -144,38 +144,6 @@
 						<artifactId>gmaven-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>before-integration-tests</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<source>
-									<![CDATA[
-										//#TODO: щас здесь определяем, что все задеплоилось по появлению файлика .deployed в каталоге деплоя сервера. Это не изящно.
-										// Более красивый способ - использование cli API, см. https://community.jboss.org/wiki/AdvancedCLIScriptingWithGroovyRhinoJythonEtc
-										// Но не взлетело, падает с ошибкой Caused by: java.lang.ClassNotFoundException: org.jboss.as.cli.impl.CommandContextFactoryImpl
-										// ошибка плохо понятна и не гуглится. Предположительно, связана с особенности класслоадинга в плагине gmaven. Если будешь пробовать,
-										//смотри, какие нужно добавить зависимости коду в wildfly-8.0.0.Beta1\bin\client\README-EJB-JMS.txt.
-
-										// В цикле будем проверять, что в каталоге деплоев сервера появился файлик .deployed. Если появился, сервер готов к тестам.
-										// (то есть гарантированно запущен и задеплоил наш ear, потому что мы только что чистили все деплойменты, а потом подсовывали ear)
-										// TASK-86264, v.semchenko: берем имя ear из соответствующего профиля customer
-										String earFileName = project.properties['ops.ear.final-name'];
-										for(int i = 0; i < 300; i++){
-											File deployedMarker = new File( project.properties.getProperty('INSTALL_PATH'),
-												'/standalone/deployments/' + earFileName + '.ear.deployed');
-											if (deployedMarker.exists()) break;
-											// если файлик еще не появился, чутка подождем и попробуем снова.
-											Thread.currentThread().sleep(1000)
-											
-											//если сервер за отведенные 5м не запустился, дальше нечего делать, надо фейлить.
-											//TASK-55548. На загрузку трех кешей (адреса, узлы, персонал) может понадобится ~10 мин.
-											if (i == 299) fail("Timeout 300 seconds occured while waiting server start and deploy ear before integration tests")
-										}
-										]]>
-									</source>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -281,35 +249,6 @@
 						<artifactId>gmaven-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>prepare-list-ui-modules</id>
-								<phase>initialize</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<property>
-											<listModules>protei-gate</listModules>
-									</property>
-									<source>
-											<![CDATA[
-												def listModules = project.properties['listModules'];
-												listModules = listModules.split(",");
-												String property;
-												String result = "";
-
-												String loginModule = String.valueOf(project.properties.getProperty("argus.security.login-module"));
-
-												//удаляем target/tmpListModules.txt, если файл существует
-												if ( new File('./target/tmpListModules.txt').exists() ) 
-													(new File('./target/tmpListModules.txt')).delete();
-
-												// запишем результат в файл
-												def file = new File('./target/tmpListModules.txt').newWriter("UTF-8", true);
-												file.write("modules=$result");
-												file.close();
-											]]>
-										</source>										
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
