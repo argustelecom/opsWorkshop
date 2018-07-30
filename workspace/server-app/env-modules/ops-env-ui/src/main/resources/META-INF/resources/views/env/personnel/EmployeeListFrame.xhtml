@@ -1,0 +1,87 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:opsenv="http://argustelecom.ru/ops/env">
+
+    <ui:define name="completeFilterFields">
+        <ul>
+            <li>
+                <div class="filter-item">
+                    <span class="filter-name width-100-percents">
+                        <p:outputLabel value="#{personnelBundle['ops.personnel.employee.search.hint']}"/>
+                    </span>
+                    <span class="filter-value">
+                        <p:inputText styleClass="m-wid-auto-on-mobile" value="#{employeeListVS.searchQuery}"/>
+                    </span>
+                </div>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="shortFilterFields">
+        <ul>
+            <ui:fragment rendered="#{employeeListVS.searchQuery ne null}">
+				<li>
+					<p:outputLabel value="#{personnelBundle['ops.personnel.employee']}:"/>
+					<h:outputText value="#{employeeListVS.searchQuery};"/>
+				</li>
+			</ui:fragment>
+		</ul>
+    </ui:define>
+
+    <ui:define name="searchResult">
+        <h:form id="#{resultFormId}">
+
+            <div class="ui-dashboard-header">
+                <i class="fa fa-binoculars"/>
+                <h:outputText styleClass="card-header" value="#{overallBundle['ops.overall.searching_results']}"/>
+
+                <p:outputPanel id="create_button" styleClass="m-fright">
+                    <p:commandButton value="#{overallBundle['ops.overall.create']}" id="mainttp"
+                                     onclick="PF('employeeEditDlg').show()" disabled="#{!p:ifGranted('System_EmployeeEdit')}"/>
+                </p:outputPanel>
+            </div>
+
+            <p:dataTable id="personnel_table" value="#{employeeListVM.lazyDm}" var="employee" lazy="true"
+                         paginator="true" rows="25" emptyMessage="#{overallBundle['ops.overall.empty']}"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['ops.overall.from']} {totalRecords}" rowsPerPageTemplate="25,50,100" sortMode="single"
+                         sortBy="#{EmployeeSort.id}" sortOrder="descending" selectionMode="single">
+
+                <p:column headerText="#{overallBundle['ops.overall.id']}" styleClass="width-100" sortBy="#{EmployeeSort.id}">
+                    <opsenv:linkToCard text="#{employee.id}" value="#{employee.getIdentifiable()}"/>
+                </p:column>
+
+                <p:column headerText="#{loginBundle['ops.login']}" sortBy="#{EmployeeSort.userName}">
+                    <h:outputText value="#{employee.loginListDto.login}"/>
+                </p:column>
+
+                <p:column headerText="#{overallBundle['ops.overall.number']}" sortBy="#{EmployeeSort.number}">
+                    <h:outputText value="#{employee.personnelNumber}" styleClass="data-overflow-ellipsis width-90-percents" title="#{employee.personnelNumber}"/>
+                </p:column>
+
+                <p:column headerText="#{personnelBundle['ops.personnel.name.last']}" sortBy="#{EmployeeSort.lastName}">
+                    <h:outputText styleClass="data-overflow-ellipsis width-90-percents" value="#{employee.lastName}"
+                                  title="#{employee.lastName}"/>
+                    <i class="#{employee.fired ? 'fa fa-user-times warn-color m-fright mar-top-2' : 'm-disp-none' }"
+                       title="#{personnelBundle['ops.personnel.employee.fired.msg']}"/>
+                </p:column>
+
+                <p:column headerText="#{personnelBundle['ops.personnel.name.first']}" sortBy="#{EmployeeSort.firstName}">
+                    <h:outputText value="#{employee.firstName}" styleClass="data-overflow-ellipsis width-90-percents" title="#{employee.firstName}"/>
+                </p:column>
+
+                <p:column headerText="#{personnelBundle['ops.personnel.name.second']}" sortBy="#{EmployeeSort.secondName}">
+                    <h:outputText value="#{employee.secondName}" styleClass="data-overflow-ellipsis width-90-percents" title="#{employee.secondName}"/>
+                </p:column>
+
+                <p:column headerText="#{loginBundle['ops.login.email']}" sortBy="#{EmployeeSort.email}">
+                    <h:outputText value="#{employee.loginListDto.email}"/>
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

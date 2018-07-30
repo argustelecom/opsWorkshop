@@ -43,33 +43,6 @@
 						<track-statements>true</track-statements>
 					</statement>
 				</datasource>
-				<datasource jndi-name="java:jboss/datasources/BoxReportDS" pool-name="BoxReportDS" enabled="true" use-java-context="true" statistics-enabled="true">
-					<connection-url>jdbc:log4jdbc:postgresql://${argus.db.address}:${argus.db.port}/${argus.db.name}</connection-url>
-					<driver>DriverSpy</driver>
-					<pool>
-						<min-pool-size>${box.report.ds.min-pool-size}</min-pool-size>
-						<max-pool-size>${box.report.ds.max-pool-size}</max-pool-size>
-					</pool>
-					<security>
-						<user-name>${box.report.user}</user-name>
-						<password>${box.report.pass}</password>
-					</security>
-					<validation>
-						<exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
-						<valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
-						<validate-on-match>false</validate-on-match>
-						<background-validation>true</background-validation>
-						<background-validation-millis>600000</background-validation-millis>
-					</validation>
-					<timeout>
-						<set-tx-query-timeout>true</set-tx-query-timeout>
-						<blocking-timeout-millis>5000</blocking-timeout-millis>
-						<idle-timeout-minutes>60</idle-timeout-minutes>
-					</timeout>
-					<statement>
-						<track-statements>true</track-statements>
-					</statement>
-				</datasource>
 				<drivers>
 					<driver module="com.h2database.h2" name="h2">
 						<xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
@@ -108,7 +81,7 @@
 				</security-domain>
 				<security-domain name="argus-security-domain" cache-type="default">
 					<authentication>
-						<login-module code="ru.argustelecom.box.inf.login.EmployeeLoginModule" flag="required" module="ru.argustelecom.box-core">
+						<login-module code="ru.argustelecom.ops.inf.login.EmployeeLoginModule" flag="required" module="ru.argustelecom.ops-core">
 							<module-option name="hashAlgorithm" value="SHA-512"/>
 						</login-module>
 					</authentication>
@@ -143,10 +116,6 @@
 						core-threads="${argus.export.pool-size:5}" max-threads="${argus.export.pool-size:5}" queue-length="${argus.export.queue-length:5}" 
 						thread-factory="export"/>	
 					
-					<managed-executor-service name="QueueHandler" jndi-name="java:jboss/ee/concurrency/executor/QueueHandler" 
-						context-service="default" hung-task-threshold="0" keepalive-time="15000" 
-						core-threads="1" max-threads="${box.queue.max-threads:10}" queue-length="${box.queue.max-threads:10}"
-						reject-policy="ABORT"/>	
 				</managed-executor-services>
 				<managed-scheduled-executor-services>
 					<managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" 

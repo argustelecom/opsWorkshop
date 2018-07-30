@@ -4,8 +4,8 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>server-conf</artifactId>
-	<groupId>ru.argustelecom.box</groupId>
-	<version>0.15.0</version>
+	<groupId>ru.argustelecom.ops</groupId>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
 	<name>server-conf</name>
 
@@ -16,12 +16,12 @@
 
 	<modules>
 		<module>server-conf-parent</module>
-		<module>box-core</module>
+		<module>ops-core</module>
 		<module>argus-imitation</module>
 		<module>argus-overrides</module>
 		
 		<!-- FIXME Поднять дистрибутив после реструктуризации проектов -->
-		<!--module>box-dist</module-->
+		<!--module>ops-dist</module-->
 	</modules>
 
 	<profiles>
@@ -39,7 +39,7 @@
 				</property>
 			</activation>
 			<modules>
-				<module>box-dist</module>
+				<module>ops-dist</module>
 			</modules>
 		</profile>
 	</profiles>

@@ -1,0 +1,25 @@
+<ui:composition template="PersonDataFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:h="http://java.sun.com/jsf/html">
+
+	<ui:param name="personDataDto" value="#{employeeDataDto}"/>
+
+	<ui:define name="extended_attributes">
+
+		<h:outputText styleClass="m-disp-block" id="appointment"
+					  rendered="#{not empty employeeDataFrameModel.employeeDataDto.appointment}"
+					  value="#{employeeDataFrameModel.employeeDataDto.appointment.objectName}"/>
+
+		<h:panelGroup styleClass="m-disp-block" rendered="#{not empty employeeDataDto.personnelNumber}">
+			<h:outputText styleClass="m-disp-inl-block m-mar-right10" for="personnel_number"
+						  value="#{personnelBundle['ops.personnel.number']}:"/>
+			<h:outputText styleClass="m-disp-inl-block" id="personnel_number"
+						  value="#{employeeDataDto.personnelNumber}"/>
+		</h:panelGroup>
+
+	</ui:define>
+
+</ui:composition>

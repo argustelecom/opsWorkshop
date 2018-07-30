@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.ops</groupId>
+		<version>0.1.0</version>
+		<artifactId>parent</artifactId>
+		<relativePath>../../../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>ops-enterprise</artifactId>
+	<packaging>ear</packaging>
+	<name>ops-enterprise</name>
+
+	<properties>
+		<main.basedir>${project.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<!-- 
+			==========================================================================================================
+			Runtime зависимости, которые должны быть включены в состав ear/lib, однако не должны подключаться как 
+			compiled из-за недопустимости их транзитивного распространения на зависимые модули. В модуле, в котором 
+			они нужны, необходимо объявлять зависимости со scope = provided.
+			==========================================================================================================  
+		-->
+		
+		<!-- Используется в ops-env как provided и не распространяется транзитивно на функциональные модули -->
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-export-fo</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- 
+			==========================================================================================================
+			Зависимости собственных модулей OPS, которые должны войти в состав EAR
+			Внимание! При добавлении зависимостей соблюдай их логическую группировку по модулям системы 
+			==========================================================================================================  
+		-->
+		<!-- "System" modules -->
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-persistence</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-inf</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-env</artifactId>
+			<version>${project.version}</version>
+			<type>ejb</type>
+		</dependency>
+
+		<!-- WAR -->
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>webui</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<version>6</version>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<initializeInOrder>true</initializeInOrder>
+
+					<generatedDescriptorLocation>${project.build.directory}</generatedDescriptorLocation>
+					<applicationXml>${project.build.directory}/application.xml</applicationXml>
+					<applicationName>ops-enterprise</applicationName>
+					<modules>
+						<!-- "System" modules -->
+						<jarModule>
+							<groupId>ru.argustelecom.ops</groupId>
+							<artifactId>ops-persistence</artifactId>
+							<bundleDir>lib</bundleDir>
+						</jarModule>
+						<ejbModule>
+							<groupId>ru.argustelecom.ops</groupId>
+							<artifactId>ops-inf</artifactId>
+						</ejbModule>
+						<ejbModule>
+							<groupId>ru.argustelecom.ops</groupId>
+							<artifactId>ops-env</artifactId>
+						</ejbModule>
+
+						<!-- собираются webui с разным составом для разных заказчиков -->
+						<webModule>
+							<groupId>ru.argustelecom.ops</groupId>
+							<artifactId>webui</artifactId>
+							<contextRoot>/ops</contextRoot>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+    <profiles>
+        <!-- TASK-85058:
+		Активируется на системную настройку Idea, и, следовательно, на другое окружение не влияет.
+		Указывает, что артефакты в ear нужно делать exploded (на каталог lib в webui не влияет).
+		Нужный <project>-ui.jar из состава webui необходимо сделать exploded самостоятельно, см. инструкцию разработчика.
+		Так же меняет каталог, в который необходимо собирать EAR деплоймент, т.к. Idea сама не может.
+		Есть https://youtrack.jetbrains.com/issue/IDEA-86484 открытый с 2012 года. Проще сделать уже самим.
+		Приходится делать путь отличный от target (добавляем ear не только в конец, но доп. подкаталогом).
+		Иначе ear будет неправильно дублироваться и сервер приложений не запустится,
+		т.к. половина мест вместо дублей .ear.ear на конце будут просто видеть .ear. -->
+        <profile>
+            <id>IdeaUnpack</id>
+            <activation>
+                <property>
+                    <name>idea.version</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-ear-plugin</artifactId>
+                        <configuration>
+                            <workDirectory>${project.build.directory}/ops/ops-enterprise-${project.version}.ear</workDirectory>
+                            <unpackTypes>war,ejb</unpackTypes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -13,7 +13,7 @@ cd server-conf
 mvn initialize 
 [ ! $? -eq 0 ] && exit 1
 #TODO: этот шаг уж точно надо убрать. 
-#cd box-core
+#cd ops-core
 #mvn clean install 
 #[ ! $? -eq 0 ] && exit 1
 #cd ..

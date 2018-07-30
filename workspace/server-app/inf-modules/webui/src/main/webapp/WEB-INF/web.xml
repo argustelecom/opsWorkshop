@@ -12,8 +12,8 @@
 		потому что при отсутствии прописанного здесь продуктового проекта (из-за специфичного для заказчика дистриба) сервер не сможет
 		запуститься. -->
 	<absolute-ordering>
-		<name>box_inf_ui</name>
-		<name>box_env_ui</name>
+		<name>ops_inf_ui</name>
+		<name>ops_env_ui</name>
 		<others />
 	</absolute-ordering>
 
@@ -22,7 +22,7 @@
 		<filter-class>org.primefaces.modena.filter.CharacterEncodingFilter</filter-class>
 	</filter>
 
-	<!-- TASK-89147. В BOX используется свой, допиленный под нужды, font-awesome. А system-inf-ui говорит: "загрузи font-awesome,
+	<!-- TASK-89147. В OPSWorkShop используется свой, допиленный под нужды, font-awesome. А system-inf-ui говорит: "загрузи font-awesome,
 	    который идет в комплекте с PrimeFaces". Из-за одновременной загрузки двух версий файлов стилей font-awesome и появляются некоторые артефакты в UI.
 	    Отключаем загрузку версии, идущей вместе с PrimeFaces. -->
 	<context-param>

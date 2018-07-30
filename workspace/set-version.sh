@@ -8,7 +8,7 @@ DIR=`pwd`
 if [ "$NEW_VERSION" ] ; then
 	echo "NEW_VERSION from args: $NEW_VERSION"
 	# Put the version to config
-    sed -i "s/box.app.version=.*/box.app.version=$NEW_VERSION/" $DIR/$CONFIG_FILE
+    sed -i "s/ops.app.version=.*/ops.app.version=$NEW_VERSION/" $DIR/$CONFIG_FILE
 fi
 
 declare -A properties
@@ -84,7 +84,7 @@ function set_version () {
 }
 
 readconf
-VERSION=${properties['box.app.version']}
+VERSION=${properties['ops.app.version']}
 echo 'Version from config: ' $VERSION
 
 set_version_with_dependents "" "parent" $VERSION

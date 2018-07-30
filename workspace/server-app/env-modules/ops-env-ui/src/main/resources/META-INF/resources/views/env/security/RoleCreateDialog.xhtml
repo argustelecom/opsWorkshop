@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog id="role_creation_dialog" widgetVar="roleCreationDlg"
+			  header="#{securityRoleBundle['ops.role.create_dialog']}"
+			  width="650" appendTo="@(body)" modal="true" dynamic="true" closable="true" resizable="false"
+			  styleClass="icon-creation">
+		<h:form id="role_creation_form">
+			<dl class="name-value width-140">
+				<dt>
+					<p:outputLabel for="role_name" value="#{overallBundle['ops.overall.name']}:"/>
+				</dt>
+				<dd>
+					<p:inputText id="role_name" value="#{roleCreateDialogModel.newRoleName}"
+								 required="true" label="#{overallBundle['ops.overall.name']}"/>
+				</dd>
+
+				<dt>
+					<p:outputLabel for="role_desc" value="#{overallBundle['ops.overall.desc']}:"/>
+				</dt>
+				<dd>
+					<p:inputTextarea id="role_desc" value="#{roleCreateDialogModel.newRoleDescription}"/>
+				</dd>
+			</dl>
+			<div class="dialog-footer-buttons">
+				<p:commandButton value="#{overallBundle['ops.overall.cancel']}"
+								 action="#{roleCreateDialogModel.cancelNewRole()}" process="@this"
+								 styleClass="m-blue-text-button" update="role_creation_form"
+								 onclick="PF('roleCreationDlg').hide()" resetValues="true"/>
+				<p:commandButton value="#{overallBundle['ops.overall.create']}"
+								 action="#{roleCreateDialogModel.submitNewRole()}" update="role_name"/>
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>

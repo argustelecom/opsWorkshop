@@ -1,0 +1,68 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+	xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{employeeCardVM}" />
+	<ui:param name="pageTitle" value="#{personnelBundle['ops.personnel.employee']}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="employee" value="#{currentPartyRole.value}" required="#{!facesContext.postback}"
+						 requiredMessage="Employee param required" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="ops-env/styles/ops-env.css" />
+		<h:outputStylesheet name="inf/styles/ops-functional-block.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+			<f:loadBundle basename="PersonnelBundle" var="personnelBundle"/>
+	
+			<p:menuitem value="#{overallBundle['ops.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+			<p:menuitem value="#{overallBundle['ops.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+			<p:menuitem value="#{personnelBundle['ops.personnel.employee.plural']}" url="/views/env/personnel/EmployeeListView.xhtml"
+						disabled="#{!p:ifGranted('System_PersonalView')}"/>
+			<p:menuitem value="#{employeeCardVM.employee.objectName}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container50 m-responsive100">
+
+			<ui:include src="PersonnelDataFrame.xhtml">
+				<ui:param name="employee" value="#{employeeCardVM.employee}" />
+			</ui:include>
+		</div>
+
+		<div class="m-container50 m-responsive100">
+			<ui:include src="EmployeeLoginFrame.xhtml">
+				<ui:param name="canEdit" value="#{p:ifGranted('System_ChangeEmployeeLogin') and !employeeCardVM.employee.fired}"/>
+			</ui:include>
+		</div>
+
+		<div class="m-container50 m-responsive100">
+			<ui:include src="RoleListFrame.xhtml"/>
+
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+
+		<ui:include src="EmployeeEditDialog.xhtml">
+			<ui:param name="update" value="employee_info_form"/>
+		</ui:include>
+
+		<ui:include src="LoginCreationDialog.xhtml">
+			<ui:param name="update" value="employee_login_form"/>
+		</ui:include>
+		<ui:include src="LoginChangePasswordDialog.xhtml">
+			<ui:param name="update" value="employee_login_form"/>
+		</ui:include>
+		<ui:include src="/views/env/contact/ContactCreationDialog.xhtml"/>
+	</ui:define>
+
+</ui:composition>

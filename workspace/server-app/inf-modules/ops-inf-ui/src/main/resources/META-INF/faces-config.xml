@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+    
+    <name>ops_inf_ui</name>
+
+    <application>
+        <message-bundle>
+            Messages
+        </message-bundle>
+    </application>
+
+    <component>
+        <component-type>org.primefaces.component.ModenaMenu</component-type>
+        <component-class>org.primefaces.modena.component.menu.ModenaMenu</component-class>
+    </component>
+    
+    <component>
+        <component-type>ru.argustelecom.ops.component.Dashboard</component-type>
+        <component-class>ru.argustelecom.ops.inf.component.dashboard.Dashboard</component-class>
+    </component>
+    
+    <component>
+        <component-type>ru.argustelecom.ops.component.DashboardItem</component-type>
+        <component-class>ru.argustelecom.ops.inf.component.dashboard.DashboardItem</component-class>
+    </component>
+    
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.ModenaMenuRenderer</renderer-type>
+            <renderer-class>org.primefaces.modena.component.menu.ModenaMenuRenderer</renderer-class>
+        </renderer>
+        
+        <renderer>
+            <component-family>ru.argustelecom.ops.component</component-family>
+            <renderer-type>ru.argustelecom.ops.component.DashboardRenderer</renderer-type>
+            <renderer-class>ru.argustelecom.ops.inf.component.dashboard.DashboardRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    
+</faces-config>

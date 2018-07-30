@@ -5,14 +5,14 @@ rem
 
 rem порядок работы:
 rem 
-rem 	1. Пробей новую версию в workspace.properties, например, так: box.app.version=0.4.0
+rem 	1. Пробей новую версию в workspace.properties, например, так: ops.app.version=0.4.0
 rem 	2. Вызови скрипт set-version.bat
 rem 	2. Убедись, что скрипт отработал без ошибок и написал version updated successfully!!!
 rem 	3. Выложи все изменения, сделанные скриптом(+ work.properties), в гит.
 rem 	4. Убедись, что в твоем my.properties версия теперь тоже правильная.
 
 rem https://github.com/mojohaus/versions-maven-plugin/issues/113
-rem versions-maven-plugin:2.3:set выполняется с ошибкой вида java.io.FileNotFoundException: D:\work\src\box\workspace\parent\parent
+rem versions-maven-plugin:2.3:set выполняется с ошибкой вида java.io.FileNotFoundException: D:\work\src\ops\workspace\parent\parent
 rem на установку версии не влияет, однако же некрасиво
 
 set start_time=%time%
@@ -21,7 +21,7 @@ set last_error=0
 
 rem пока выставляем версию только на основании work.properties (my.properties игнорируем)
 for /F "tokens=1* delims==" %%A in (work.properties) do (
-    if "%%A"=="box.app.version" set version=%%B
+    if "%%A"=="ops.app.version" set version=%%B
 )
 
 call :set_version_with_dependents "" "parent" %version%

@@ -4,8 +4,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>inf-modules</artifactId>
-	<groupId>ru.argustelecom.box</groupId>
-	<version>0.15.0</version>
+	<groupId>ru.argustelecom.ops</groupId>
+	<version>0.1.0</version>
 	<packaging>pom</packaging>
 	<name>inf-modules</name>
 
@@ -15,13 +15,13 @@
     </properties>
 
 	<modules>
-		<module>box-inf</module>
-		<module>box-inf-ui</module>
+		<module>ops-inf</module>
+		<module>ops-inf-ui</module>
 
 		<module>webui</module>
 
-		<module>box-persistence</module>
-		<module>box-enterprise</module>
+		<module>ops-persistence</module>
+		<module>ops-enterprise</module>
 	</modules>
 
 </project>
