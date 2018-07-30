@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<f:loadBundle var="personnelBundle" basename="PersonnelBundle"/>
+	<f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+	<p:outputPanel rendered="#{p:ifGranted('CRM_CustomerView')}">
+		<div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+					<h:form id="customer_info_form">
+
+						<o:importConstants type="ru.argustelecom.box.env.party.CustomerCategory" var="category"/>
+
+						<div class="ui-dashboard-header">
+							<i class="#{customer.typeInstance.type.category.icon}"/>
+							<i class="fs14 #{customer.vip ? 'fa fa-star m-gold' : ''} m-pos-absolute icon-vip"/>
+							<h:outputText styleClass="card-header" value="#{customerBundle['box.customer']}"/>
+						</div>
+
+						<div class="columns">
+							<div class="column width-60-percents">
+								<dl class="name-value width-150 m-mar-bot-0 ">
+									<dt>
+										<p:outputLabel for="customer_id" value="#{overallBundle['box.overall.id']}:"/>
+									</dt>
+									<dd>
+										<boxenv:linkToCard title="#{overallBundle['box.overall.open']}" id="customer_id"
+														   value="#{customer}" text="#{customer.id}"/>
+									</dd>
+									<dt>
+										<p:outputLabel for="organization_type" value="#{overallBundle['box.overall.type']}:"/>
+									</dt>
+									<dd>
+										<h:outputText id="organization_type" value="#{customer.typeInstance.type.objectName}"/>
+									</dd>
+								</dl>
+								<ui:fragment rendered="#{customer.typeInstance.type.category eq category.PERSON}">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel for="last_name"
+														   value="#{personnelBundle['box.personnel.name.last']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="last_name" value="#{customer.party.name.lastName()}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="first_name" value="#{personnelBundle['box.personnel.name.first']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="first_name" value="#{customer.party.name.firstName()}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="second_name"
+														   value="#{personnelBundle['box.personnel.name.second']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="second_name" value="#{customer.party.name.secondName()}"/>
+										</dd>
+									</dl>
+								</ui:fragment>
+
+								<ui:fragment rendered="#{customer.typeInstance.type.category eq category.COMPANY}">
+									<dl class="name-value width-150">
+										<dt>
+											<p:outputLabel for="legal_name"
+														   value="#{customerBundle['box.customer.legal_name']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="legal_name" value="#{customer.party.legalName}"/>
+										</dd>
+
+										<dt>
+											<p:outputLabel for="brand_name"
+														   value="#{customerBundle['box.customer.brand_name']}:"/>
+										</dt>
+										<dd>
+											<h:outputText id="brand_name" value="#{customer.party.brandName}"/>
+										</dd>
+									</dl>
+								</ui:fragment>
+							</div>
+
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</p:outputPanel>
+
+	<ui:include src="/views/env/page/frame/NotGrantedFrame.xhtml">
+		<ui:param name="headerIcon" value="#{customer.typeInstance.type.category.icon}" />
+		<ui:param name="headerText" value="#{customerBundle['box.customer']} #{customer.id}" />
+		<ui:param name="permission" value="#{permissionRepository.getPermission('CRM_CustomerView')}" />
+	</ui:include>
+
+</ui:composition>

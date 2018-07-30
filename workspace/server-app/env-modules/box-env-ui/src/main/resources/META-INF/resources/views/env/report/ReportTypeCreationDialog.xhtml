@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="reportBundle" basename="ReportBundle"/>
+    <h:form id="report_type_creation_form">
+
+        <p:dialog id="report_type_creation_dlg" header="#{reportBundle['box.report.type.create']}" width="500"
+                  widgetVar="reportTypeCreationDlgVar" styleClass="icon-creation"
+                  resizable="false" modal="true" closable="false" dynamic="true">
+
+            <dl class="name-value width-150">
+
+                <dt>
+                    <p:outputLabel for="report_name" value="#{overallBundle['box.overall.name']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="report_name" value="#{reportTypeCreationDm.name}" required="true"
+                                 maxlength="128" label="#{overallBundle['box.overall.name']}"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="group" value="#{overallBundle['box.overall.group']}:"/>
+                </dt>
+                <dd>
+                    <p:selectOneMenu id="group" value="#{reportTypeCreationDm.group}"
+                                     filter="true" filterMatchMode="startsWith" caseSensitive="false">
+                        <f:selectItem itemValue="" />
+                        <f:selectItems value="#{reportTypeCreationDm.groups}" var="group" itemValue="#{group}"
+                                       itemLabel="#{group.objectName}" />
+                    </p:selectOneMenu>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="description" value="#{overallBundle['box.overall.desc']}:"/>
+                </dt>
+                <dd>
+                    <p:inputTextarea id="description" value="#{reportTypeCreationDm.desc}"
+                                     rows="3" counter="description_display" maxlength="256"
+                                     counterTemplate="#{overallBundle['box.overall.chars_left']}"/>
+                    <h:outputText id="description_display" styleClass="fs12"/>
+                </dd>
+
+
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" styleClass="m-blue-text-button"
+                                 value="#{overallBundle['box.overall.cancel']}"
+                                 update="report_type_creation_dlg" process="@this"
+                                 onclick="PF('reportTypeCreationDlgVar').hide()" resetValues="true"/>
+                <p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 actionListener="#{reportTypeCreationDm.create()}"
+                                 update="#{update} report_name description group"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('reportTypeCreationDlgVar').hide()}" />
+            </div>
+        </p:dialog>
+    </h:form>
+</ui:composition>

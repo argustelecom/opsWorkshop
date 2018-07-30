@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<fonts>
+	<font>
+		<name>arial.ttf</name>
+		<encoding>Identity-H</encoding>
+		<embedded>true</embedded>
+	</font>
+	<font>
+		<name>calibri.ttf</name>
+		<encoding>Identity-H</encoding>
+		<embedded>true</embedded>
+	</font>
+	<font>
+		<name>courier-new.ttf</name>
+		<encoding>Identity-H</encoding>
+		<embedded>true</embedded>
+	</font>
+	<font>
+		<name>times-new-roman.ttf</name>
+		<encoding>Identity-H</encoding>
+		<embedded>true</embedded>
+	</font>
+</fonts>

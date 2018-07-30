@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- без схемы из-за https://issues.jboss.org/browse/JBMETA-384 -->
+<!-- <jboss-web xmlns="http://www.jboss.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!-- xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee http://www.jboss.org/schema/jbossas/jboss-web_8_0.xsd" version="8.0"> -->
+<jboss-web>
+	<security-domain>argus-security-domain</security-domain>
+</jboss-web>

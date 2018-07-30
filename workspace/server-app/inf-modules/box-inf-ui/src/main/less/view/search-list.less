@@ -1,0 +1,50 @@
+/* search-list */
+.search-list {
+	ul {
+		-webkit-column: 4;
+		-moz-columns: 	4;
+		columns: 		4;
+		-webkit-column-gap: 2em;
+		-moz-column-gap: 	2em;
+		column-gap: 		2em;
+		-moz-column-fill: balance;
+		column-fill: balance;
+		padding: 0;
+		margin: 0 0 16px;
+
+		li {
+			margin: 0 0 5px;
+			-webkit-column-break-inside: avoid;
+			page-break-inside: avoid;
+			break-inside: avoid;
+
+			label {
+				width: 90px;
+			}
+
+			div {
+				width: 70%;
+			}
+
+			input, span.ui-autocomplete {
+				width: calc(~'70% - 16px');
+			}
+
+			input:first-child {
+				width: calc(~'70% + 81px');
+			}
+
+			span.ui-calendar {
+				input {
+					width: 100%;
+				}
+				&.filter-calendar {
+					input {
+						width: calc(~'90% + 81px');
+					}
+				}
+			}
+
+		}
+	}
+}

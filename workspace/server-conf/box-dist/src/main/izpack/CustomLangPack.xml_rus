@@ -1,0 +1,26 @@
+<langpack>
+    <str id="UserInputPanel.dir.nodirectory.message" txt="Необходимо выбрать существующий путь."/>
+    <str id="UserInputPanel.dir.nodirectory.caption" txt="Путь не выбран"/>
+    <str id="UserInputPanel.dir.notdirectory.message"
+         txt="Выбранный путь не существует."/>
+    <str id="UserInputPanel.dir.notdirectory.caption" txt="Путь не найден"/>
+    <str id="ConsolePrompt.yesNo" txt="Да/Нет"/>
+    <str id="ConsoleInstaller.continueQuitRedisplay" txt="Продолжить(1)/Выйти(2)/Повторить(3)"/>
+    <str id="ConsoleInstaller.inputSelection" txt="Выберите значение из списка"/>
+    <str id="ConsoleInstaller.redisplayQuit" txt="Повторить(1)/Выйти(2)"/>
+    <str id="data.validation.error.title" txt="Ошибка валидации" />
+    <str id="TargetPanel.info" txt="Выберите каталог установки (путь не должен содержать пробелов)"/>
+	<str id="SecurityWarningPanel.warning" txt="Внимание"/>
+	<str id="SecurityWarningPanel.logfilecreation" txt="Создан файл журналирования установки"/>
+	<str id="SecurityWarningPanel.propertywarn" txt="В файле доступны настройки, с которыми установлен сервер приложений."/>
+	<str id="SecurityWarningPanel.recomendation" txt="Рекомендуется удалить данный файл из каталога сервера приложений из соображений безопасности."/>	
+	<str id="installer.Message" txt="Сообщение"/>
+	
+    <str id="ConsolePrompt.yesNo" txt="Да(0)/Нет(1)"/>
+    <str id="ConsolePrompt.okCancel" txt="'Ок(1)/Отмена(2): "/>
+    <str id="ConsolePrompt.yesNoCancel" txt="Да(0)/Нет(1)/Отмена(2): "/>
+    <str id="ConsolePrompt.ok" txt="1"/>
+    <str id="ConsolePrompt.cancel" txt="2"/>
+    <str id="ConsolePrompt.yes" txt="0"/>
+    <str id="ConsolePrompt.no" txt="1"/>
+</langpack>

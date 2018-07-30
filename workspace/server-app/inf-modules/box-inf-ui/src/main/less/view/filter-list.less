@@ -1,0 +1,72 @@
+/* filter-list - конструкция для списка фильтров.
+Filter-list является оболочкой и управляющим классом для списка <ul>.
+Для viewport up to 1280px отрисовывается список в 4 колонки, для viewport under to 1280px отрисовывается список в 3 колонки.
+Каждый элемент <li> содержит в себе конструкцию <div class="filter-item">, который формирует сетку для пары Name-Value.
+Сама сетка построена на основе свойства flex (см https://frontender.info/a-guide-to-flexbox/)
+В документе media.less лежит хак для ie>10, где вместо flex: initial; выставлен flex: 1;
+
+-----------------------------
+вид конструкции
+----------------------------
+<div class="filter-list">
+	<ul>
+		<li>
+			<div class="filter-item">
+				<span class="filter-name">Name</span>
+				<span class="filter-value">Value</span>
+			</div>
+		</li>
+	</ul>
+</div>
+
+Используется для списков фильтров
+---------------------------------------------------------------------------------*/
+
+.filter-list {
+	ul {
+		-webkit-column: 4;
+		-moz-columns: 	4;
+		columns: 		4;
+		-webkit-column-gap: 3em;
+		-moz-column-gap: 	3em;
+		column-gap: 		3em;
+		-moz-column-fill: balance;
+		column-fill: balance;
+		padding: 0;
+		margin: 0 0 16px;
+
+		li {
+			margin: 0 0 5px;
+			-webkit-column-break-inside: avoid;
+			page-break-inside: avoid;
+			break-inside: avoid;
+
+			> .filter-item,
+			.ui-outputpanel > .filter-item,
+			span > .filter-item {
+				width: 100%;
+				display: -ms-flexbox;
+				display: -webkit-flex;
+				display: flex;
+				flex-flow: row wrap;
+			}
+		}
+
+		.filter-name {
+			padding: 3px 2px 2px;
+			vertical-align: top;
+			flex: initial;
+		}
+
+		.filter-value {
+			flex: 3;
+
+			div.ui-selectonemenu,
+			input, span.ui-autocomplete {
+				width: 100%;
+				box-sizing: border-box;
+			}
+		}
+
+	}
+}

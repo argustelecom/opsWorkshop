@@ -1,0 +1,104 @@
+/* dialog */
+
+/* dialog header */
+.ui-dialog {
+
+	.ui-dialog-content {
+		font-size: 14px;
+	}
+
+	.ui-dialog-titlebar {
+		position: relative;
+		background-color: @dialog-header-bg;
+		border-bottom-color: @dialog-header-border-bottom-color !important;
+		font: @dialog-headers-font-weight @dialog-headers-font-size @dialog-headers-font-family;
+	}
+
+/* pseudo element for icon content */
+	.ui-dialog-titlebar:before {
+		position: absolute;
+		top: 50%;
+		left: 20px;
+		color: #546e7a;
+		margin-top: -18px;
+		font-family: "FontAwesome";
+		font-size: 24px;
+		text-align: center;
+		line-height: 42px;
+	}
+
+	.ui-dialog-title {
+		margin: 1px 0 1px 40px !important;
+	}
+	 .name-value > dt .ui-inputfield,
+	 .name-value > dd .ui-inputfield {
+		line-height: 22px;
+	}
+
+/* dialog body */
+	.message {
+		margin-left: -10px;
+	}
+
+	.name-value {
+		.text-redonly {
+			font-family: 'robotoregular';
+			line-height: 2;
+		}
+	}
+
+	.property-list {
+		.ui-chkbox .ui-chkbox-box {
+			margin: 2px 5px 8px 0px;
+		}
+
+		.property-item {
+			margin: 0 0 4px;
+		}
+
+		.property-name {
+			padding-top: 5px;
+		}
+	}
+}
+
+
+/* dialog footer */
+
+/* dialog footer buttons */
+/* common dialog */
+.ui-dialog {
+	.dialog-footer-buttons {
+		margin-top: 10px;
+		margin-right: -20px;
+		margin-left: -20px;
+		padding: 20px 20px 0px 20px;
+		text-align: right;
+		border-top: none;
+		font-size: @dialog-footer-buttons-font-size;
+
+		button, a {
+			font-family: @dialog-footer-buttons-font-family !important;
+			text-transform: uppercase;
+		}
+
+		button {
+			margin-left: 10px;
+		}
+
+		.m-blue-text-button {
+			text-transform: uppercase !important;
+		}
+	}
+}
+
+/* confirm dialog */
+
+.ui-dialog {
+	.ui-dialog-footer {
+		background-color: transparent;
+		border-top: none !important;
+	}
+}
+
+

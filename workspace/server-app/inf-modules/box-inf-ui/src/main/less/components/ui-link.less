@@ -1,0 +1,81 @@
+/* ui-link */
+
+a.ui-commandlink{
+	&.arisen-link {
+		color: #546e7a !important;
+		opacity: .2;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+	&.m-bold-gray {
+		color: @bold-gray;
+
+		&:hover {
+			color: lighten(@bold-gray, 20%) !important;
+		}
+	}
+}
+
+/* positioned-link */
+
+.positioned-link {
+	position: absolute;
+}
+
+.debit-period {
+	.positioned-link {
+		top: 47px;
+		right: 100px;
+	}
+}
+
+/* ui-widget-content links */
+.m-card:not(.ui-dashboard-card ) {
+
+	a:not(.ui-commandlink) {
+		color: #0288D1 !important;
+		text-decoration: underline !important;
+		&:hover {
+			text-decoration: none !important;
+			opacity: 0.8;
+			-webkit-transition: all 0.5s ease;
+			-moz-transition: all 0.5s ease;
+			-ms-transition: all 0.5s ease;
+			-o-transition: all 0.5s ease;
+			transition: all 0.5s ease;
+		}
+	}
+}
+
+.info-hover {
+	position: relative;
+
+	&:before {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: block;
+		content: '\e325';
+		width: 12px;
+		height: 12px;
+		margin-right: -15px;
+		color: @icon-hover-color;
+		font-family: 'Modena';
+		opacity: 0;
+
+
+	}
+	&:hover {
+		&:before {
+			opacity: 1;
+		}
+	}
+}
+
+/* link-to-card */
+.link-to-card {
+	display: inline-block;
+	vertical-align: top;
+}

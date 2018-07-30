@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <p:outputPanel id="company_info_attributes_panel">
+
+        <f:event listener="#{companyInfoAttrFm.preRender(owner, callbackAfterChangePrincipal)}" type="preRenderComponent"/>
+
+        <h:form id="company_info_attributes_form">
+            <div class="columns">
+                <div class="column m-pad-0">
+                    <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+                        <i class="fa fa-group fs60" />
+                        <h:outputText value="ID #{companyInfoAttrFm.owner.id}" />
+                    </p:panelGrid>
+                </div>
+
+                <div class="column width-100-percents">
+                    <div class="columns">
+                        <div class="column m-container100 m-responsive100">
+                            <sysinf:editableSection disabled="#{companyInfoAttrFm.owner eq null or !p:ifGranted('System_OwnerEdit')}"
+                                                    saveLabel="#{overallBundle['box.overall.save']}"
+                                                    cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+                                <p:ajax event="save" listener="#{companyInfoAttrFm.onNameChanged()}" update="#{update}"/>
+
+                                <dl class="name-value width-130">
+                                    <dt>
+                                        <p:outputLabel for="name" value="#{overallBundle['box.overall.name']}"/>
+                                    </dt>
+                                    <dd>
+                                        <p:inputText id="name" value="#{companyInfoAttrFm.owner.name}" required="true">
+                                            <f:validateLength maximum="256"/>
+                                        </p:inputText>
+                                    </dd>
+                                </dl>
+                            </sysinf:editableSection>
+
+
+                            <dl class="name-value width-140 name-value-tooltip">
+                                <dt>
+                                    <p:outputLabel for="party_type" value="#{overallBundle['box.overall.party_type']}:"/>
+                                </dt>
+                                <dd>
+                                    <h:outputText id="party_type" value="#{companyInfoAttrFm.owner.partyTypeName}"/>
+                                </dd>
+
+                                <dt>
+                                    <p:outputLabel for="tax_rate" value="#{companyInfoBundle['box.company_info.tax_rate_label']}:"/>
+                                </dt>
+                                <dd>
+                                    <h:outputText id="tax_rate" value="#{companyInfoAttrFm.owner.taxRate} %"/>
+                                </dd>
+
+                                <o:importConstants type="ru.argustelecom.box.env.party.model.role.Owner"/>
+                                <o:importFunctions type="java.lang.System"/>
+                                <!--Шаблон для генерации QR-кода-->
+                                <ui:fragment rendered="#{System:getProperty(Owner.QR_CODE_PATTERN_ENABLED)}">
+                                    <dt>
+                                        <p:outputLabel for="bill_type_qr_code"
+                                                       value="#{companyInfoBundle['box.company_info.qr_code_pattern']}:"/>
+                                    </dt>
+                                        <dd>
+                                            <sysinf:editableSection disabled="#{companyInfoAttrFm.owner eq null or !p:ifGranted('System_OwnerEdit')}"
+                                                                    saveLabel="#{overallBundle['box.overall.save']}"
+                                                                    cancelLabel="#{overallBundle['box.overall.cancel']}">
+
+                                                <p:ajax event="save" listener="#{companyInfoAttrFm.onQrCodePatternChanged()}"/>
+                                                <p:inputTextarea id="bill_type_qr_code" value="#{companyInfoAttrFm.owner.qrCodePattern}"
+                                                                 rows="4" autoResize="false" required="true"
+                                                                 label="#{companyInfoBundle['box.company_info.qr_code_pattern']}">
+                                                    <f:validator binding="#{qrCodePatternValidator}"/>
+                                                    <f:attribute value="#{companyInfoAttrFm.owner.id}" name="entityId"/>
+                                                    <f:attribute value="#{true}" name="owner"/>
+                                                </p:inputTextarea>
+                                            </sysinf:editableSection>
+                                        </dd>
+                                </ui:fragment>
+
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column m-pad-0 m-tex-al-right">
+                    <div class="width-180 m-tex-al-right">
+                        <p:commandButton id="mark_principal" value="#{companyInfoBundle['box.company_info.make_principal_btn_label']}"
+                                         update="#{update}" process="@this" action="#{companyInfoAttrFm.markPrincipal()}"
+                                         styleClass="width-100-percents m-mar-bot10"
+                                         disabled="#{!p:ifGranted('System_OwnerEdit') or companyInfoAttrFm.owner.principal}"/>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+    </p:outputPanel>
+</ui:composition>

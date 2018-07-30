@@ -1,0 +1,157 @@
+/* contact */
+/* contact persons */
+
+.contact-person-list {
+	margin: 0 -16px;
+	box-sizing: border-box;
+}
+
+.contact-person-item {
+	padding: 5px 23px 5px 16px;
+	box-sizing: border-box;
+
+	a {
+		color: #0288d1;
+		font-family: 'robotoregular' !important;
+		font-size: 14px;
+
+		&.ui-commandlink {
+			color: #546e7a !important;
+			opacity: .2;
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+	img {
+		width: 45px;
+		height: 45px;
+		border-radius: 50%;
+		vertical-align: middle;
+	}
+
+	.m-disp-table-cell {
+		&:nth-child(2) {
+			padding: 0 5px;
+
+			&:hover {
+				background-color: #f5f5f5;
+			}
+		}
+	}
+
+	.contact-person-name {
+		max-width: 300px;
+		font-size: 14px;
+		font-family: 'robotoregular' !important;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+
+		.contact-person-last-name {
+			margin-right: 5px;
+		}
+
+	}
+
+	.contact-person-phone,
+	.contact-person-email {
+		position: relative;
+	}
+	.contact-person-phone:before,
+	.contact-person-email:before{
+		position: absolute;
+		display: none;
+		top: 50%;
+		left: 20px;
+		color: #546e7a;
+		margin-top: -7px;
+		font-family: "FontAwesome";
+		font-size: 14px;
+		text-align: center;
+		line-height: 1;
+	}
+	.contact-person-phone:before{
+		content: "\f098";
+	}
+	.contact-person-email:before{
+		content: "\f0e0";
+	}
+
+}
+
+/* contacts */
+.contact-list {
+	margin-bottom: 10px;
+
+	.m-disp-table-cell {
+		vertical-align: top;
+	}
+}
+
+.contact-edit-list {
+	.m-disp-table-cell {
+		vertical-align: top;
+		&:nth-child(1),
+		&:nth-child(5),
+		&:nth-child(6){
+			vertical-align: middle;
+		}
+
+		.ui-selectonemenu {
+			margin-bottom: 5px;
+		}
+	}
+}
+
+.contact-comment {
+	max-width: 300px;
+	display: inline-block;
+}
+.contact-comment.closed {
+	max-width: 300px;
+	display: none;
+}
+
+/* contact dialog */
+
+.contact-edit-dlg {
+
+	&.ui-dialog {
+		overflow: inherit;
+
+		.ui-dialog-content {
+			overflow: inherit;
+		}
+	}
+}
+
+.container-close {
+	height: 165px;
+	overflow: hidden;
+}
+
+.container-open {
+	height: auto;
+	overflow: inherit;
+}
+
+/* contact @media */
+@media only screen and (max-width: 1600px) and (min-width: 1200px)  {
+	.contact-person-first-name {
+		display: none;
+	}
+
+	.contact-person-last-name {
+		max-width: 100px;
+	}
+
+	.contact-person-phone,
+	.contact-person-email{
+		display: inline-block;
+	}
+	.contact-person-phone:before,
+	.contact-person-email:before{
+		display: block;
+	}
+}

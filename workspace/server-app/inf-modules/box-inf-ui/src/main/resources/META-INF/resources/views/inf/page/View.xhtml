@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<h:html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:sysinf="http://argustelecom.ru/system-inf" xmlns:pm="http://primefaces.org/modena">
+
+	<f:loadBundle basename="ErrorBundle" var="errorBundle"/>
+<!--
+   НАЗНАЧЕНИЕ
+     Реализация общей части view. Понятие view см. javadoc system.infrastructure.page.package-info
+     Все конкретные view должны наследовать этот шаблон (быть клиентами шаблона).
+     
+	 Внизу заготовка для создания потомка.     
+
+   МЕТАДАННЫЕ VIEW (ШАБЛОНА)
+     Потомки должны задать параметры (ui:param):
+     1. ViewModel viewModel
+     	ViewModel с которым работает view-потомок: <ui:param name="viewModel" value="#{clientCardViewModel}"/> 
+     	Value должен быть именем (@Named) класса, наследованного от ViewModel. Если не указано, будет использован класс
+     	ViewModel. 
+     2. String pageTitle
+     	Заголовок страницы:
+     		<ui:param name="pageTitle" value="Карточка клиента #{clientCardViewModel.client.objectName}"/>
+     	Обязательно. Помещается в заголовок страницы. Произвольная строка.
+     3. (Инфраструктура) Boolean viewTransient
+     	Не обязательно. Делает view транзиентным.
+     	
+   ПАРАМЕТРЫ СТРАНИЦЫ
+     Потомки должны задавать параметры view в <ui:define name="metadata">, а не в других местах.
+     Пример: 
+	   	<ui:define name="metadata">
+			<f:metadata>
+				<f:viewParam name="client" value="#{clientCardViewParams.clientId}" required="#{!facesContext.postback}"
+					requiredMessage="client param required" />
+				<f:viewParam name="service" value="#{clientCardViewParams.serviceId}" />
+			</f:metadata>
+		</ui:define>
+	  Мотив: f:metadata вынесен в основной шаблон чтобы иметь возможность задать общие для всех view viewAction.
+   
+   BODY VIEW
+	 Данный шаблон навязывает pe:layout, позволяя потомкам произвольно задавать содержимое layoutUnit center, определив:
+		 <ui:define name="body">
+		 	Произвольное содержимое потомка. Может быть вложенным деревом pe:layoutUnit.
+		 </ui:define>
+	 	 
+	 Если потомок не желает использовать pe:layout, может полностью переопределить содержимое view, определив
+		 <ui:define name="layout">
+		 	Произвольное содержимое потомка. Потомок отвечает за отображение всего, включая главное меню.
+		 </ui:define>
+		
+	
+   ЗАГОТОВКА VIEW
+	<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+		xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+		xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+		xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+		xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+		xmlns:sys="http://argustelecom.ru/system" xmlns:pm="http://primefaces.org/modena">
+	
+		//TASK-X
+		//Назначение страницы
+	
+		<ui:param name="viewModel" value="#{myViewModel}" />
+		<ui:param name="pageTitle" value="Заголовок страницы" />
+		
+		<ui:define name="metadata">
+			<f:metadata>
+				<f:viewParam name="myParam" value="#{myCurrentX.value}" required="#{!facesContext.postback}"
+					requiredMessage="My param is required!" />
+			</f:metadata>
+		</ui:define>
+		
+		<ui:define name="body">
+			Содержимое
+		</ui:define>
+			
+	</ui:composition>
+-->
+
+<!-- PackageDescriptor нужен для опциональных зависимостей между entity packages (TASK-45016). Использовать с
+	sysinf:packageDeployed. -->
+<o:importConstants type="ru.argustelecom.system.inf.configuration.packages.model.PackageDescriptor" />
+
+<f:view encoding="UTF-8" contentType="text/html" transient="#{viewTransient}" beforePhase="#{viewModel.beforePhase}" 
+		locale="#{languageBean.locale}">
+		
+	<!-- Сюда потомки должны вставлять f:metadata -->
+	<ui:insert name="metadata" />
+
+	<!-- Чтобы обеспечить вызов preRender фреймворком. см. PresentationModel -->
+	<f:event listener="#{viewModel.preRender}" type="preRenderView" />
+
+	<h:head>
+		<f:facet name="first">
+			<!-- режим совместимости IE отключается HTTP-заголовком в standalone.xml -->
+			<!-- viewport настраивается org.primefaces.mobile.renderkit.HeadRenderer, для десктопного приложения не нужно -->
+			<title>#{empty pageTitle ? overallBundle['box.overall.app'] : pageTitle}</title>
+
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+			<meta name="apple-mobile-web-app-capable" content="yes" />
+		</f:facet>
+
+		<link rel="shortcut icon" href="#{resource['box-inf/images/favicon.ico']}" type="image/x-icon" />
+
+		<f:facet name="middle">
+			<!-- фикс window.console для IE, подробнее в самом файле -->
+			<script type="text/javascript" src="#{resource['system-inf/scripts/console-fix.js']}">
+			</script>
+		</f:facet>
+
+		<!-- СТИЛИ -->
+		<ui:insert name="styles">
+			<h:outputStylesheet name="modena-theme/styles/theme.css" />
+			<h:outputStylesheet name="box-inf/styles/box-inf.css" />
+			<h:outputStylesheet name="system/styles/components.css" />
+		</ui:insert>
+
+		<!-- СКРИПТЫ -->
+		<!-- В h:outputScript надо указывать target="head" для правильного порядка скриптов -->
+
+		<!-- можно раскомментировать для дебага на мобильных устройствах типа iPad, только не коммитить -->
+		<!--script type="text/javascript" src="https://getfirebug.com/firebug-lite-debug.js"></script-->
+
+		<!-- логгирование: http://pimterry.github.io/loglevel/ -->
+		<h:outputScript name="system-inf/scripts/loglevel.min.js" target="head" />
+
+		<h:outputScript name="system-inf/scripts/system-inf.js" target="head" />
+		<o:importConstants type="ru.argustelecom.system.inf.transaction.UnitOfWork" />
+		<ui:insert name="primefacesScriptOverrides">
+			<h:outputScript name="system-inf/scripts/primefaces-overrides.js" target="head" />
+		</ui:insert>
+		<h:outputScript name="box-inf/scripts/primefaces-overrides-box.js" target="head"/>
+		<h:outputScript name="system-inf/scripts/localization.js" target="head" />
+		<h:outputScript name="box-inf/scripts/box-inf.js" target="head"/>
+		<h:outputScript name="box-env/scripts/box-env.js" target="head"/>
+
+		<o:importFunctions type="ru.argustelecom.system.inf.navigation.HistoryAPIFallbackGateProvider$GateResponseListener"
+			var="HistoryFallbackGRL" />
+		<!-- вынуждены всегда генерировать gateId на редкий случай, что он пригодится -->
+		<script>
+			//для _init на клиенте надо передавать sessionId каким его знает сервер, т.к. балансер может править в куках jsessionid (см. TASK-77936).
+			Argus.System.Page.initHeadEnd(#{sysinf:appDebugMode()}, '#{request.contextPath}',
+					#{empty javax.enterprise.context.conversation.id ? 'null' :
+						javax.enterprise.context.conversation.id}, #{UnitOfWork.CONVERSATION_TIMEOUT},
+					'#{HistoryFallbackGRL:getGateId("p")}','#{session.id}');
+		</script>
+
+		<h:outputScript name="modena-layout/scripts/ripple-effect.js" />
+		<h:outputScript name="modena-layout/scripts/perfect-scrollbar.js" />
+		<h:outputScript name="modena-layout/scripts/layout.js" />
+
+		<ui:insert name="infrahead" />
+
+		<ui:insert name="head" />
+	</h:head>
+
+	<h:body class="m-gray-modena m-geometry" style="height:auto;">
+
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+		<!--
+			Иногда PrimeFaces втихаря делает сабмит, не имея формы, например, переключении вкладки в p:tabView, который
+			не вложен в форму, или в p:dialog с dynamic="true". Но POST-сабмит всегда должен делаться от имени какой-то
+			формы, и PrimeFaces просто берет первую попавшуюся форму (см. core.ajax.js, PrimeFaces.ajax.Request.send). У
+			нас первой формой была форма главного меню, в которой прописано conversationPropagation=none, что приводило
+			к печальным последствиям - создавался новый converation со всеми моделями, после апдейта на одной странице
+			появлялись формы с разными cid. Для обхода проблемы добавил первой пустую автообновляющуюся форму.
+		-->
+		<p:outputPanel autoUpdate="true">
+			<script>
+				Argus.System.Page.update(#{empty javax.enterprise.context.conversation.id ? 'null' :
+						javax.enterprise.context.conversation.id});
+			</script>
+			<h:form id="default_form" />
+		</p:outputPanel>
+
+		<!--
+			Биндинг нашего JS-интерфейса слушателей AJAX-реквестов.
+
+			Эта и другие слушалки (для blockUI) рассчитывают, что все реквесты глобальные (атрибут PF global=true).
+			В секции 4.1.3 дока PF5.0 обещает, что "By default ajax requests are global". Наткнулся на один случай,
+			когда это нарушается - outputPanel deferred=true. В доке для этого компонента написано global=false, и это
+			действительно так. http://code.google.com/p/primefaces/issues/detail?id=7204
+
+			p:ajaxStatus реагирует на PF-AJAX и JSF-AJAX. Т.е. использование напрямую XMLHttpRequest или jQuery.ajax()
+			не заметит.
+
+			Располагается перед основным содержимым, чтобы у того не было шанса начать AJAX до того, как мы повесили
+			слушалки. Хотя ajaxStatus создается только при DOM ready, но надеюсь, никто не додумается делать реквест
+			раньше - это неправильно.
+		-->
+		<p:ajaxStatus onstart="Argus.System.Ajax._trigger('start')" onerror="Argus.System.Ajax._trigger('error')"
+			onsuccess="Argus.System.Ajax._trigger('success')" oncomplete="Argus.System.Ajax._trigger('complete')" />
+
+		<!--
+			Блокировка UI при AJAX-реквестах.
+
+			Используем pe:blockUI по нескольким причинам.
+			1. p:blockUI - велосипедная примитивная вещь, которая сводится к "показать что-то поверх", насколько я
+			понял. По опыту Аргус 2 и IceFaces знаем, что этого недостаточно.
+			pe:blockUI использует плагин jQuery BlockUI, который куда более продвинутый:
+			// blockUI uses 3 layers for blocking, for simplicity they are all used on every platform;
+			// layer1 is the iframe layer which is used to supress bleed through of underlying content
+			// layer2 is the overlay layer which has opacity and a wait cursor (by default)
+			// layer3 is the message content that is displayed while blocking
+			+ дизаблит события мыши и клавиатуры.
+			2. p:blockUI doc: BlockUI does not support absolute or fixed positioned components. e.g. dialog.
+			Не проверял. 
+
+			Много жалоб на мелькание блокировки (TASK-42922 WebUI: создание инфраструктуры нового веб-приложения) -
+			поправим дефолты fadeIn/fadeOut напрямую у jQuery.blockUI.
+
+			В идеале было бы делать fadeIn нелинейно, чтобы визуально fadeIn начинался не сразу. В jQuery есть такая
+			вещь, как easing-функции. Надо посмотреть, как воткнуть ее плагину, опции он не дает вроде.
+			На самом деле в jQuery дефолт swing, а не linear, но они близки. Вот так почему-то не работает:
+			$.fn._fadeIn = function(duration, complete) { $.fn.fadeIn(duration, 'easeInQuart', complete); };
+			Почему - не понимаю. В любом случае нехорошо бы было - так сильно завязываться на деталь реализации плагина.
+			Решением стало отображение оверлея и сообщения blockUI с нулевыми opacity, а по событию onBlock (закончился
+			невидимый fadeIn от плагина), делаем вызов fadeTo до нужной opacity.
+			См. также Argus.System.Page._initBlockUICosmetics.
+
+			Биндинг блокировки на AJAX-реквесты делается в system-inf.js, Argus.System.BlockUI.
+		-->
+		<pe:blockUI widgetVar="blockUIVar" target="@(body, .sys-autoblockable)" cssOverlay="{opacity: 0}"
+			css="{'background-color' : '#BBBBBB', 'border-radius': '10px', 'border-color': '#BBBBBB', opacity: 0}">
+			<p:graphicImage styleClass="sys-block-ui" name="box-inf/images/loading.gif" />
+		</pe:blockUI>
+
+		<ui:insert name="visibleContent">
+			<p:focus context="content_body" />
+
+			<ui:insert name="layout">
+				<ui:include src="TopBarFrame.xhtml" />
+	
+				<!-- Наличие компонента с id wrapper обязательно по требованию структуры modena-layout -->
+				<div id="wrapper">
+					<!-- Наличие компонента с id wrapper_indent обязательно по требованию структуры modena-layout -->
+					<div id="wrapper_indent">
+	
+						<ui:insert name="mainMenu">
+							<ui:include src="MenuFrame.xhtml" />
+						</ui:insert>
+	
+						<!-- Наличие компонента с id layout_portlets_cover обязательно по требованию структуры modena-layout -->
+						<div id="layout_portlets_cover">
+							<div class="m-container100 m-fnone m-mar-auto">
+							<div class="m-container-indent">
+								
+								<!-- 
+									Предназначена для указания пути к текущей странице или указания ее названия.
+									* Если нужно указать путь страницы (breadcrumbs) определи <ui:define name="pagePath" />
+									* Если нужно указать полностью произвольный заголовок страницы определи весь pageHeader 
+								-->
+								<ui:insert name="pageHeader">
+									<ui:include src="HeaderFrame.xhtml" />
+								</ui:insert>
+	
+								<!--
+									id контейнера основного содержимого - про него знают всякие штучки типа focus и block.
+									Если зачем-то переопределяешь layout, то укажи внутри компонент с id="content_body".
+								-->
+								<p:outputPanel id="content_body">
+									<ui:insert name="body" />
+								</p:outputPanel>
+	
+								<!-- footer 
+								<ui:include src="footer.xhtml" /> -->
+							</div>
+							</div>
+						</div>
+	
+						<p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+							<f:facet name="start">
+								<p:graphicImage name="modena-layout/images/preloader.gif" />
+							</f:facet>
+	
+							<f:facet name="complete">
+								<h:outputText value="" />
+							</f:facet>
+						</p:ajaxStatus>
+					</div>
+				</div>
+			</ui:insert>
+
+			<!-- Пришлось сделать область dialogs, т.к. диалоги PF не работают внутри p:layout (
+				 http://layout.jquery-dev.net/documentation.cfm глава Working with Drop-Downs and Pop-Ups)
+				 Атрибут appendToBody не помогает, если в диалоге нужна форма. Вся страница ломалась, из-за вложенных форм,
+				 что ли - хотя с какой стати appendToBody отрабатывать на клиенте, а не на сервере?
+				  20.05.2014 20:32:32, Голованов Сева
+					с pf user guide:
+					Do not place dialog inside tables, containers likes divs with relative positioning or with non-visible
+					overflow defined, in cases like these functionality might be broken. This is not a limitation
+					but a result of DOM model. For example dialog inside a layout unit, tabview, accordion are a 
+					couple of examples. Same applies to confirmDialog as well.
+					
+					http://forum.primefaces.org/viewtopic.php?f=3&t=16504
+					optimus.prime: You can't use modal dialogs inside layout, modal dialog must be outside.
+					
+					еще что-то не так с update диалога - на форуме неоднократно можно встретить ответ "не обновляй диалог,
+					обновляй его содержимое". если помещать в общий layout, то будут обновляться диалоги.
+					Портится id: http://forum.primefaces.org/viewtopic.php?f=3&t=3473
+					
+					appendToBody не работает?
+					2. Try h:form prependId=false http://forum.primefaces.org/viewtopic.php?f=3&t=17071
+					Oleg: Form in a dialog doesn't work with appendToBody=true.
+					http://forum.primefaces.org/viewtopic.php?f=3&t=27341
+					catagay: works for me
+					sbstm:i have found the Error. I use an template with layout and extra forms. 
+					
+					h:form д.б. в p:dialog, а не p:dialog в h:form
+					http://stackoverflow.com/questions/5402191/primefaces-dialogs-form-structure
+					
+					http://lauraliparulo.altervista.org/primefaces-dialog-framework-how-to-make-it-work/
+	
+	
+				Revisited.
+				С одной стороны, есть такие проблемы:
+					http://stackoverflow.com/questions/18607921/primefaces-dialog-appendtobody-true-not-working
+				, где в xhtml вроде все нормально, но иногда что-то не работает.
+				Есть такие утверждения от Кагатая:
+					"I know modal dialogs and layout can work this way."
+					(http://stackoverflow.com/questions/4934037/primefaces-using-dialogs-and-layouts/4934127#4934127)
+				"Can work"? Что-то неуверенно.
+				Оттуда же, от него же:
+					"I usually place my dialogs outside of the dialog as a direct child of body element.
+					I have a special ui:insert part in my page template for this."
+	
+				С другой стороны, сам нашел только один проблемный случай: когда формы нестятся на сервере.
+					<h:form>
+						<p:dialog>
+							<h:form>
+							</h:form>
+						</p:dialog>
+					</h:form>
+				Тогда, похоже, сервер при сабмите не может найти компоненты, не валидирует, не сеттит, не вызывает экшны.
+				Обнадеживает, что Кагатай про то же упоминает:
+					"appendToBody and a form inside dialog works for me, just make sure dialog is not inside another form."
+					(http://forum.primefaces.org/viewtopic.php?p=86225#p86225)
+				Но в этом же топике Олег Вараксин жалуется на мистические проблемы...
+			-->
+			<ui:insert name="dialogs" />
+			<!-- общий диалог подтверждения, использовать через p:confirm -->
+			<!-- TODO [42922] временное решение. цель в том, чтобы диалог одинаковый был, но текущее решение вынуждает
+				 делать дурацкие инсерты для возможности указания p:ajax -->
+
+			<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<h:form>
+					<p:commandButton value="#{overallBundle['box.overall.no']}" type="button" styleClass="ui-confirmdialog-no m-blue-text-button">
+						<ui:insert name="confirm_no" />
+					</p:commandButton>
+					<p:commandButton value="#{overallBundle['box.overall.yes']}" type="button" styleClass="ui-confirmdialog-yes">
+						<ui:insert name="confirm_yes" />
+					</p:commandButton>
+				</h:form>
+			</p:confirmDialog>
+
+			<!-- возможность перекрыть глобальный эдитор (страницы) -->
+			<ui:insert name="globalEditor">
+				<sysinf:globalEditor id="global_editor" viewModel="#{viewModel}" />
+			</ui:insert>
+		</ui:insert>
+
+		<ui:insert name="visibleContentEnd" />
+
+		<!-- messages должны рендериться последними -->
+		<!-- info и warn для прицельного добавления сообщения через ru.argustelecom.system.inf.utils.Notification,
+			 там же используются значения атрибутов id и for -->
+		<!--
+			FIXME [42922] обдумать сообщения и UI. сейчас умозрительно представляю так:
+			- есть сообщения в контексте страницы;
+			- есть сообщения в контексте диалога (можно ли доработать Notification, чтобы это работало прозрачно для
+			разработчика?);
+			- есть локальные сообщения: ошибки валидации возле полей (изначально можно пренебречь; в cookbook chapter 12
+			есть про показ ошибок в тултипах). -->
+		<div id="global_msg_container">
+			<p:growl id="global_msg_info" for="for_global_msg_info" showDetail="true" />
+			<p:growl id="global_msg_info_html" for="for_global_msg_info_html" showDetail="true" escape="false" />
+			<p:growl id="global_msg_warn" for="for_global_msg_warn" showDetail="true" sticky="true" />
+			<p:growl id="global_msg_warn_html" for="for_global_msg_warn_html" showDetail="true" sticky="true" escape="false" />
+			<!-- error и неотображенные -->
+			<p:growl id="global_msg_error" showDetail="true" autoUpdate="true" sticky="true" redisplay="false" />
+			<!--
+				В Argus.System.Page._initGrowlCosmetics воркэраунд
+				https://code.google.com/p/primefaces/issues/detail?id=6779, чтобы гроулы не оверлапились.
+			-->
+		</div>
+
+		<!-- Кусок обработки ошибок, объяснение в web.xml -->
+		<p:dialog id="ajax_error_dlg" modal="true" closable="false" widgetVar="sysAjaxErrorDialogVar" header="Ошибка" draggable="false"
+			resizable="false" styleClass="dialog-width-small #{sysAjaxErrorDialogStyleClass}">
+			<p>#{overallBundle['box.overall.error.timeout.details']}</p>
+			<div class="dialog-footer-buttons">
+				<h:form>
+					<p:commandButton type="button" value="#{overallBundle['box.overall.reload']}" onclick="window.location.reload(true);" />
+				</h:form>
+			</div>
+		</p:dialog>
+		<!-- см. также Argus.System.Page._initClientErrorHandling -->
+
+		<script>
+			Argus.System.Page.initBodyEnd();
+		</script>
+
+		<h:outputStylesheet name="box-inf/styles/core-layout.css" />
+		<h:outputStylesheet name="box-inf/styles/animate.css" />
+		<h:outputStylesheet name="box-inf/styles/modena-font.css" />
+		<h:outputStylesheet name="box-inf/styles/ripple-effect.css" />
+		<h:outputStylesheet name="box-inf/styles/perfect-scrollbar.css" />
+		<h:outputStylesheet name="box-inf/styles/font-awesome.css" />
+		<h:outputStylesheet name="modena-layout/styles/modena-layout.css" />
+
+	</h:body>
+</f:view>
+
+</h:html>

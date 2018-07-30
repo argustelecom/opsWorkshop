@@ -1,0 +1,59 @@
+/* property-list  - альтернативная конструкция для списка определений, где пара Name-Value отрисовываются в одной строке.
+Property-list задает ширину поля Name в процентах, в отличие от конструкции name-value, где ограничение поля Name задается в px. Это преимущество для респонсив и адаптивной верстки.
+-----------------------------
+вид конструкции
+----------------------------
+<ul class="property-list">
+	<li class="property-item">
+		<strong class="property-name">Name</strong>
+		<span class="property-value">Value</span>
+	</li>
+</ul>
+
+Используется для характеристик типов
+---------------------------------------------------------------------------------*/
+
+.property-list {
+	padding: 4px;
+	margin: 0;
+
+	.property-item {
+
+		> div {
+			display: table;
+			width: 100%;
+			font-family: 'robotolight';
+		}
+	}
+
+	.property-name {
+		display: table-cell;
+		width: 40%;
+		padding: 2px;
+		line-height: 20px;
+		vertical-align: top;
+	}
+
+	.property-value {
+		display: table-cell;
+		width: 60%;
+
+		.ui-inputfield,
+		>.ui-calendar,
+		>.ui-calendar > .ui-inputfield,
+		table.ui-input-measured-value,
+		.ui-selectonemenu {
+			width: 100%;
+		}
+		.ui-input-date-interval-value .ui-calendar > input,
+		.ui-input-date-interval-value .ui-calendar {
+			width: 110px !important;
+		}
+	}
+
+	&.property-value-30 {
+		.property-name {
+			width: 30%;
+		}
+	}
+}

@@ -1,0 +1,198 @@
+/* warnings is a warn style for user attention */
+.warn-style {
+	&.m-card {
+		//background: @warn-style-bg !important;
+	}
+	> .ui-dashboard-header {
+		color: @warn-style-color !important;
+	}
+	.avatar-field {
+		position: relative;
+
+		&:after {
+			content: '';
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: block;
+			position: absolute;
+			background: @warn-style-avatar-bg;
+			opacity: 1;
+			border-radius: 3%;
+		}
+		&:before {
+			z-index: 1;
+			position: absolute;
+			display: inline-block;
+			color: @warn-style-color;
+			top: 50%;
+			left: 50%;
+			margin: -67px 0 0 -70px;
+			vertical-align: middle;
+			content: '\f235';
+			text-align: center;
+			font-size: 130px;
+			font-family: 'FontAwesome';
+		}
+	}
+}
+
+.warn-color {
+	color: @warn-style-color;
+}
+
+/* component box-message*/
+
+.message {
+	overflow: hidden;
+	margin: 0 5px 10px 0;
+	padding: 10px;
+	font-family: 'robotoregular';
+	text-align: justify;
+}
+
+.message-info {
+	&:extend(.message);
+	border: 1px solid @info-box-color;
+	border-radius: 2px;
+}
+
+.message-note {
+	&:extend(.message);
+	border: 1px solid @orange;
+	border-radius: 2px;
+}
+
+.message-warn {
+	&:extend(.message);
+	border: 1px solid @orange;
+	border-radius: 2px;
+}
+
+.message-success {
+	&:extend(.message);
+	border: 1px solid @leaden-green;
+	border-radius: 2px;
+}
+
+.message-error {
+	&:extend(.message);
+	border: 1px solid @warn-style-color;
+	border-radius: 2px;
+}
+
+.message-bg-info {
+	&:extend(.message, .message-info);
+	background-color: lighten(@info-box-color, 40%);
+}
+
+.message-bg-note {
+	&:extend(.message, .message-note);
+	background-color: lighten(@orange, 35%);
+}
+
+.message-bg-warn {
+	&:extend(.message);
+	background-color: lighten(@orange, 35%);
+}
+
+.message-bg-success {
+	&:extend(.message, .message-warn);
+	background-color: lighten(@leaden-green, 40%);
+}
+
+.message-bg-error {
+	&:extend(.message, .message-error);
+	background-color: lighten(@warn-style-color, 25%);
+}
+
+.message-icon {
+	position: relative;
+	padding-left: 40px;
+
+	&:before {
+		position: absolute;
+		display: block;
+		top: 0.5em;
+		left: 11px;
+		font-family: "Modena";
+		line-height: 1;
+		font-size: 20px;
+		text-align: center;
+	}
+
+	&.message-icon-info {
+		&:before {
+			color: @info-box-color;
+			content: '\e325';
+		}
+	}
+
+	&.message-icon-note {
+		&:before {
+			content: '\e124';
+			color: @orange;
+		}
+	}
+
+	&.message-icon-warn {
+		&:before {
+			content: '\e00b';
+			color: @orange;
+		}
+	}
+
+	&.message-icon-success {
+		&:before {
+			content: '\e042';
+			color: @leaden-green;
+		}
+	}
+
+	&.message-icon-error {
+		&:before {
+			content: '\e041';
+			color: @warn-style-color;
+		}
+	}
+}
+
+.message-corner {
+	position: relative;
+	border-radius: 2px;
+
+	&:before, &:after {
+		content: '';
+		position: absolute;
+		left: -20px;
+		top: 11px;
+		border: 10px solid transparent;
+		border-right: 10px solid  @info-box-color;
+	}
+	&:after {
+		border-right: 10px solid @white;
+		top: 11px;
+		left: -19px;
+	}
+}
+
+.messages-container {
+	max-height: 400px;
+	overflow-y: auto;
+	margin: 0 -20px 0 -20px;
+	padding: 0 10px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.messages-container  {
+	ul, li {
+		margin: 0;
+		padding: 0;
+	}
+	li {
+		list-style: none;
+	}
+}
+
+

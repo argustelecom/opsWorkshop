@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId> 
+		<artifactId>ejb-parent</artifactId> 
+		<version>0.15.0</version> 
+		<relativePath>../../ejb-parent/pom.xml</relativePath> 
+	</parent>
+
+	<artifactId>box-inf</artifactId>
+	<packaging>ejb</packaging>
+	<name>box-inf</name>
+
+	<properties>
+		<main.basedir>${project.parent.parent.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>system-inf</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>git-commit-id</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<prefix>git</prefix>
+					<dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+					<verbose>false</verbose>
+					<useNativeGit>false</useNativeGit>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					<skipPoms>false</skipPoms>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/build.info</generateGitPropertiesFilename>
+					<failOnNoGitDirectory>true</failOnNoGitDirectory>
+					<abbrevLength>7</abbrevLength>
+					<skip>false</skip>
+					<runOnlyOnce>false</runOnlyOnce>
+					<excludeProperties>
+						<excludeProperty>git.tags</excludeProperty>
+						<excludeProperty>git.commit.id.describe</excludeProperty>
+						<excludeProperty>git.build.user.*</excludeProperty>
+						<excludeProperty>git.build.time</excludeProperty>
+						<excludeProperty>git.commit.id.abbrev</excludeProperty>
+						<excludeProperty>git.commit.user.*</excludeProperty>
+						<excludeProperty>git.commit.message.*</excludeProperty>
+						<excludeProperty>git.remote.*</excludeProperty>
+					</excludeProperties>
+					<gitDescribe>
+						<skip>false</skip>
+						<always>false</always>
+						<abbrev>7</abbrev>
+						<dirty>-dirty</dirty>
+						<match>*</match>
+						<forceLongFormat>false</forceLongFormat>
+					</gitDescribe>
+				</configuration>
+			</plugin> 
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>pl.project13.maven</groupId>
+										<artifactId>git-commit-id-plugin</artifactId>
+										<versionRange>[2.1.12,)</versionRange>
+										<goals>
+											<goal>revision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

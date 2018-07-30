@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle var="contactTypeBundle" basename="ContactTypeBundle"/>
+    <h:form id="contact_type_edit_form">
+
+        <p:dialog id="contact_type_edit_dlg" width="500"
+				  header="#{not contactTypeEditDM.isEditMode() ? contactTypeBundle['box.contact.type.create_dialog'] : contactTypeBundle['box.contact.type.edit_dialog']}"
+                  widgetVar="contactTypeEditDlg" resizable="false" modal="true" closable="false" styleClass="icon-creation">
+
+            <dl class="name-value width-140">
+                <dt>
+                    <p:outputLabel for="new_contact_category" value="#{contactTypeBundle['box.contact.type.category']}:"/>
+                </dt>
+                <dd>
+
+
+					<p:selectOneMenu id="new_contact_category" value="#{contactTypeEditDM.newCategory}" var="c" required="true">
+						<f:selectItem itemLabel="" itemValue=""/>
+						<f:selectItems value="#{contactTypeEditDM.categories}" var="category"
+									   itemValue="#{category}" itemLabel="#{category.getName()}"/>
+
+						<p:column>
+							<i class="#{c.icon} fs14"/>
+						</p:column>
+
+						<p:column>
+							#{c.getName()}
+						</p:column>
+					</p:selectOneMenu>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="new_contact_name" value="#{overallBundle['box.overall.name']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="new_contact_name" value="#{contactTypeEditDM.newName}" required="true"
+                                 label="#{overallBundle['box.overall.name']}" maxlength="128"/>
+                </dd>
+
+                <dt>
+                    <p:outputLabel for="new_contact_short_name" value="#{overallBundle['box.overall.name.short']}:"/>
+                </dt>
+                <dd>
+                    <p:inputText id="new_contact_short_name" value="#{contactTypeEditDM.newShortName}" maxlength="32"/>
+                </dd>
+            </dl>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}" styleClass="m-blue-text-button" update="contact_type_edit_dlg"
+                                 process="@this" action="#{contactTypeEditDM.cancel()}" resetValues="true" onclick="PF('contactTypeEditDlg').hide()"/>
+                <p:commandButton id="create_button" value="#{contactTypeEditDM.getSubmitButtonLabel()}"
+                                 action="#{contactTypeEditDM.submit()}" update="#{update} new_contact_category new_contact_name"/>
+            </div>
+
+        </p:dialog>
+
+    </h:form>
+
+</ui:composition>

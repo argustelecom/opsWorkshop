@@ -1,0 +1,180 @@
+/* wizard */
+.box-wizard {
+	position: relative;
+
+	.ui-outputpanel.ui-widget {
+		min-height: 274px;
+		padding: 10px !important;
+	}
+
+	.ui-wizard-content:after {
+		visibility: hidden;
+		display: block;
+		font-size: 0;
+		content: " ";
+		clear: both;
+		height: 0;
+	}
+
+	.ui-fileupload-content {
+		position: relative;
+		height: 200px;
+		margin: 10px;
+		border-radius: 5px;
+		border: 1px dashed;
+	}
+
+	.ui-wizard-navbar {
+		position: absolute;
+		bottom: 10px;
+		right: 13px;
+	}
+
+	.ui-wizard-step-title {
+		margin: 0 8px 0 0;
+	}
+
+	.ui-wizard-step-titles li.ui-state-default {
+		background-color: #ffffff;
+		color: @wizard-color-main;
+	}
+
+	.ui-wizard-step-titles li.ui-state-highlight {
+		background-color: #546e7a;
+		color: #ffffff;
+	}
+
+	.ui-wizard-nav-next {
+		margin-right: 5px;
+	}
+
+	.ui-wizard-nav-next,
+	.ui-wizard-nav-back {
+		background-color: #0288d1;
+	}
+
+	.ui-wizard-nav-next.ui-state-hover,
+	.ui-wizard-nav-back.ui-state-hover {
+		background-color: #03a9f4;
+	}
+
+	.ui-wizard-nav-next.ui-state-active,
+	.ui-wizard-nav-back.ui-state-active {
+		background-color: #176ba0;
+	}
+
+	.ui-fileupload-content:after {
+		content: "\f016";
+		font-size: 40px;
+		color: #546e7a;
+		left: 50%;
+		margin: -33px 0 0 -35px;
+	}
+
+	.ui-fileupload-content:before {
+		content: "Выберите файл через меню 'Обзор', либо перетащите его в эту область";
+		font-family: 'robotolight';
+		font-size: 13px;
+		color: @wizard-color-main;
+		left: 50%;
+		margin: 12px 0 0 -247px;
+	}
+
+	.dialog-footer-buttons {
+		border-top: none;
+	}
+
+	.ui-widget .ui-widget {
+		font-family: 'robotolight';
+	}
+
+}
+
+#upload_file_form .box-wizard .custom-content-card {
+	padding-bottom: 45px !important;
+}
+
+.ui-button.dark-background.ui-state-hover {
+	background-color: #546e7a;
+	opacity: 0.8
+}
+
+
+.ui-wizard-nav-back {
+	margin-right: 10px;
+}
+
+.ui-wizard .ui-wizard-nav-back .ui-icon-arrowthick-1-w,
+.ui-wizard .ui-wizard-nav-next .ui-icon-arrowthick-1-e {
+	background-image: none !important;
+}
+
+.ui-wizard-navbar .ui-wizard-nav-next.ui-wizard-nav-next .ui-button-text {
+	padding: 10px 40px 10px 20px !important;
+}
+
+.ui-wizard .ui-wizard-nav-next:after,
+.ui-wizard .ui-wizard-nav-back:after,
+.box-wizard .ui-fileupload-content:after,
+.box-wizard .ui-fileupload-content:before {
+	z-index: 1;
+	position: absolute;
+	top: 50%;
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: 100;
+	text-decoration: inherit;
+}
+
+.ui-wizard .ui-wizard-nav-next:after {
+	content: "\f061";
+	font-size: 14px;
+	color: #fff;
+	right: 18px;
+	margin: -6px 0 0 0;
+}
+
+.ui-wizard .ui-wizard-nav-back:after {
+	content: "\f060";
+	font-size: 14px;
+	color: #fff;
+	left: 18px;
+	margin: -6px 0 0 0;
+}
+
+.dialog-nav-wizard {
+
+	.ui-wizard-step-titles {
+		border-bottom: 1px solid @wizard-border-bottom-color;
+
+		.ui-wizard-step-title {
+			background-color: transparent;
+			color: @wizard-color-main;
+			border-bottom: 1px solid transparent;
+
+			&:hover {
+				color: @wizard-color-lighten;
+				border-bottom-color: @wizard-border-bottom-color;
+			}
+
+			&.ui-state-highlight {
+				background-color: transparent;
+				border-bottom-color: @wizard-color-main;
+			}
+		}
+	}
+
+	.ui-wizard-content {
+		margin: 20px 0 0;
+		&:after,
+		&:before {
+			content: " ";
+			display: table;
+			height: 0;
+			clear: both;
+			visibility: hidden;
+
+		}
+	}
+}
+

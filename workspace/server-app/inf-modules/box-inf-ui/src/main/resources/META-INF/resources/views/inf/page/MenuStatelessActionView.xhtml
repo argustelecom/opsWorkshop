@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<h:html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+<!-- Stateless view, в котором по умолчанию выполняются POST'ы главного меню. Подробнее см. MenuFrame.xhtml. -->
+
+<o:importConstants type="ru.argustelecom.system.inf.metadata.PackageDescriptor" />
+
+<f:view encoding="UTF-8" contentType="text/html" transient="true">
+	<h:head>
+	</h:head>
+
+	<h:body>
+		<ui:include src="MenuFrame.xhtml" />
+	</h:body>
+</f:view>
+
+</h:html>

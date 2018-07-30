@@ -1,0 +1,74 @@
+<ui:composition template="/views/env/filter/ListFrame.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:boxenv="http://argustelecom.ru/box/env">
+
+	<ui:define name="completeFilterFields">
+		<ul>
+			<li>
+				<div class="filter-item">
+					<span class="filter-name width-100-percents">
+						<p:outputLabel value="#{securityRoleBundle['box.role.search.hint']}"/>
+					</span>
+					<span class="filter-value">
+						<p:inputText styleClass="m-wid-auto-on-mobile"
+									 value="#{roleListViewState.searchQuery}">
+						</p:inputText>
+					</span>
+				</div>
+			</li>
+		</ul>
+	</ui:define>
+
+	<ui:define name="shortFilterFields">
+		<ul>
+			<ui:fragment rendered="#{roleListViewState.searchQuery ne null}">
+				<li>
+					<p:outputLabel value="#{securityRoleBundle['box.role']}:"/>
+					<h:outputText value="#{roleListViewState.searchQuery}"/>
+				</li>
+			</ui:fragment>
+		</ul>
+	</ui:define>
+
+	<ui:define name="searchResult">
+		<h:form id="#{resultFormId}">
+
+			<div class="ui-dashboard-header">
+				<i class="fa fa-binoculars" />
+				<h:outputText styleClass="card-header"  value="#{overallBundle['box.overall.searching_results']}"/>
+
+				<p:outputPanel id="create_button" styleClass="m-fright">
+					<p:commandButton value="#{securityRoleBundle['box.role.create']}"
+									 onclick="PF('roleCreationDlg').show()"
+									 disabled="#{!p:ifGranted('System_RoleEdit')}" id="mainttp"/>
+				</p:outputPanel>
+			</div>
+
+			<p:dataTable id="role_table" value="#{roleListViewModel.lazyDm}" var="role" lazy="true"
+						 paginator="true" rows="25" emptyMessage="#{overallBundle['box.overall.empty']}"
+						 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						 currentPageReportTemplate="{startRecord} - {endRecord} #{overallBundle['box.overall.from']} {totalRecords}" rowsPerPageTemplate="25,50,100" sortMode="single"
+						 sortBy="#{RoleSort.id}" sortOrder="descending" selectionMode="single">
+
+				<p:column headerText="#{overallBundle['box.overall.id']}" styleClass="width-100" sortBy="#{RoleSort.id}">
+					<boxenv:linkToCard value="#{role.getIdentifiable()}" text="#{role.id}"/>
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.name']}" sortBy="#{RoleSort.name}">
+					<h:outputText value="#{role.name}"/>
+				</p:column>
+
+				<p:column headerText="#{overallBundle['box.overall.desc']}">
+					<h:outputText value="#{role.desc}" />
+				</p:column>
+
+				<p:column styleClass="width-16">
+					<i class="#{role.sys ? 'icon-lock m-red' : ''}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

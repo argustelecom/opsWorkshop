@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pm="http://primefaces.org/modena">
+
+	<f:loadBundle basename="TopBarBundle" var="topBarBundle"/>
+
+	<li>
+		<a class="ripplelink" title="#{topBarBundle['box.top_bar.system_info']}">
+			<i class="icon-info_outline"/><span class="m-show-on-mobile">#{topBarBundle['box.top_bar.system_info']}</span>
+		</a>
+		<ul class="m-pad-15 m-bold-gray" style="width: 225px">
+			<li>
+				<ui:include src="frame/ApplicationPropertiesFrame.xhtml"/>
+			</li>
+		</ul>
+	</li>
+
+</ui:composition>

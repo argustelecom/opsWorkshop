@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+                <div class="avatar">
+
+                    <f:event type="preRenderComponent" listener="#{personAvatarFM.preRender(personDataDto)}"/>
+
+                    <h:panelGroup id="avatar_panel" styleClass="avatar-field avatar-field-round" rendered="true" layout="block">
+                        <p:graphicImage value="#{avatarUri.avatar}" cache="false" rendered="#{not personAvatarFM.showUploadedAvatar()}">
+                            <f:param name="#{avatarUri.personIdParamName}"
+                                     value="#{not personAvatarFM.showDefaultAvatar() ? personDataDto.personId : avatarUri.defaultPersonId}"/>
+                        </p:graphicImage>
+
+                        <o:graphicImage value="#{personAvatarFM.uploadedAvatar}" rendered="#{personAvatarFM.showUploadedAvatar()}" dataURI="true"/>
+                    </h:panelGroup>
+
+                    <p:outputPanel id="manage_buttons" class="avatar-tools m-disp-block" rendered="#{canEdit}">
+
+                        <p:commandLink styleClass="m-mar-right10" action="#{personAvatarFM.removeAvatar()}" process="@this"
+                                       update="avatar_panel manage_buttons" rendered="#{personAvatarFM.canRemoveAvatar()}">
+                            <i id="avatar_delete" class="icon-clear m-bold-gray  fs28"
+                               title="#{overallBundle['box.overall.delete']}"/>
+                        </p:commandLink>
+
+                        <script type="text/javascript">
+                            $( document ).ready(function() {
+                                Argus.System.Tooltip.tooltip("",'#employee_edit_form-manage_buttons .ui-button');
+                            });
+                        </script>
+
+                    </p:outputPanel>
+                </div>
+
+</ui:composition>

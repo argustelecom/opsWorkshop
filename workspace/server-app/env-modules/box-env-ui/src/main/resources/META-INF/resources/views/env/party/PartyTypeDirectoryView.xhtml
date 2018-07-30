@@ -1,0 +1,148 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{partyTypeDirectoryVm}"/>
+	<ui:param name="pageTitle" value="#{partyTypeBundle['box.party.type.plural']}"/>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="partyType" value="#{currentType.value}" required="false"/>
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="box-env/styles/box-env.css"/>
+		<h:outputStylesheet name="inf/styles/box-functional-block.css"/>
+	</ui:define>
+
+	<ui:define name="pagePath">
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+		<f:loadBundle basename="PartyTypeBundle" var="partyTypeBundle"/>
+		<f:loadBundle basename="TypeBundle" var="typeBundle"/>
+
+		<p:menuitem value="#{overallBundle['box.overall.home']}" url="/views/env/home/HomeView.xhtml"/>
+		<p:menuitem value="#{overallBundle['box.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml"/>
+		<p:menuitem value="#{partyTypeBundle['box.party.type.plural']}"/>
+	</ui:define>
+
+	<ui:define name="body">
+		<div class="m-container35 m-responsive100">
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+						<h:form id="party_type_tree_form">
+
+							<div class="ui-dashboard-header">
+								<p:inputText styleClass="m-wid50 m-wid-auto-on-mobile m-mar-right10" />
+								<i class="fa fa-search" />
+
+								<p:outputPanel id="party_type_tree_managed_buttons" styleClass="m-fright">
+									<p:commandLink id="create_party_type_button" styleClass="m-mar-left10" update="possible_party_type_categories"
+													title="#{overallBundle['box.overall.create']}" disabled="#{!p:ifGranted('System_PartyTypeEdit')}">
+													<i class="fa fa-edit icon-btn"/>
+									</p:commandLink>
+
+									<p:overlayPanel id="party_type_creation_panel" widgetVar="partyTypeCreationPanelVar" for="create_party_type_button"
+													styleClass="select-one-item-overlay-panel">
+										<p:selectOneListbox id="possible_party_type_categories" value="#{partyTypeCreationDm.newCategory}" var="category">
+
+											<p:ajax process="@this" listener="#{partyTypeCreationDm.onDialogOpen()}"
+													update="party_type_creation_form"/>
+
+											<f:selectItems value="#{partyTypeDirectoryVm.partyCategories}" var="pc"
+														   itemValue="#{pc}" itemLabel="#{pc.name}"/>
+											<p:column>
+												<i class="#{category.icon}"/>
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{category.name}"/>
+											</p:column>
+										</p:selectOneListbox>
+									</p:overlayPanel>
+
+									<p:commandLink styleClass="m-mar-left10" action="#{partyTypeDirectoryVm.removePartyType()}" process="@this"
+													 disabled="#{!p:ifGranted('System_PartyTypeEdit') or !partyTypeDirectoryVm.removableNode}" update="party_type_tree_form"
+													 title="#{overallBundle['box.overall.delete']}">
+													<i class="fa fa-trash icon-btn"/>
+													<p:confirm header="#{partyTypeBundle['box.party.type.delete_dialog']}"
+                                                     message="#{partyTypeBundle['box.party.type.delete_dialog.details']} '#{partyTypeDirectoryVm.partyType.name}'?" />
+									</p:commandLink>
+								</p:outputPanel>
+							</div>
+
+							<o:importConstants type="ru.argustelecom.box.env.party.PartyTypeNodeRef" var="partyTypeNodeType"/>
+
+							<p:outputPanel id="party_type_tree_panel">
+								<p:tree id="party_type_tree" styleClass="width-100-percents m-ov-auto tree-no-border" value="#{partyTypeDirectoryVm.partyTypeNode}"
+										var="node" lazy="true" dynamic="true" selectionMode="single" selection="#{partyTypeDirectoryVm.selectedNode}"
+										highlight="true" cashe="false" propagateSelectionUp="false" propagateSelectionDown="false">
+
+									<p:ajax event="select"
+											update="party_type_tree_form-party_type_tree_managed_buttons party_type_tree_form-party_type_creation_panel party_type_attributes_form type_property_form"/>
+
+									<p:treeNode type="#{partyTypeNodeType.PERSON.keyword}">
+										<i class="#{partyTypeNodeType.PERSON.icon} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}"/>
+									</p:treeNode>
+
+									<p:treeNode type="#{partyTypeNodeType.COMPANY.keyword}">
+										<i class="#{partyTypeNodeType.COMPANY.icon} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}"/>
+									</p:treeNode>
+
+									<p:treeNode type="#{partyTypeNodeType.PARTY_TYPE.keyword}">
+										<i class="#{partyTypeNodeType.PARTY_TYPE.icon} m-fleft m-mar-right3 m-mar-top3"/>
+										<h:outputText value=" #{node.name}"/>
+									</p:treeNode>
+								</p:tree>
+
+								<script>
+									$( document ).ready(function() {
+										Argus.System.AutoHeight.compute('party_type_tree_form', 40);
+										Argus.System.AutoHeight.compute('party_type_tree_form-party_type_tree', 35);
+									});
+								</script>
+							</p:outputPanel>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container65 m-responsive100">
+			<ui:include src="PartyTypeAttributesFrame.xhtml">
+				<ui:param name="update" value="party_type_tree_form-party_type_tree"/>
+			</ui:include>
+
+			<div class="m-container100">
+				<div class="m-container-indent">
+					<div class="m-card m-shadow-effect simple-fb">
+						<ui:include src="/views/env/type/TypePropertyFrame.xhtml">
+							<ui:param name="readonly" value="#{!p:ifGranted('System_PartyTypePropertyEdit')}" />
+						</ui:include>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="dialogs">
+		<ui:include src="PartyTypeCreationDialog.xhtml">
+			<ui:param name="update" value="party_type_tree_form party_type_attributes_form"/>
+			<ui:param name="updateWhenCancel" value="-party_type_tree_form-possible_party_type_categories"/>
+		</ui:include>
+
+		<ui:include src="/views/env/type/TypePropertyAddDialog.xhtml"/>
+
+		<ui:include src="/views/env/type/TypePropertyEditDialog.xhtml"/>
+
+		<ui:include src="/views/env/type/TypePropertyGroupEditDialog.xhtml">
+			<ui:param name="updatedElements" value="type_property_form"/>
+		</ui:include>
+	</ui:define>
+</ui:composition>

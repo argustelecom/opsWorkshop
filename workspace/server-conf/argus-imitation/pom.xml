@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>server-conf-parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../server-conf-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>argus-imitation</artifactId>
+	<packaging>pom</packaging>
+	<name>argus-imitation</name>
+
+	<properties>
+		<main.basedir>${project.parent.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant-launcher</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-argus-core-artifacts</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>ru.argustelecom.argus</groupId>
+									<artifactId>jboss-conf</artifactId>
+									<overWrite>true</overWrite>
+									<outputDirectory>${argus.imitation.jboss-conf}/target</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>ru.argustelecom.argus</groupId>
+									<artifactId>core</artifactId>
+									<overWrite>true</overWrite>
+									<outputDirectory>${argus.imitation.core}/target</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-argus-core-artifacts</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>ru.argustelecom.argus</groupId>
+									<artifactId>jboss-conf</artifactId>
+									<version>${version.ru.argustelecom.argus}</version>
+									<classifier>groovy-scripts</classifier>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${argus.imitation.jboss-conf}/src/main/groovy</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>ru.argustelecom.argus</groupId>
+									<artifactId>core</artifactId>									
+									<version>${version.ru.argustelecom.argus}</version>
+									<classifier>argus-core-package</classifier>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${argus.imitation.core.package}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>clear-unnecessary-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<property name="corePackageDir" value="${argus.imitation.core.package.absolutepath}" />
+
+								<!-- Удаление лишней конфигурации -->
+								<delete dir="${corePackageDir}/domain/configuration/argustelecom" failonerror="true" />
+								<delete dir="${corePackageDir}/standalone/configuration/argustelecom" failonerror="true" />
+								<delete dir="${corePackageDir}/standalone/configuration/report-templates" failonerror="true" />
+
+								<!-- Удаление лишних статических модулей -->
+								<!-- com.oracle.ojdbc:main нужен для модуля ru.argustelecom.core. Поэтому, оставляем здесь -->
+								<!-- delete dir="${corePackageDir}/modules/com/oracle/ojdbc/main" failonerror="true" /-->
+
+								<!-- Чистка директории статических модулей от пустых директорий, оставшихся после удаления модулей -->
+								<delete includeemptydirs="true" failonerror="true">
+									<fileset dir="${corePackageDir}/modules">
+										<and>
+											<size value="0" />
+											<type type="dir" />
+										</and>
+									</fileset>
+								</delete>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${argus.imitation.jboss-conf}</directory>
+						</fileset>
+						<fileset>
+							<directory>${argus.imitation.core}</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

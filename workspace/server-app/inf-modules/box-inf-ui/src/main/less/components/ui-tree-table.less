@@ -1,0 +1,115 @@
+/* tree-table */
+
+.tree-no-border {
+	width: 100%;
+	margin-left: -10px;
+	border: none;
+}
+
+.tree-tab-no-top-padding {
+	&.ui-tabs {
+		.ui-tabs-panel {
+			padding: 0 10px !important;
+		}
+	}
+}
+
+.select-one-item-overlay-panel .ui-overlaypanel-content {
+	padding: 0 !important;
+	text-align: left;
+}
+
+/* tree-table body */
+.ui-treetable {
+
+	border: none;
+
+	table {
+
+		thead {
+			tr {
+				th {
+					color: #546e7a;
+					background-color: #f5f5f5;
+					border: 1px solid #e6eaec;
+					font-size: @tree-table-td-font-size;
+					font-weight: normal;
+				}
+			}
+		}
+		tbody {
+			tr {
+				td {
+					border: 1px solid #e6eaec;
+					font-size: @tree-table-td-font-size;
+					line-height: 1.2;
+				}
+			}
+		}
+	}
+
+	tbody {
+		td {
+			&:not(.ws-normal){
+				white-space: pre-line;
+			}
+
+			.tree-node {
+				overflow: hidden;
+				display: table-cell;
+			}
+
+			.ui-chkbox {
+				float: left;
+			}
+		}
+
+	}
+
+	.ui-icon-triangle-1-s, .ui-icon-triangle-1-e {
+		background-image: url("#{resource['modena-theme/images/breadcrumb-arrow.svg']}");
+		background-size: 100%;
+		margin-top: 2px;
+		height: 12px;
+		width: 12px;
+	}
+
+	.ui-icon-triangle-1-s {
+		transform: rotate(90deg);
+	}
+
+	&.tree-table-no-header{
+		thead {
+			display: none;
+		}
+	}
+
+	&.tree-table-no-border {
+		tbody {
+			tr {
+				td {
+					border: none;
+				}
+			}
+		}
+	}
+
+	&.tree-table-num-pattern {
+		tbody {
+			tr {
+				.first-column {
+					.ui-outputlabel{
+						width: 63%;
+					}
+				}
+				td {
+					padding: 5px;
+				}
+			}
+		}
+	}
+}
+
+
+
+

@@ -1,0 +1,98 @@
+/* bill-type */
+.bill-analytic-list {
+	overflow-y: auto;
+	margin: -16px;
+	padding: 16px;
+	font-family: "robotolight";
+
+	.bill-analytic-list-category {
+		padding: 0 0 5px 5px;
+	}
+
+	.bill-analytic-list-name {
+		font-family: 'robotomedium';
+	}
+
+	.bill-analytic-list-value {
+		display: inline-block;
+		margin-top: 5px;
+		vertical-align: top;
+	}
+}
+
+.ui-dialog {
+
+	.bill-analytic-list-name {
+		padding: 0 0 5px;
+		font-size: 16px;
+	}
+}
+
+
+ul{
+	&.directory-creation-list {
+		font-size: 14px;
+		padding: 0!important;
+		margin: 0!important;
+
+		li {
+			margin: 0;
+			cursor: pointer;
+
+			&:hover {
+				background-color: #f5f5f5 !important;
+			}
+
+			a.ui-commandlink {
+				display: block;
+				padding: 10px 15px;
+				color: #546e7a !important;
+			}
+		}
+	}
+}
+
+.bill-description {
+	.sys-comp-editable-section-output-multiline {
+		max-height: 61px;
+	}
+}
+
+.grouping-method{
+	width: 45% !important;
+	margin-right: 10px;
+}
+
+.grouping-autocompete {
+	width: 40%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.bill-send-download {
+	display: table;
+	margin: 30px 0 0 -28px;
+
+
+	i {
+		display: table-cell;
+		color: #546e7a;
+	}
+
+	.bill-send-download-text {
+		display: table-cell;
+		padding-left: 10px;
+		color: #546e7a ;
+		font-family: 'robotoregular';
+		line-height: 1.3;
+		vertical-align: top;
+		text-decoration: underline;
+	}
+
+	&:hover {
+		.bill-send-download-text {
+			text-decoration: none;
+		}
+	}
+
+}

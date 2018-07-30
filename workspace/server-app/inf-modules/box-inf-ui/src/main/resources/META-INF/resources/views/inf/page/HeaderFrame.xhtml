@@ -1,0 +1,17 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pm="http://primefaces.org/modena">
+
+	<div class="m-container100">
+		<div class="m-container-indent">
+			<h:form id="page_path_form">
+				<p:breadCrumb styleClass="ui-page-path m-shadow-effect m-wid-100" homeDisplay="text">
+					<ui:insert name="pagePath" />
+				</p:breadCrumb>
+			</h:form>
+		</div>
+	</div>
+
+</ui:composition>

@@ -1,0 +1,33 @@
+/* tooltip */
+.ui-tooltip {
+	width: 300px;
+	background-color: rgba(69, 90, 100, .9) !important;
+	font-size: 14px !important;
+	white-space: pre-line;
+	text-align: justify;
+}
+
+.tooltip-help {
+	display: inline-block;
+	opacity: .4;
+	vertical-align: top;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.tooltip-help-3 {
+	&:extend(.tooltip-help);
+	margin-top: 3px;
+}
+
+.tooltip-help-5 {
+	&:extend(.tooltip-help);
+	margin-top: 5px;
+}
+
+.tooltip-help-15 {
+	&:extend(.tooltip-help);
+	margin-top: 15px;
+}

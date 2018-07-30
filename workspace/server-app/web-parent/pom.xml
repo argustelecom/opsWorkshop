@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>server-app-parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../server-app-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>web-parent</artifactId>
+	<packaging>pom</packaging>
+	<name>web-parent</name>
+
+	<properties>
+		<main.basedir>${project.parent.parent.basedir}/..</main.basedir>
+		<main.module-name>web-parent</main.module-name>
+		<main.skip.less-compilation>false</main.skip.less-compilation>
+        <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
+        <sonar.skip>true</sonar.skip>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>system-inf-ui</artifactId>	
+			<!-- provided, так как попадание в war/lib обеспечивается зависимостью в webui -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>system-inf-ui</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-inf</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.spec.javax.faces</groupId>
+			<artifactId>jboss-jsf-api_2.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- поддержка тестов UI -->
+		<!-- эта зависимость здесь нужна ради селениума, а выполняются тесты через webui -->
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-drone-webdriver-depchain</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.graphene</groupId>
+			<artifactId>graphene-webdriver</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+		<!-- TASK-86080 Добавление graphene скриншотера -->
+		<dependency>
+			<groupId>org.jboss.arquillian.graphene</groupId>
+			<artifactId>arquillian-browser-screenshooter</artifactId>
+			<version>${version.org.jboss.arquillian.browser.screenshooter}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>	
+				<plugin>
+					<groupId>org.lesscss</groupId>
+					<artifactId>lesscss-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>compile-less-default</id>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+							<phase>process-sources</phase>
+							<configuration>
+								<sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
+								<outputDirectory>${project.build.outputDirectory}/META-INF/resources/resources/${main.module-name}/styles</outputDirectory>
+								<skip>${main.skip.less-compilation}</skip>
+								<force>${argus.build.less.force}</force>
+								<compress>${argus.build.less.compress-output}</compress>
+								<includes>
+									<include>${main.module-name}.less</include>
+								</includes>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>	
+		</pluginManagement>
+	</build>
+	<profiles>
+		<profile>
+			<!-- профиль, включаемый нами для выполнения интеграционных тестов UI. Содержит 
+				вызов тестов, а подготовительные мероприятия (запуск сеорвера, деплой, последующий за билдом останов сервера) делаются в webui/pom.xml) -->
+			<id>ui-tests</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.gmaven</groupId>
+						<artifactId>gmaven-plugin</artifactId>
+						<executions>
+							<execution>
+							<!-- используется для arquillian-тестов. Изменяет стандартные настроки для СП Box на настройки необходимые для запуска СП Box Personal Area -->
+								<id>calc-some-props-personal-area</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<source>
+										boolean argusTestUiRemoteArm = Boolean.valueOf(project.properties.getProperty("argus.test.ui.remotearm"));
+										if (argusTestUiRemoteArm) {
+											int offset = Integer.valueOf(project.properties["jboss.socket.binding.port-offset"]) ;
+											//TASK-89021, v.semchenko: для тестов личного кабинета порт 8190
+											project.properties.setProperty("application.port", String.valueOf(offset + 8190));
+										}
+									</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- failsafe plugin все же надо явно описать, чтобы включался на фазе тестов -->
+					<plugin>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<systemPropertyVariables>
+								<arquillian.launch>wildfly-managed</arquillian.launch>
+								<org.jboss.remoting-jmx.timeout>300</org.jboss.remoting-jmx.timeout>
+								<UNIT_TEST_SERVER_PATH>${INSTALL_PATH}</UNIT_TEST_SERVER_PATH>
+								<MANAGEMENT_PORT>${management.port}</MANAGEMENT_PORT>
+								<MANAGEMENT_ADDRESS>${jboss.bind.address}</MANAGEMENT_ADDRESS>
+								<APP_PORT>${application.port}</APP_PORT>
+								<CONTEXT_ROOT>${contextRoot}</CONTEXT_ROOT>
+							</systemPropertyVariables>
+							<argLine>-Dfile.encoding=UTF-8</argLine>
+						</configuration>
+					</plugin>
+					<!-- когда выполняем интеграционные тесты (то есть активен профиль integration-tests, 
+						ut скипаем -->
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<skipTests>true</skipTests>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

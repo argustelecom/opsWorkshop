@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	JBIDE ругается на вычисляемые значения в optional, причем еррорами.
+	Создал https://issues.apache.org/jira/browse/MNG-5864, т.к. похоже на ошибку в схеме.
+	Убрал здесь схему, тогда есть просто ворнинг про отсутствие схемы. И нет валидации само собой.
+-->
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.box</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.15.0</version>
+		<relativePath>../../../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>webui</artifactId>
+	<packaging>war</packaging>
+	<name>webui</name>
+
+	<properties>
+		<main.basedir>${project.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<!-- для ru.argustelecom.system.inf.application.WebAppCtxProviderWebUI -->
+		<dependency>
+			<groupId>io.undertow</groupId>
+			<artifactId>undertow-servlet</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ################################# -->
+		<!-- НАЧАЛО вебфрагментов (project-ui) -->
+		<!-- ################################# -->
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-inf-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.box</groupId>
+			<artifactId>box-env-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- ################################ -->
+		<!-- КОНЕЦ вебфрагментов (project-ui) -->
+		<!-- ################################ -->
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>                        
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+	</build>
+
+	<profiles>
+		<profile>
+			<!-- before-ui-tests-build-add-ear - профиль, используемый для выполнения билда интеграционных тестов UI на сервере CI. Содержит плагин, 
+				добавляющий собраную ear-ку в каталог деплойментов сервера приложейний (считается, что ear уже собрана в argus-enterprise/target) 
+				и прогоном тестов. Используется только в test-helper.bat, при сборке ui-tests в teamcity его не используем. -->
+			<id>before-ui-tests-build-add-ear</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- закидываем наш ear на сервер -->
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-ear-before-integration-tests</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>${project.groupId}</groupId>
+											<artifactId>box-enterprise</artifactId>
+											<overWrite>true</overWrite>
+											<version>${project.version}</version>
+											<outputDirectory>${INSTALL_PATH}/standalone/deployments</outputDirectory>
+											<type>ear</type>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- TASK-86264, v.semchenko: потребовалось разделение исходных профилей before-ui-tests-build и after-ui-tests-build на несколько профилей, отвечающих за конкретные задачи. -->
+			<!-- before-ui-tests-build-start-appserver - профиль, используемый для выполнения билда интеграционных тестов UI на сервере CI. Содержит плагины, обеспечивающие запуск сервера.
+				Не запускает сами тесты, а также не делает завершающие билд операции (это в отдельных профилях ui-tests(см. ui-parent) и after-ui-tests-build. -->
+			<id>before-ui-tests-build-start-appserver</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- стартуем сервер -->
+					<plugin>
+						<groupId>org.wildfly.plugins</groupId>
+						<artifactId>wildfly-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>start-server-before-integration-tests</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<jbossHome>${INSTALL_PATH}</jbossHome>
+							<port>${management.port}</port>
+							<hostname>${jboss.bind.address}</hostname>
+							<!-- при дефолтных значениях памяти недостаточно, чтобы успешно стартануть нашу ear -->
+							<jvmArgs>-Xms2048m -Xmx4096m 
+								-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8
+								-Dsun.lang.ClassLoader.allowArraySyntax=true
+								-Djava.net.preferIPv4Stack=true</jvmArgs>
+							<startupTimeout>300</startupTimeout>
+							<!-- kostd, TASK-91307: лог сервера не должен попадать в консоль (иначе слишком 
+							большой билдлог ci). Сохраним в файлик, который можно как выбросить, так и 
+							забрать в артефакты, если почему-то обычного server.log недостаточно -->
+							<stdout>${project.build.directory}/wildfly-log.log</stdout>
+							<username>${argus.app.admin.user}</username>
+							<password>${argus.app.admin.pass}</password>
+						</configuration>
+					</plugin>
+					<!-- wildfly-maven-plugin, стартующий jboss, возвращает управление сразу 
+						же, не дожидаясь, пока развернутся наши деплойменты(по крайней мере, так было раньше). Здесь наша задача подождать, 
+						пока все задеплоится, и только после этого переходить к тестам. -->
+					<plugin>
+						<groupId>org.codehaus.gmaven</groupId>
+						<artifactId>gmaven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>before-integration-tests</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<source>
+									<![CDATA[
+										//#TODO: щас здесь определяем, что все задеплоилось по появлению файлика .deployed в каталоге деплоя сервера. Это не изящно.
+										// Более красивый способ - использование cli API, см. https://community.jboss.org/wiki/AdvancedCLIScriptingWithGroovyRhinoJythonEtc
+										// Но не взлетело, падает с ошибкой Caused by: java.lang.ClassNotFoundException: org.jboss.as.cli.impl.CommandContextFactoryImpl
+										// ошибка плохо понятна и не гуглится. Предположительно, связана с особенности класслоадинга в плагине gmaven. Если будешь пробовать,
+										//смотри, какие нужно добавить зависимости коду в wildfly-8.0.0.Beta1\bin\client\README-EJB-JMS.txt.
+
+										// В цикле будем проверять, что в каталоге деплоев сервера появился файлик .deployed. Если появился, сервер готов к тестам.
+										// (то есть гарантированно запущен и задеплоил наш ear, потому что мы только что чистили все деплойменты, а потом подсовывали ear)
+										// TASK-86264, v.semchenko: берем имя ear из соответствующего профиля customer
+										String earFileName = project.properties['box.ear.final-name'];
+										for(int i = 0; i < 300; i++){
+											File deployedMarker = new File( project.properties.getProperty('INSTALL_PATH'),
+												'/standalone/deployments/' + earFileName + '.ear.deployed');
+											if (deployedMarker.exists()) break;
+											// если файлик еще не появился, чутка подождем и попробуем снова.
+											Thread.currentThread().sleep(1000)
+											
+											//если сервер за отведенные 5м не запустился, дальше нечего делать, надо фейлить.
+											//TASK-55548. На загрузку трех кешей (адреса, узлы, персонал) может понадобится ~10 мин.
+											if (i == 299) fail("Timeout 300 seconds occured while waiting server start and deploy ear before integration tests")
+										}
+										]]>
+									</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- after-ui-tests-build-stop-appserver - профиль, используемый для выполнения билда интеграционных тестов UI на сервере CI. Содержит плагины выполняющий остановку сервера. 
+				Все действия after-ui-tests-build-stop-server и after-ui-tests-build-clean-deployments на фазе initialize, так как завершительные операции надо делать 
+				отдельным мавен-билдом, а тогда уж проще указать фазу поменьше, чтобы лишнего не делать. -->
+			<id>after-ui-tests-build-stop-appserver</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- останавливаем сервер -->
+					<plugin>
+						<groupId>org.wildfly.plugins</groupId>
+						<artifactId>wildfly-maven-plugin</artifactId>
+						<executions>
+							<!-- предыдущие версии wildfly-maven-plugin делали start так, что сервер сам останавливался, когда завершался порождающий start мавен-процесс.
+								Но теперь это не так, останавливаем явно сами. -->
+							<execution>
+								<id>stop-server-after-integration-tests</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>shutdown</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<jbossHome>${INSTALL_PATH}</jbossHome>
+							<port>${management.port}</port>
+							<hostname>${jboss.bind.address}</hostname>
+							<!-- при дефолтных значениях памяти недостаточно, чтобы успешно стартануть нашу ear -->
+							<jvmArgs>-Xms2048m -Xmx4096m 
+								-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8
+								-Dsun.lang.ClassLoader.allowArraySyntax=true
+								-Djava.net.preferIPv4Stack=true</jvmArgs>
+							<startupTimeout>300</startupTimeout>
+							<!-- kostd, TASK-91307: лог сервера не должен попадать в консоль (иначе слишком 
+							большой билдлог ci). Сохраним в файлик, который можно как выбросить, так и 
+							забрать в артефакты, если почему-то обычного server.log недостаточно -->
+							<stdout>${project.build.directory}/wildfly-log.log</stdout>
+							<username>${argus.app.admin.user}</username>
+							<password>${argus.app.admin.pass}</password>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- after-ui-tests-build-clean-deployments - профиль, используемый для выполнения билда интеграционных тестов UI на сервере CI. Содержит плагин 
+				выполняющий очистку каталога деплойментов после прогона всех тестов. Выделен в отдельный профиль так как используется только в test-helper.bat, 
+				при сборке ui-tests в teamcity его не используем. -->
+			<id>after-ui-tests-build-clean-deployments</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- после прогона всех тестов и остановки сервера очистим каталог деплойментов,
+						чтобы вернуть все к исходному состоянию -->
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>clean-after-its</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+								<configuration>
+									<excludeDefaultDirectories>true</excludeDefaultDirectories>
+									<filesets>
+										<fileset>
+											<directory>${INSTALL_PATH}/standalone/deployments</directory>
+											<includes>
+												<include>**/*</include>
+											</includes>
+										</fileset>
+									</filesets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<!-- prepare-list-ui-modules - профиль, используемый для выполнения билда интеграционных тестов UI на сервере CI. Содержит плагин 
+				выполняющий получение значений параметров из профиля заказчика. Выделен в отдельный профиль так как используется только в сборке ui-tests в teamcity и gitlab ci. -->
+			<id>prepare-list-ui-modules</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Результат работы записывается во временный файл target/tmpListModules.txt -->
+						<groupId>org.codehaus.gmaven</groupId>
+						<artifactId>gmaven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-list-ui-modules</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<property>
+											<listModules>protei-gate</listModules>
+									</property>
+									<source>
+											<![CDATA[
+												// TASK-89021, v.semchenko: для Box нет необходимости определять перечень модулей всключеных в поставку,
+												// пока нет профилей для заказчиков. Но есть разделение на модули ЛК и обычного Box
+
+												def listModules = project.properties['listModules'];
+												listModules = listModules.split(",");
+												String property;
+												String result = "";
+
+												String loginModule = String.valueOf(project.properties.getProperty("argus.security.login-module"));
+
+												for(int i = 0; i < listModules.size(); i++){
+													// проверяем какие тесты надо запускать ЛК или обычного Box
+													if ( loginModule.contains("ru.argustelecom.box.inf.login.PersonalAreaLoginModule") ) {
+														// в каталоге pa-modules ui-тесты для ЛК
+														// TODO: убери из условия listModules[i].contains( "personal-area-ui" ) , если появились ui-тесты 
+														// в других модулях ЛК
+														if ( listModules[i].contains( "pa-modules" ) && listModules[i].contains( "pa-modules" ) )
+															if ( i != listModules.size() - 1 ) 
+																result = result + listModules[i].toString() + ",";
+															else
+																result = result + listModules[i].toString();
+													} else {
+														// вне каталога pa-modules ui-тесты для обычного Box
+									                    if ( !listModules[i].contains( "pa-modules" ) )
+															if ( i != listModules.size() - 1 ) 
+																result = result + listModules[i].toString() + ",";
+															else
+																result = result + listModules[i].toString();
+													}
+												}
+												
+												//удаляем target/tmpListModules.txt, если файл существует
+												if ( new File('./target/tmpListModules.txt').exists() ) 
+													(new File('./target/tmpListModules.txt')).delete();
+
+												// запишем результат в файл
+												def file = new File('./target/tmpListModules.txt').newWriter("UTF-8", true);
+												file.write("modules=$result");
+												file.close();
+											]]>
+										</source>										
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

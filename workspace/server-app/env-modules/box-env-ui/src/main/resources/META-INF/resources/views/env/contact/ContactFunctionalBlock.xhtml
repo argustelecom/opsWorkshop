@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <f:loadBundle basename="ContactBundle" var="contactBundle"/>
+
+    <div class="#{containerClass eq null ? 'm-container50' : containerClass} m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                <h:form id="contacts_form">
+
+                    <div class="ui-dashboard-header">
+                        <i class="fa fa-phone-square"/>
+                        <h:outputText styleClass="card-header" value="#{contactBundle['box.contact.plural']}" />
+                        <h:outputText  id="contactsttp" class="icon-help_outline tooltip-help-15" position="top"
+                                       title="#{contactBundle['box.contact.tooltip']}"/>
+                        <p:tooltip id="contacts_ttp" for="contactsttp" />
+
+                        <p:outputPanel styleClass="m-fright">
+                            <p:commandLink action="#{contactCreationDM.open()}" title="#{contactBundle['box.contact.edit_header_tooltip']}">
+                            	<f:setPropertyActionListener value="#{party}" target="#{contactCreationDM.party}"/>
+                                <i class="fa fa-pencil-square-o icon-btn"/>
+                            </p:commandLink>
+                        </p:outputPanel>
+                    </div>
+
+					<ui:include src="ContactFrame.xhtml">
+						<ui:param name="party" value="#{party}" />
+					</ui:include>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+
+</ui:composition>

@@ -1,0 +1,177 @@
+<userInput>
+	<panel order="0" layout="center" id="0">
+
+        <field type="dir" align="center" variable="argus.java.home.path" conditionid="!isVarEmptyArgusJavaHome">
+            <spec txt="Каталог с установленной Java" size="15" set="${argus.java.home.path}" mustExist="true" create="false" allowEmptyValue="false" />
+            <validator class="ru.argustelecom.system.distributive.JavaHomePathValidator" txt="Java not found or old version of java, requires version 1.8.0_77." id="argus.java.home.path.validator" />
+        </field>
+        <field type="dir" align="center" variable="argus.java.home.path" conditionid="isVarEmptyArgusJavaHome">
+            <spec txt="Каталог с установленной Java" size="15" set="${ENV[JAVA_HOME]}" mustExist="true" create="false" allowEmptyValue="false" />
+            <validator class="ru.argustelecom.system.distributive.JavaHomePathValidator" txt="Java not found or old version of java, requires version 1.8.0_77." id="argus.java.home.path.validator" />
+        </field>
+    </panel>
+    <panel order="1" layout="left" id="1">
+
+        <field type="title" txt="Настройки сервера приложений" bold="true" size="1"/>
+        <field type="staticText" align="left" txt="Настройки подключения"/>
+        <field type="divider" align="top"/>
+
+        <field type="text" variable="jboss.bind.address">
+            <spec txt="IP Адрес:" size="15" set="${IP_ADDRESS}"/>
+            <validator  class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                                                    txt="Не верный формат IP адреса">
+				<param  name="pattern" value="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[
+            1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"/>
+            </validator>
+        </field>
+
+        <field type="text" variable="jboss.socket.binding.port-offset">
+            <!--  Здесь и далее вынуждены дублировать описание combo, потому description показывается
+                  в консольном инсталляторе, а txt в гуевом-->
+            <description align="left" txt="Смещение Web-порта:" id=""/>
+            <spec txt="(относительно значения по-умолчанию)" id="Web порт:" size="15" set="${jboss.socket.binding.port-offset}"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                       txt="Неверный формат смещения портов">
+                <param name="pattern" value="\d+"/>
+            </validator>
+        </field>
+
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Дополнительные настройки"/>
+        <field type="divider" align="top"/>
+
+        <field type="combo" variable="argus.app.debug-mode.enabled">
+            <description align="left" txt="Сервер предназначен для тестирования?" id="modecombo"/>
+            <spec>
+                <choice txt="Нет" value="false"/>
+                <choice txt="Да" value="true"/>
+            </spec>
+        </field>
+
+        <field type="space"/>
+
+        <field type="text" variable="argus.app.memory.max-size">
+            <spec txt="Доступная память, Мб (мин 4.0Гб+20Мб на пользователя):" size="8" set="${argus.app.memory.max-size}"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                       txt="Неверный формат объема памяти">
+                <param name="pattern" value="\d+"/>
+            </validator>
+        </field>
+
+        <field type="space"/>
+
+        <field type="staticText" align="left" txt="Настройки SMTP"/>
+        <field type="divider" align="top"/>
+        <field type="check" variable="argus.enable.mail">
+            <spec txt="Включить почтовую рассылку?" true="true" false="false" revalidate="true"/>
+        </field>
+        <field type="text" variable="argus.mail.smtp.host" conditionid="cond.argus.enable.mail">
+            <spec txt="Адрес SMTP сервера:" size="15"/>
+        </field>
+        <field type="text" variable="argus.mail.smtp.port" set="25" conditionid="cond.argus.enable.mail">
+            <spec txt="Порт SMTP сервера:" size="15"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.IsPortValidator"
+                       txt="Неверный формат порта SMTP сервера"/>
+        </field>
+        <field type="text" variable="argus.mail.smtp.user" conditionid="cond.argus.enable.mail">
+            <spec txt="E-mail пользователя:" size="15"/>
+        </field>
+        <field type="password" variable="argus.mail.smtp.password" conditionid="cond.argus.enable.mail">
+            <spec>
+                <pwd txt="Пароль пользователя:" size="15"/>
+            </spec>
+        </field>
+        <field type="combo" variable="argus.mail.transport.protocol" conditionid="cond.argus.enable.mail">
+            <description align="left" txt="Протокол:" id="protocol"/>
+            <spec>
+                <choice txt="SMTP" value="smtp" set="true"/>
+                <choice txt="SMTPS" value="smtps"/>
+            </spec>
+        </field>
+        <field type="check" variable="argus.mail.smtp.starttls.enable" conditionid="cond.argus.enable.mail">
+            <spec txt="Использовать STARTTLS" true="true" false="false" set="false"/>
+        </field>
+        <field type="check" variable="argus.mail.smtp.auth" conditionid="cond.argus.enable.mail">
+            <spec txt="Аутентификация" true="true" false="false" set="true"/>
+        </field>
+
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Настройки учетной записи администратора"/>
+        <field type="divider" align="top"/>
+
+        <field type="text" variable="argus.app.admin.user">
+            <spec txt="Учетная запись администратора:" size="15"/>
+            <validator class="ru.argustelecom.system.distributive.AdminLoginValidator"
+                       txt="Неверный формат учетной записи администратора"/>               
+        </field>
+
+        <field type="password" variable="argus.app.admin.pass">
+            <spec>
+                <pwd txt="Пароль:" size="15" set="${argus.app.admin.pass}"/>
+                <pwd txt="Еще раз:" size="15" set="${argus.app.admin.pass}"/>
+            </spec>
+            <validator class="com.izforge.izpack.panels.userinput.validator.PasswordEqualityValidator"
+                       txt="Введенные пароли учетной записи администратора не совпадают"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.NotEmptyValidator"
+                       txt="Пароль учетной записи администратора не должен быть пустым"/>
+        </field>
+
+    </panel>
+
+    <panel order="2" layout="left" id="2">
+        <field type="title" txt="Настройки подключения к БД" bold="true" size="1"/>
+        <field type="staticText" align="left" txt="Общие сведения"/>
+        <field type="divider" align="top"/>
+
+        <field type="text" variable="argus.db.address">
+            <spec txt="IP Адрес сервера БД:" size="15"/>
+            <validator  class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                                                    txt="Неверный формат IP адреса БД">
+                <param  name="pattern" value="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[
+            1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"/>
+            </validator>
+        </field>
+
+        <field type="space"/>
+
+        <field type="text" variable="argus.db.port">
+            <spec txt="Порт сервера БД:" size="10"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.IsPortValidator"
+                       txt="Неверный формат порта БД"/>
+        </field>
+
+        <field type="space"/>
+
+        <field type="text" variable="argus.db.name">
+            <spec txt="Имя БД:" size="10" set="${argus.db.name}"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                       txt="Неверный формат имени БД">
+                <param name="pattern" value="\w+"/>
+            </validator>
+        </field>
+
+        <field type="space"/>
+        <field type="staticText" align="left" txt="Настройки подключения к БД"/>
+        <field type="divider" align="top"/>
+
+        <field type="text" variable="argus.db.user">
+            <spec txt="Учетная запись:" size="15"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.RegularExpressionValidator"
+                       txt="Неверный формат имени пользователя">
+                <param name="pattern" value="\w+"/>
+            </validator>
+        </field>
+
+        <field type="password" variable="argus.db.pass">
+            <spec>
+                <pwd txt="Пароль:" size="15" set="${argus.db.pass}"/>
+                <pwd txt="Еще раз:" size="15" set="${argus.db.pass}"/>
+            </spec>
+            <validator class="com.izforge.izpack.panels.userinput.validator.PasswordEqualityValidator"
+                       txt="Введенные пароли не совпадают"/>
+            <validator class="com.izforge.izpack.panels.userinput.validator.NotEmptyValidator"
+                       txt="Пароль учетной записи БД не должен быть пустым"/>
+        </field>
+    </panel>
+
+</userInput>

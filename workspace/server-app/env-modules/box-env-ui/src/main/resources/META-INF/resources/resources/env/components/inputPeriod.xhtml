@@ -1,0 +1,80 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+			  xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+			  xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+			  xmlns:cc="http://java.sun.com/jsf/composite" xmlns:sysinf="http://argustelecom.ru/system-inf">
+
+	<cc:interface componentType="inputPeriod">
+		<cc:attribute name="id" />
+		<cc:attribute name="value" type="ru.argustelecom.box.env.billing.bill.model.BillPeriod" required="true"/>
+		<cc:attribute name="periodUnit" type="ru.argustelecom.box.env.stl.period.PeriodUnit"
+					  shortDescription="Допустимые значения: MONTH, QUARTER, SEMESTER, YEAR. При null - ввод произвольных дат" />
+		<cc:attribute name="readOnly" type="java.lang.Boolean" default="false"/>
+		<cc:attribute name="withTime" type="java.lang.Boolean" default="false"/>
+		<cc:attribute name="required" type="java.lang.Boolean" default="false"/>
+		<cc:attribute name="rendered" type="java.lang.Boolean" default="true" />
+		<cc:attribute name="styleClass" type="java.lang.String"/>
+	</cc:interface>
+
+	<cc:implementation>
+		<h:outputStylesheet name="box-env/styles/components.css" target="head" />
+
+		<o:importConstants type="ru.argustelecom.box.env.stl.period.PeriodUnit" var="unit"/>
+		<o:importConstants type="ru.argustelecom.box.env.billing.bill.model.Periods.Month"/>
+		<o:importConstants type="ru.argustelecom.box.env.billing.bill.model.Periods.Quarter"/>
+		<o:importConstants type="ru.argustelecom.box.env.billing.bill.model.Periods.Semester"/>
+
+		<p:outputLabel value="#{cc.attrs.value}" rendered="#{cc.attrs.rendered and cc.attrs.readOnly}"/>
+
+		<h:panelGroup id="#{cc.attrs.id}" rendered="#{cc.attrs.rendered and not cc.attrs.readOnly}" styleClass="#{cc.attrs.styleClass}">
+			<ui:fragment rendered="#{cc.attrs.periodUnit ne null}">
+				<ui:fragment rendered="#{cc.attrs.periodUnit == unit.MONTH}">
+					<p:selectOneMenu id="month" value="#{cc.month}" converter="omnifaces.GenericEnumConverter"
+									 label="#{cc.bundle['box.input.calendar.month']}" required="#{cc.attrs.required}">
+						<f:selectItem itemLabel=""/>
+						<f:selectItems value="#{Month.values()}" var="month" itemValue="#{month}" itemLabel="#{month.name}" />
+						<p:ajax event="change"/>
+					</p:selectOneMenu>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{cc.attrs.periodUnit == unit.QUARTER}">
+					<p:selectOneMenu id="quarter" value="#{cc.quarter}" converter="omnifaces.GenericEnumConverter"
+									 label="#{cc.bundle['box.input.calendar.quarter']}" required="#{cc.attrs.required}">
+						<f:selectItem itemLabel=""/>
+						<f:selectItems value="#{Quarter.values()}" var="quarter" itemValue="#{quarter}" itemLabel="#{quarter.name}" />
+						<p:ajax event="change"/>
+					</p:selectOneMenu>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{cc.attrs.periodUnit == unit.SEMESTER}">
+					<p:selectOneMenu id="semester" value="#{cc.semester}" converter="omnifaces.GenericEnumConverter"
+									 label="#{cc.bundle['box.input.calendar.semester']}" required="#{cc.attrs.required}">
+						<f:selectItem itemLabel=""/>
+						<f:selectItems value="#{Semester.values()}" var="semester" itemValue="#{semester}" itemLabel="#{semester.name}" />
+						<p:ajax event="change"/>
+					</p:selectOneMenu>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{cc.attrs.periodUnit.ordinal() ge unit.MONTH.ordinal() and cc.attrs.periodUnit.ordinal() le unit.YEAR.ordinal()}">
+					<p:selectOneMenu id="year" value="#{cc.year}" converter="javax.faces.Integer"
+									 label="#{cc.bundle['box.input.calendar.year']}" required="#{cc.attrs.required}">
+						<f:selectItems value="#{cc.years}" />
+						<p:ajax event="change"/>
+					</p:selectOneMenu>
+				</ui:fragment>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{cc.attrs.periodUnit eq null}">
+				<p:calendar id="start_date" value="#{cc.startDate}" required="#{cc.attrs.required}" locale="#{languageBean.locale.language}"
+							pattern="#{cc.attrs.withTime ? dateUtils.DATETIME_DEFAULT_PATTERN : dateUtils.DATE_DEFAULT_PATTERN}">
+					<p:ajax event="dateSelect"/>
+				</p:calendar>
+
+				<p:calendar id="end_date" value="#{cc.endDate}" required="#{cc.attrs.required}" locale="#{languageBean.locale.language}"
+							pattern="#{cc.attrs.withTime ? dateUtils.DATETIME_DEFAULT_PATTERN : dateUtils.DATE_DEFAULT_PATTERN}">
+					<p:ajax event="dateSelect"/>
+				</p:calendar>
+			</ui:fragment>
+		</h:panelGroup>
+
+	</cc:implementation>
+</ui:component>

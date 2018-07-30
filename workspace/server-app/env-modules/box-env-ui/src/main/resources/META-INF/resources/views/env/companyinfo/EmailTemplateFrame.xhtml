@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+                xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+    <div class="#{containerClass eq null ? 'm-container100' : containerClass} m-responsive100">
+        <div class="m-container-indent">
+            <div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+                <h:form id="email_template_form">
+
+                    <f:event listener="#{ownerEmailTemplateFm.preRender(owner)}" type="preRenderComponent"/>
+
+                    <div class="ui-dashboard-header">
+                        <i class="icon-layers"/>
+                        <h:outputText value="#{companyInfoBundle['box.company_info.template.bill']}" styleClass="card-header"/>
+
+                        <p:outputPanel id="manage_buttons" styleClass="m-fright">
+
+                            <ui:fragment rendered="#{ownerEmailTemplateFm.owner.templateName ne null}">
+                                <p:commandLink  title="#{overallBundle['box.overall.download']}" position="left" ajax="false">
+                                    <i class="icon-file_download fs25 m-bold-gray m-vertical-al-middle" />
+                                    <p:fileDownload value="#{ownerEmailTemplateFm.download()}"/>
+                                </p:commandLink>
+
+                                <p:commandLink  position="left" update="email_template_form-email_template_output_panel manage_buttons" styleClass="m-mar-left10"
+                                                action="#{ownerEmailTemplateFm.remove()}"
+                                                title="#{overallBundle['box.overall.delete']}" process="@this" >
+                                    <i class="fa fa-trash fs25 m-bold-gray m-vertical-al-middle" />
+                                </p:commandLink>
+                            </ui:fragment>
+                        </p:outputPanel>
+                    </div>
+
+                    <p:outputPanel id="email_template_output_panel">
+
+                        <p:outputPanel rendered="#{ownerEmailTemplateFm.owner.templateName ne null}">
+							<p:commandLink  title="#{overallBundle['box.overall.download']}" value="#{ownerEmailTemplateFm.owner.templateName}"
+											position="left" ajax="false" styleClass="strike-link">
+								<p:fileDownload value="#{ownerEmailTemplateFm.download()}"/>
+							</p:commandLink>
+                        </p:outputPanel>
+
+                        <ui:fragment rendered="#{ownerEmailTemplateFm.owner.templateName eq null}">
+                            <h:outputText value="#{companyInfoBundle['box.company_info.template.bill.hint']}" style="display: inline-block"/>
+							<script type="text/javascript">
+								$( document ).ready(function() {
+									Argus.System.Tooltip.tooltip('','#email_template_form-email_template_panel .ui-button');
+								});
+							</script>
+                        </ui:fragment>
+                    </p:outputPanel>
+
+                </h:form>
+            </div>
+        </div>
+    </div>
+</ui:composition>

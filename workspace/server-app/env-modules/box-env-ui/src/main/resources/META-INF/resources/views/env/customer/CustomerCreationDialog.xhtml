@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+				xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+				xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<f:loadBundle var="customerBundle" basename="CustomerBundle"/>
+	<f:loadBundle var="personnelBundle" basename="PersonnelBundle"/>
+	<h:form id="customer_creation_form">
+		<p:dialog id="customer_creation_dlg" header="#{customerCreationDialogModel.dialogHeader}" width="500" styleClass="icon-creation"
+				  widgetVar="customerCreationDlgVar" resizable="false" modal="true" closable="false" dynamic="true">
+
+			<dl class="name-value #{customerCreationDialogModel.individualCreation ? 'width-150' : 'width-170'} m-mar-bot-0">
+				<dt>
+					<p:outputLabel for="new_type" value="#{customerBundle['box.customer.type']}:"/>
+				</dt>
+				<dd>
+					<p:selectOneMenu id="new_type" value="#{customerCreationDialogModel.newCustomerType}" required="true"
+							 label="#{customerBundle['box.customer.type']}">
+						<f:selectItem itemValue=""/>
+						<f:selectItems value="#{customerCreationDialogModel.possibleCustomerTypes}" var="type"
+								itemValue="#{type}" itemLabel="#{type.objectName}"/>
+					</p:selectOneMenu>
+				</dd>
+			</dl>
+
+			<ui:fragment rendered="#{customerCreationDialogModel.individualCreation}">
+				<dl class="name-value width-150">
+					<dt>
+						<p:outputLabel for="new_last_name" value="#{personnelBundle['box.personnel.name.last']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_last_name" value="#{customerCreationDialogModel.newLastName}" required="true"
+									 maxlength="64" label="#{personnelBundle['box.personnel.name.last']}"/>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_first_name" value="#{personnelBundle['box.personnel.name.first']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_first_name" value="#{customerCreationDialogModel.newFirstName}" required="true"
+									 maxlength="64" label="#{personnelBundle['box.personnel.name.first']}"/>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_second_name" value="#{personnelBundle['box.personnel.name.second']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_second_name" value="#{customerCreationDialogModel.newSecondName}"
+									 maxlength="64"/>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<ui:fragment rendered="#{!customerCreationDialogModel.individualCreation}">
+				<dl class="name-value width-170">
+					<dt>
+						<p:outputLabel for="new_legal_name" value="#{customerBundle['box.customer.legal_name']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_legal_name" value="#{customerCreationDialogModel.newLegalName}" required="true"
+									 maxlength="256" label="#{customerBundle['box.customer.legal_name']}"/>
+					</dd>
+
+					<dt>
+						<p:outputLabel for="new_brand_name" value="#{customerBundle['box.customer.brand_name']}:"/>
+					</dt>
+					<dd>
+						<p:inputText id="new_brand_name" value="#{customerCreationDialogModel.newBrandName}" maxlength="256"/>
+					</dd>
+				</dl>
+			</ui:fragment>
+
+			<div class="dialog-footer-buttons">
+				<p:commandButton id="cancel_button" value="#{overallBundle['box.overall.cancel']}"
+								 styleClass="m-blue-text-button" update="#{update} customer_creation_dlg"
+								 process="@this" action="#{customerCreationDialogModel.cleanCreationParams()}"
+								 onclick="PF('customerCreationDlgVar').hide()"/>
+				<p:commandButton id="create_button" value="#{overallBundle['box.overall.create']}"
+								 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('customerCreationDlgVar').hide()}"
+								 action="#{customerCreationDialogModel.onCustomerCreated()}" process="customer_creation_dlg"/>
+			</div>
+
+		</p:dialog>
+	</h:form>
+
+</ui:composition>

@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <f:loadBundle var="contactPersonBundle" basename="ContactPersonBundle"/>
+    <h:form id="contact_person_edit_form">
+
+        <p:dialog id="contact_person_edit_dlg"
+                  header="#{contactPersonEditDM.header}"
+                  width="850" styleClass="personnel-dlg #{contactPersonEditDM.styleClass}"
+                  widgetVar="contactPersonEditDlg" resizable="false" modal="true" closable="false" dynamic="true">
+
+            <div class="person personnel-edit clearfix">
+
+                <ui:include src="/views/env/personnel/PersonAvatar.xhtml">
+                    <ui:param name="canEdit" value="true"/>
+                    <ui:param name="personDataDto" value="#{contactPersonEditDM.editableObject}"/>
+                </ui:include>
+
+                <div class="personnel-attr fs14">
+                    <ui:include src="ContactPersonDataEditFrame.xhtml">
+                        <ui:param name="contactPersonDataDto" value="#{contactPersonEditDM.editableObject}"/>
+                    </ui:include>
+                </div>
+            </div>
+
+            <div class="personnel-contact">
+                <div class="ui-dashboard-header">
+                    <i class="fa fa-phone-square"/>
+                    <h:outputText styleClass="card-header" value="#{contactPersonBundle['box.contact.person.contact.plural']}" />
+                </div>
+
+                <div class="m-mar-left20 m-mar-right20">
+                    <ui:include src="/views/env/contact/ContactEditFrame.xhtml">
+                    	<ui:param name="party" value="#{contactPersonEditDM.contactPerson.party}"/>
+                    </ui:include>
+                </div>
+            </div>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_person_edit_button" value="#{overallBundle['box.overall.cancel']}"
+                                 styleClass="m-blue-text-button" update="contact_person_edit_dlg #{update}"
+                                 process="@this" action="#{contactPersonEditDM.cancel()}" onclick="PF('contactPersonEditDlg').hide()"/>
+                <p:commandButton id="save_person_edit_button" value="#{contactPersonEditDM.getSubmitButtonLabel()}"
+                                 process="contact_person_edit_dlg" update="#{update}" action="#{contactPersonEditDM.submit()}"
+                                 oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('contactPersonEditDlg').hide()}"/>
+            </div>
+
+        </p:dialog>
+
+    </h:form>
+
+</ui:composition>

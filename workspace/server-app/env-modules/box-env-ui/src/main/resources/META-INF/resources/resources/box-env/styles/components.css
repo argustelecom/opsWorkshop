@@ -1,0 +1,63 @@
+@CHARSET "UTF-8";
+
+.ui-input-measured-value,
+.ui-input-measured-value .ui-panelgrid-cell,
+.ui-input-measured-interval-value,
+.ui-input-measured-interval-value .ui-panelgrid-cell,
+.ui-input-date-interval-value,
+.ui-input-date-interval-value .ui-panelgrid-cell {
+	border: none !important;
+}
+
+.ui-input-measured-value .ui-panelgrid-cell,
+.ui-input-measured-interval-value .ui-panelgrid-cell,
+.ui-input-date-interval-value .ui-panelgrid-cell {
+	padding: 0;
+}
+
+.ui-input-measured-value .ui-panelgrid-cell:LAST-CHILD,
+.ui-input-measured-interval-value .ui-panelgrid-cell:LAST-CHILD,
+.ui-input-date-interval-value .ui-panelgrid-cell:LAST-CHILD {
+	padding-left: 5px;
+}
+
+.ui-input-measured-value .ui-inputtext, 
+.ui-input-measured-interval-value .ui-inputtext,
+.ui-input-date-interval-value .ui-calendar {
+	width: 170px !important;
+}
+
+.ui-input-date-interval-value .ui-calendar > input {
+	width: 170px !important;
+}
+
+.custom-content-card .ui-datascroller .ui-input-measured-value .ui-inputtext,
+.custom-content-card .ui-datascroller .ui-input-measured-interval-value .ui-inputtext,
+.custom-content-card .ui-datascroller .ui-input-date-interval-value .ui-calendar,
+.custom-content-card .ui-datascroller .ui-input-date-interval-value .ui-calendar > input{
+	width: 100px !important;
+}
+
+.ui-input-measured-value .ui-selectonemenu, 
+.ui-input-measured-interval-value .ui-selectonemenu {
+	margin-top: 3px;
+	width: 75px !important;
+}
+
+.ui-input-measured-value .ui-outputlabel, 
+.ui-input-measured-interval-value .ui-outputlabel,
+.ui-input-date-interval-value .ui-outputlabel {
+	background: transparent;
+}
+
+.ui-input-date-interval-value .ui-menubutton {
+	margin-top: 5px;
+}
+
+.ui-input-date-interval-value .ui-menubutton .ui-icon-triangle-1-s {
+	background-image: none;
+}
+
+.ui-input-date-interval-value .ui-menubutton .ui-button-text {
+	padding: 5px 40px 25px 5px !important;
+}

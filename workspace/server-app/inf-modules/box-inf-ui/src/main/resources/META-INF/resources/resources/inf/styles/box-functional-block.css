@@ -1,0 +1,176 @@
+.simple-fb {
+	padding: 0 16px 16px !important;
+}
+
+.toggle-container.simple-fb {
+	 padding:  0 16px !important;
+}
+
+.simple-fb .ui-dashboard-header {
+	padding: 0;
+	height: 50px;
+	line-height: 50px;
+	font-size: 20px;
+	vertical-align: middle;
+	margin-bottom: 16px;	
+}
+
+.simple-fb .ui-dashboard-header .ui-chkbox-box {
+	margin-top: -3px;
+}
+
+dt {
+	font-family: robotolight;
+}
+
+.simple-fb .ui-dashboard-header .sys-comp-editable-section,
+.simple-fb .ui-dashboard-header .ui-inplace-display,
+.simple-fb .ui-dashboard-header .ui-inplace-content {
+	height: 50px;
+}
+
+.simple-fb .ui-dashboard-header .sys-comp-editable-section .ui-inplace-editor {
+    padding-top: 0px;
+    top: 0;
+}
+
+.simple-fb .ui-dashboard-header > i {
+	font-size: 28px;
+	vertical-align: middle;	
+}
+
+.simple-fb .ui-dashboard-header button {
+	vertical-align: middle;
+}
+
+.simple-fb .ui-dashboard-header::after {
+	content: "";
+	border-bottom: solid 1px #E0E0E0;
+    display: block;
+    overflow: hidden;
+    height: 0px;
+    margin: 0 -16px;
+}
+
+.custom-content-card.m-card, 
+.custom-content-card .m-card {
+	font-family: 'robotolight' !important;
+	padding: 0 !important;
+}
+
+.custom-content-card .ui-dashboard-header {
+	padding: 0 16px 0;
+	margin: 0;	
+}
+
+.custom-content-card .ui-datascroller-item {
+	border: none !important;
+	padding: 5px;
+}
+
+
+.contact-info thead {
+	display: none;
+}
+
+.custom-content-card .ui-datascroller .ui-datascroller-content {
+	border: none;
+	padding: 0;
+}
+
+.custom-content-card .ui-datascroller {
+	border: none;
+	margin-top: 1px;
+	background-color: #f6f6f6;
+	border-radius: 0;
+}
+
+.custom-content-card .ui-datascroller ul.ui-datascroller-list {
+	columns: 2;
+	padding: 5px;
+	column-gap: 0;
+}
+
+.ui-dialog .ui-datascroller ul.ui-datascroller-list {
+	columns: 1;
+}
+
+.custom-content-card .ui-datascroller ul li{
+	-webkit-column-break-inside: avoid;
+	page-break-inside: avoid;
+	break-inside: avoid;
+}
+
+.ui-dashboard-header .sys-comp-editable-section * {
+	box-sizing: border-box;
+}
+
+.contact-value i {
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+.contact-value {
+	border-right: none !important;
+}
+
+.action-column > * {
+	display: inline-block;
+	float: left;
+}
+
+.custom-content-card .ui-button-icon-only {
+	min-width: 30px !important;
+	max-width: 30px !important;
+	height: 30px;	
+}
+
+.action-column .trash-btn {
+	min-width: 16px !important;
+	max-width: 16px !important;
+	height: 16px;
+}
+
+.ui-row-editing .trash-btn {
+	display: none;
+}
+
+.contact-value + .action-column {
+	border-left: none !important;
+}
+
+.trash-btn {
+	background: none !important;
+	color: #0288d1;
+}
+
+.add-contact-btn {
+	float: right;
+	margin: -15px 18px -15px 0;
+	color: #0288d1;
+	background: white;
+	border: solid 1px #d1d3d4;
+	box-shadow: 0px 1px 3px 0px rgba(43, 59, 93, 0.4)
+}
+
+.remove-card-btn {
+	background: none !important;
+	color: red;
+}
+
+.order-offers .simple-fb .ui-dashboard-header button.remove-card-btn {
+    vertical-align: top;
+    margin: 11px 0 0 5px;
+}
+
+
+/********************************** COMMON *************************************/
+
+dd input, 
+dd .ui-selectonemenu {
+	box-sizing: border-box;
+}
+
+#edit_spec_property_form-spec_property_editable_section_content {
+	margin-bottom: 40px;
+}

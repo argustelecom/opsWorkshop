@@ -1,0 +1,48 @@
+/* ui-datalist */
+
+.ui-datalist {
+
+	.ui-datalist-header {
+		color: #546e7a;
+		background-color: rgba(84, 110, 122, 0.2);
+		padding: 10px 15px !important;
+		font: 14px 'robotoregular' !important;
+	}
+
+	.ui-widget-header + .ui-datalist-content {
+		.ui-datalist-data {
+			padding: 0 8px;
+		}
+	}
+
+	.ui-datalist-content {
+
+		.ui-datalist-data {
+			margin: 0px;
+			padding: 4px 8px;
+			font-family: 'robotoregular';
+			font-size: 14px;
+		}
+	}
+	.ui-datalist-item {
+		margin: 0 -8px;
+		padding: 10px 15px;
+		list-style: none !important;
+
+		&:hover {
+			background-color: #f5f5f5;
+
+			.ui-commandlink {
+				color: #0091EA !important;
+			}
+		}
+
+		.ui-commandlink {
+			color: #546e7a !important;
+		}
+	}
+
+	.ui-datalist-empty-message {
+		font-size: 14px;
+	}
+}
