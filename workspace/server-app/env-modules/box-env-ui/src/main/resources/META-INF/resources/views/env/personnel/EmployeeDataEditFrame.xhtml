@@ -5,17 +5,17 @@
                 xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html">
 
-		<ui:param name="personDataDto" value="#{employeeDataDto}" />
+		<ui:param name="personDataDto" value="#{employee}" />
 
         <ui:define name="extended_attributes">
 
-            <p:selectOneMenu id="new_appointment" value="#{employeeDataDto.appointment}">
+            <p:selectOneMenu id="new_appointment" value="#{employee.appointment}">
                 <f:selectItems value="#{selectItems.byDirectoryName('Appointment', true, false, null)}" var="appointment"
                                itemValue="#{appointment}" itemLabel="#{appointment.objectName}"/>
             </p:selectOneMenu>
 
             <p:inputText id="personnel_number" placeholder="#{personnelBundle['box.personnel.number']}"
-                         value="#{employeeDataDto.personnelNumber}" styleClass="m-disp-block " required="true"
+                         value="#{employee.personnelNumber}" styleClass="m-disp-block " required="true"
                          label="#{personnelBundle['box.personnel.number']}"/>
         </ui:define>
 

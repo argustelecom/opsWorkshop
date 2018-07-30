@@ -23,7 +23,6 @@ import ru.argustelecom.system.inf.modelbase.NamedObject;
 @Entity
 @Access(AccessType.FIELD)
 @Table(schema = "system")
-@EqualsAndHashCode(of = { "id" })
 public abstract class Contact<T> extends BusinessObject implements NamedObject {
 
 	private static final long serialVersionUID = 764789879075783495L;

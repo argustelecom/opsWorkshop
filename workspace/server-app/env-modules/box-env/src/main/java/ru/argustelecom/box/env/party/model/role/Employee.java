@@ -1,6 +1,5 @@
 package ru.argustelecom.box.env.party.model.role;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,17 +7,19 @@ import java.util.List;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import ru.argustelecom.box.env.party.model.Appointment;
 import ru.argustelecom.box.env.party.model.PartyRole;
+import ru.argustelecom.box.env.party.model.PersonName;
 import ru.argustelecom.box.env.person.Person;
 import ru.argustelecom.box.env.security.model.Role;
 
@@ -27,7 +28,7 @@ import ru.argustelecom.box.env.security.model.Role;
  */
 @Entity
 @Access(AccessType.FIELD)
-@EqualsAndHashCode(callSuper = true, exclude = { "name", "appointment", "personnelNumber", "fired" })
+@DiscriminatorValue(value = "Employee")
 public class Employee extends PartyRole {
 
 	private static final long serialVersionUID = -4206745377739673861L;
@@ -55,6 +56,9 @@ public class Employee extends PartyRole {
 	public Employee(Long id) {
 		super(id);
 	}
+
+	@Transient
+	private Person person;
 
 	@Override
 	public String getObjectName() {
@@ -108,11 +112,16 @@ public class Employee extends PartyRole {
 			boolean fired, Long personId, String prefix, String firstName, String secondName, String lastName,
 			String suffix, String note) {
 
-		this.person = new Person(personId, prefix, firstName, secondName, lastName, suffix, note);
+		this.person = new Person(personId, PersonName.of(prefix, firstName, secondName, lastName, suffix), note);
 
+		this.id = employeeId;
+		this.objectName = employeeName;
 		this.appointment = appointment;
 		this.personnelNumber = personnelNumber;
 		this.fired = fired;
 	}
 
+	public Person getPerson() {
+		return person;
+	}
 }

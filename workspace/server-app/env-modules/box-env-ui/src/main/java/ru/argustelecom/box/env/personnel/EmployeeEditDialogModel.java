@@ -11,9 +11,13 @@ import org.primefaces.context.RequestContext;
 import lombok.Getter;
 import lombok.Setter;
 import ru.argustelecom.box.env.contact.ContactEditFrameModel;
+import ru.argustelecom.box.env.idsequence.IdSequenceService;
 import ru.argustelecom.box.env.overall.nls.OverallMessagesBundle;
+import ru.argustelecom.box.env.party.model.Appointment;
+import ru.argustelecom.box.env.party.model.Party;
 import ru.argustelecom.box.env.party.model.role.Employee;
 import ru.argustelecom.box.env.party.nls.PersonnelMessagesBundle;
+import ru.argustelecom.box.env.person.Person;
 import ru.argustelecom.box.inf.nls.LocaleUtils;
 import ru.argustelecom.box.inf.page.outcome.OutcomeConstructor;
 import ru.argustelecom.box.inf.page.outcome.param.IdentifiableOutcomeParam;
@@ -35,24 +39,31 @@ public class EmployeeEditDialogModel implements Serializable {
 	@Inject
 	private ContactEditFrameModel contactEditFM;
 
-	private EmployeeData employeeDataDto;
+	@Inject
+	private IdSequenceService idSequence;
 
 	@Getter
 	@Setter
 	private Employee employee;
+
+	private String prefix;
+	private String firstName;
+	private String secondName;
+	private String lastName;
+	private String suffix;
+	private String note;
+	private String personnelNumber;
+	private String employeeName;
+	private Appointment appointment;
+	private Party party;
 
 	public void open() {
 		RequestContext.getCurrentInstance().update("employee_edit_form-employee_edit_dlg");
 		RequestContext.getCurrentInstance().execute("PF('employeeEditDlg').show()");
 	}
 
-	public void init() {
-		if (employeeDataDto == null)
-			employeeDataDto = new EmployeeDataDto();
-	}
-
 	public boolean isEditMode() {
-		return employeeDataDto.getEmployeeId() != null;
+		return employee.getId() != null;
 	}
 
 	public String submit() {
@@ -70,29 +81,29 @@ public class EmployeeEditDialogModel implements Serializable {
 	}
 
 	public void cancel() {
-		employeeDataDto = null;
+		employee = null;
 	}
 
 	private void edit() {
 		//@formatter:off
 		employeeDataAs.renamePerson(
-			employeeDataDto.getPersonId(),
-			employeeDataDto.getPrefix(),
-			employeeDataDto.getFirstName(),
-			employeeDataDto.getSecondName(),
-			employeeDataDto.getLastName(),
-			employeeDataDto.getSuffix()
+			employee.getId(),
+			employee.getPerson().getPersonName().prefix(),
+			employee.getPerson().getPersonName().firstName(),
+			employee.getPerson().getPersonName().secondName(),
+			employee.getPerson().getPersonName().lastName(),
+			employee.getPerson().getPersonName().suffix()
 		);
 
 		employeeDataAs.editPersonData(
-			employeeDataDto.getPersonId(),
-			employeeDataDto.getNote()
+			employee.getId(),
+			employee.getPerson().getNote()
 		);
 
 		employeeDataAs.editEmployeeData(
-			employeeDataDto.getEmployeeId(),
-			employeeDataDto.getAppointment(),
-			employeeDataDto.getPersonnelNumber()
+			employee.getId(),
+			employee.getAppointment(),
+			employee.getPersonnelNumber()
 		);
 		//@formatter:on
 
@@ -101,56 +112,103 @@ public class EmployeeEditDialogModel implements Serializable {
 
 	private String create() {
 		Employee employeeWithSamePersonnelNumber = employeeDataAs
-				.findEmployeeByPersonnelNumber(employeeDataDto.getPersonnelNumber());
+				.findEmployeeByPersonnelNumber(employee.getPersonnelNumber());
 
 		if (employeeWithSamePersonnelNumber == null) {
-			//@formatter:off
-			Employee employee = employeeDataAs.createEmployee(
-				employeeDataDto.getPrefix(),
-				employeeDataDto.getFirstName(),
-				employeeDataDto.getSecondName(),
-				employeeDataDto.getLastName(),
-				employeeDataDto.getSuffix(),
-				employeeDataDto.getAppointment(),
-				employeeDataDto.getPersonnelNumber(),
-				employeeDataDto.getNote()
-			);
-
-			employeeDataDto.setEmployeeId(employee.getId());
-			employeeDataDto.setPersonId(employee.getParty().getId());
-
-			// add avatar
-			if (personAvatarFm.isAvatarChanged() && employeeDataDto.getImageInputStream() != null)
-				employeeDataAs.addPersonAvatar(
-						employeeDataDto.getPersonId(),
-						employeeDataDto.getImageInputStream(),
-						employeeDataDto.getImageFormatName()
-				);
-			//@formatter:on
-
+			Employee employee = new Employee(idSequence.nextValue(Employee.class), employeeName, appointment,
+					personnelNumber, false, idSequence.nextValue(Person.class), prefix, firstName, secondName, lastName,
+					suffix, note);
+			employee.setParty(party);
 			this.employee = employee;
 			return outcome.construct(EmployeeCardViewModel.VIEW_ID, IdentifiableOutcomeParam.of("employee", employee));
 		} else {
 			OverallMessagesBundle overallMessages = LocaleUtils.getMessages(OverallMessagesBundle.class);
 			PersonnelMessagesBundle personnelMessages = LocaleUtils.getMessages(PersonnelMessagesBundle.class);
 
-			Notification.error(
-					overallMessages.error(),
-					personnelMessages.employeeAlreadyExists(
-							employeeWithSamePersonnelNumber.getObjectName(),
-							employeeWithSamePersonnelNumber.getPersonnelNumber()
-					)
-			);
+			Notification.error(overallMessages.error(),
+					personnelMessages.employeeAlreadyExists(employeeWithSamePersonnelNumber.getObjectName(),
+							employeeWithSamePersonnelNumber.getPersonnelNumber()));
 			return StringUtils.EMPTY;
 		}
 	}
 
-	public EmployeeDataDto getEditableEmployee() {
-		return employeeDataDto;
+	public String getPrefix() {
+		return prefix;
 	}
 
-	public void setEditableEmployee(EmployeeDataDto employeeDataDto) {
-		this.employeeDataDto = employeeDataDto;
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getSecondName() {
+		return secondName;
+	}
+
+	public void setSecondName(String secondName) {
+		this.secondName = secondName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getPersonnelNumber() {
+		return personnelNumber;
+	}
+
+	public void setPersonnelNumber(String personnelNumber) {
+		this.personnelNumber = personnelNumber;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
+	public Party getParty() {
+		return party;
+	}
+
+	public void setParty(Party party) {
+		this.party = party;
+	}
 }

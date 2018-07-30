@@ -14,21 +14,21 @@ public abstract class PersonDataFrameModel implements Serializable {
 	public void save() {
 		//@formatter:off
 		personDataAs.renamePerson(
-			getPersonDataDto().getPersonId(), 
-			getPersonDataDto().getPrefix(),
-			getPersonDataDto().getFirstName(),
-			getPersonDataDto().getSecondName(),
-			getPersonDataDto().getLastName(),
-			getPersonDataDto().getSuffix()
+			getPerson().getId(),
+			getPerson().getPersonName().prefix(),
+			getPerson().getPersonName().firstName(),
+			getPerson().getPersonName().secondName(),
+			getPerson().getPersonName().lastName(),
+			getPerson().getPersonName().suffix()
 		);
 
 		personDataAs.editPersonData(
-			getPersonDataDto().getPersonId(),
-			getPersonDataDto().getNote()
+			getPerson().getId(),
+			getPerson().getNote()
 		);
 		//@formatter:on
 	}
 
-	public abstract PersonDataDto getPersonDataDto();
+	public abstract Person getPerson();
 
 }

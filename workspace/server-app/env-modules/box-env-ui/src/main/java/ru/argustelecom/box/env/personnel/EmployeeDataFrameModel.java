@@ -2,9 +2,8 @@ package ru.argustelecom.box.env.personnel;
 
 import javax.inject.Inject;
 
-import lombok.Getter;
 import ru.argustelecom.box.env.party.model.role.Employee;
-import ru.argustelecom.box.env.person.PersonDataDto;
+import ru.argustelecom.box.env.person.Person;
 import ru.argustelecom.box.env.person.PersonDataFrameModel;
 import ru.argustelecom.system.inf.page.PresentationModel;
 
@@ -14,16 +13,11 @@ public class EmployeeDataFrameModel extends PersonDataFrameModel {
 	private static final long serialVersionUID = 6051753154718053597L;
 
 	@Inject
-	private EmployeeDataDtoTranslator translator;
-
-	@Inject
 	private EmployeeDataAppService employeeDataAs;
-
-	@Getter
-	private EmployeeDataDto employeeDataDto;
+	private Employee employee;
 
 	public void preRender(Employee employee) {
-		employeeDataDto = translator.translate(employee);
+		this.employee = employee;
 	}
 
 	@Override
@@ -32,20 +26,20 @@ public class EmployeeDataFrameModel extends PersonDataFrameModel {
 
 		//@formatter:off
 		employeeDataAs.editEmployeeData(
-			employeeDataDto.getEmployeeId(),
-			employeeDataDto.getAppointment(),
-			employeeDataDto.getPersonnelNumber()
+			employee.getId(),
+			employee.getAppointment(),
+			employee.getPersonnelNumber()
 		);
 		//@formatter:on
 	}
 
-	public void fire() {
-		employeeDataAs.fireEmployee(employeeDataDto.getEmployeeId());
+	@Override
+	public Person getPerson() {
+		return null;
 	}
 
-	@Override
-	public PersonDataDto getPersonDataDto() {
-		return employeeDataDto;
+	public void fire() {
+		employeeDataAs.fireEmployee(employee.getId());
 	}
 
 }
