@@ -15,7 +15,7 @@ public class CustomContact extends Contact<String> {
 	protected CustomContact() {
 	}
 
-	protected CustomContact(Long id) {
+	public CustomContact(Long id) {
 		super(id);
 	}
 

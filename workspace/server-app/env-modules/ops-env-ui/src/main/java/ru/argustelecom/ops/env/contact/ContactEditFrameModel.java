@@ -99,7 +99,8 @@ public class ContactEditFrameModel implements Serializable {
 
 	private void addEmptyContactsIfNeed() {
 		Arrays.stream(ContactCategory.values()).forEach(category -> {
-			if (contacts.stream().noneMatch(contact -> contact.getType().getCategory() == category)) {
+			if (contacts.stream()
+					.noneMatch(contact -> contact.getType() != null && contact.getType().getCategory() == category)) {
 				contacts.add(createEmptyContactBy(category));
 			}
 		});
@@ -109,21 +110,20 @@ public class ContactEditFrameModel implements Serializable {
 		Contact contact;
 		switch (category) {
 		case EMAIL:
-			contact = new EmailContact();
+			contact = new EmailContact(null);
 			break;
 		case PHONE:
-			contact = new PhoneContact();
+			contact = new PhoneContact(null);
 			break;
 		case SKYPE:
-			contact = new SkypeContact();
+			contact = new SkypeContact(null);
 			break;
 		case CUSTOM:
-			contact = new CustomContact();
+			contact = new CustomContact(null);
 			break;
 		default:
 			throw new SystemException(String.format("Unsupported contact category: '%s'", category));
 		}
-		contact.getType().setCategory(category);
 		return contact;
 	}
 
@@ -135,6 +135,10 @@ public class ContactEditFrameModel implements Serializable {
 
 		@Override
 		public int compare(Contact o1, Contact o2) {
+			if (o1.getType() == null || o2.getType() == null) {
+				return 1;
+			}
+
 			return o1.getType().getCategory().name().compareTo(o2.getType().getCategory().name());
 		}
 

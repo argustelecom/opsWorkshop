@@ -12,12 +12,10 @@
                   width="850" styleClass="personnel-dlg"
                   widgetVar="employeeEditDlg" resizable="false" modal="true" closable="false" dynamic="true">
 
-            <f:event type="preRenderComponent" listener="#{employeeEditDM.init()}"/>
-
             <div class="person personnel-edit clearfix">
                 <div class="personnel-attr fs14">
                     <ui:include src="EmployeeDataEditFrame.xhtml">
-                        <ui:param name="employeeDataDto" value="#{employeeEditDM.editableEmployee}"/>
+                        <ui:param name="employeeDataDto" value="#{employeeEditDM.employee}"/>
                     </ui:include>
                 </div>
             </div>

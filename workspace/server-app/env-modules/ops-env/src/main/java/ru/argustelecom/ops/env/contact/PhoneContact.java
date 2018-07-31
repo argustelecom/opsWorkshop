@@ -18,7 +18,7 @@ public class PhoneContact extends Contact<PhoneNumber> {
 	protected PhoneContact() {
 	}
 
-	protected PhoneContact(Long id) {
+	public PhoneContact(Long id) {
 		super(id);
 	}
 

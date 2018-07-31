@@ -15,7 +15,7 @@ public class SkypeContact extends Contact<SkypeLogin> {
 	protected SkypeContact() {
 	}
 
-	protected SkypeContact(Long id) {
+	public SkypeContact(Long id) {
 		super(id);
 	}
 

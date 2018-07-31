@@ -63,7 +63,7 @@ public class EmployeeEditDialogModel implements Serializable {
 	}
 
 	public boolean isEditMode() {
-		return employee.getId() != null;
+		return employee != null && employee.getId() != null;
 	}
 
 	public String submit() {
