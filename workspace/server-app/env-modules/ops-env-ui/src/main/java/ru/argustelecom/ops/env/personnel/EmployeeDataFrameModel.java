@@ -3,7 +3,7 @@ package ru.argustelecom.ops.env.personnel;
 import javax.inject.Inject;
 
 import ru.argustelecom.ops.env.party.model.role.Employee;
-import ru.argustelecom.ops.env.person.Person;
+import ru.argustelecom.ops.env.party.model.Person;
 import ru.argustelecom.ops.env.person.PersonDataFrameModel;
 import ru.argustelecom.system.inf.page.PresentationModel;
 

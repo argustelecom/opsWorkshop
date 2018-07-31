@@ -1,5 +1,7 @@
 package ru.argustelecom.ops.env.person;
 
+import ru.argustelecom.ops.env.party.model.Person;
+
 import java.io.Serializable;
 
 import javax.inject.Inject;
@@ -15,11 +17,11 @@ public abstract class PersonDataFrameModel implements Serializable {
 		//@formatter:off
 		personDataAs.renamePerson(
 			getPerson().getId(),
-			getPerson().getPersonName().prefix(),
-			getPerson().getPersonName().firstName(),
-			getPerson().getPersonName().secondName(),
-			getPerson().getPersonName().lastName(),
-			getPerson().getPersonName().suffix()
+			getPerson().getName().prefix(),
+			getPerson().getName().firstName(),
+			getPerson().getName().secondName(),
+			getPerson().getName().lastName(),
+			getPerson().getName().suffix()
 		);
 
 		personDataAs.editPersonData(

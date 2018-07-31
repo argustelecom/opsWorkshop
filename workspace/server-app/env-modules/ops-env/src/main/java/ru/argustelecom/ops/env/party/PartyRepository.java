@@ -27,7 +27,7 @@ import ru.argustelecom.ops.env.party.model.PersonName;
 import ru.argustelecom.ops.env.party.model.role.ContactPerson;
 import ru.argustelecom.ops.env.party.model.role.ContactPerson.ContactPersonQuery;
 import ru.argustelecom.ops.env.party.model.role.Employee;
-import ru.argustelecom.ops.env.person.Person;
+import ru.argustelecom.ops.env.party.model.Person;
 import ru.argustelecom.ops.env.util.QueryWrapper;
 import ru.argustelecom.ops.inf.service.Repository;
 import ru.argustelecom.system.inf.dataaccess.namedquery.NamedQuery;
@@ -172,7 +172,7 @@ public class PartyRepository implements Serializable {
 		checkNotNull(partyRole);
 
 		//@formatter:off
-		Person newPerson = new Person(idSequence.nextValue(Person.class), PersonName.of(prefix, firstName, secondName, lastName, suffix), note);
+		Person newPerson = Person.builder().id(idSequence.nextValue(Person.class)).name(PersonName.of(prefix, firstName, secondName, lastName, suffix)).note(note).build();
 		//@formatter:on
 
 		newPerson.addRole(partyRole);

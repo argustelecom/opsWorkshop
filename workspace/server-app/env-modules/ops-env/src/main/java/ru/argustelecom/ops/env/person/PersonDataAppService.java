@@ -7,6 +7,7 @@ import java.io.Serializable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import ru.argustelecom.ops.env.party.model.Person;
 import ru.argustelecom.ops.env.party.model.PersonName;
 import ru.argustelecom.ops.inf.service.ApplicationService;
 

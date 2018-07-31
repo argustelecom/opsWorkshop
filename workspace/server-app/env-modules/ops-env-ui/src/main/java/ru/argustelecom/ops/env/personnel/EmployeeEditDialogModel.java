@@ -17,7 +17,7 @@ import ru.argustelecom.ops.env.party.model.Appointment;
 import ru.argustelecom.ops.env.party.model.Party;
 import ru.argustelecom.ops.env.party.model.role.Employee;
 import ru.argustelecom.ops.env.party.nls.PersonnelMessagesBundle;
-import ru.argustelecom.ops.env.person.Person;
+import ru.argustelecom.ops.env.party.model.Person;
 import ru.argustelecom.ops.inf.nls.LocaleUtils;
 import ru.argustelecom.ops.inf.page.outcome.OutcomeConstructor;
 import ru.argustelecom.ops.inf.page.outcome.param.IdentifiableOutcomeParam;
@@ -88,11 +88,11 @@ public class EmployeeEditDialogModel implements Serializable {
 		//@formatter:off
 		employeeDataAs.renamePerson(
 			employee.getId(),
-			employee.getPerson().getPersonName().prefix(),
-			employee.getPerson().getPersonName().firstName(),
-			employee.getPerson().getPersonName().secondName(),
-			employee.getPerson().getPersonName().lastName(),
-			employee.getPerson().getPersonName().suffix()
+			employee.getPerson().getName().prefix(),
+			employee.getPerson().getName().firstName(),
+			employee.getPerson().getName().secondName(),
+			employee.getPerson().getName().lastName(),
+			employee.getPerson().getName().suffix()
 		);
 
 		employeeDataAs.editPersonData(
