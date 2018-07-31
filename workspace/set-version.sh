@@ -91,11 +91,6 @@ set_version_with_dependents "" "parent" $VERSION
 set_version "" $VERSION
 set_version "server-app" $VERSION
 set_version "server-app/app-modules" $VERSION
-set_version "server-app/app-modules/billing-modules" $VERSION
-set_version "server-app/app-modules/crm-modules" $VERSION
-set_version "server-app/app-modules/nri-modules" $VERSION
-set_version "server-app/app-modules/pa-modules" $VERSION
-set_version "server-app/app-modules/product-dir-modules" $VERSION
 set_version "server-app/env-modules" $VERSION
 set_version "server-app/inf-modules" $VERSION
 set_version "server-conf" $VERSION
