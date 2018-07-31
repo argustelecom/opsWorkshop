@@ -1,0 +1,172 @@
+<ui:composition template="/views/inf/page/View.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:sys="http://argustelecom.ru/system" xmlns:sysinf="http://argustelecom.ru/system-inf"
+	xmlns:pm="http://primefaces.org/modena">
+
+	<ui:param name="viewModel" value="#{roleCardViewModel}" />
+	<ui:param name="pageTitle" value="#{securityRoleBundle['ops.role']}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="role" value="#{currentRole.value}" required="#{!facesContext.postback}"
+				requiredMessage="Role param required" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<h:outputStylesheet name="ops-env/styles/ops-env.css" />
+		<h:outputStylesheet name="inf/styles/ops-functional-block.css" />
+	</ui:define>
+
+	<ui:define name="pagePath">
+
+		<f:loadBundle basename="SecurityRoleBundle" var="securityRoleBundle"/>
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+		<p:menuitem value="#{overallBundle['ops.overall.home']}" url="/views/env/home/HomeView.xhtml" />
+		<p:menuitem value="#{overallBundle['ops.overall.dir.dashboard']}" url="/views/env/directory/DirectoryDashboardView.xhtml" />
+		<p:menuitem value="#{securityRoleBundle['ops.role.plural']}" url="/views/env/security/RoleListView.xhtml"
+					disabled="#{!p:ifGranted('System_RoleView')}"/>
+		<p:menuitem value="#{roleCardViewModel.role.objectName}" />
+	</ui:define>
+
+	<ui:define name="body">
+
+		<f:loadBundle basename="SecurityRoleBundle" var="securityRoleBundle"/>
+		<f:loadBundle basename="OverallBundle" var="overallBundle"/>
+
+		<div class="m-container100 m-responsive100 ui-fluid">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile">
+					<h:form id="role_attrib_form">
+						<div class="columns">
+							<div class="column m-pad-0 m-responsive100">
+								<p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank m-tex-al-center column-id">
+									<i class="fa fs50 #{roleCardViewModel.role.sys ? 'fa-user-secret' : 'fa-users'}" />
+									<h:outputText value="#{overallBundle['ops.overall.id']} #{roleCardViewModel.role.id}" />
+								</p:panelGrid>
+							</div>
+
+							<div class="column m-container100 m-fnone m-responsive100">
+								<div class="columns">
+									<div class="column m-container50 m-responsive100">
+										<sysinf:editableSection disabled="#{!p:ifGranted('System_RoleEdit') or roleCardViewModel.role.sys}"
+																saveLabel="#{overallBundle['ops.overall.save']}"
+																cancelLabel="#{overallBundle['ops.overall.cancel']}">
+											<dl class="name-value width-110">
+												<dt>
+													<p:outputLabel for="role_name" value="#{overallBundle['ops.overall.name']}:" />
+												</dt>
+												<dd>
+													<p:inputText id="role_name" value="#{roleCardViewModel.role.objectName}"
+																 maxlength="100" required="true"
+																 label="#{overallBundle['ops.overall.name']}" />
+												</dd>
+												<dt>
+													<p:outputLabel for="role_status" value="#{overallBundle['ops.overall.state']}:" />
+												</dt>
+												<dd>
+													<p:selectOneMenu id="role_status" value="#{roleCardViewModel.role.status}">
+														<f:selectItems var="status" itemValue="#{status}" itemLabel="#{status}"
+																	   value="#{roleCardViewModel.roleStatuses}" />
+													</p:selectOneMenu>
+												</dd>
+											</dl>
+										</sysinf:editableSection>
+									</div>
+									<div class="column m-container50 m-responsive100">
+										<div class="m-pos-relative">
+											<div class="hover-overlay-block">
+												<sysinf:editableSection disabled="#{!p:ifGranted('System_RoleEdit') or roleCardViewModel.role.sys}"
+																		saveLabel="#{overallBundle['ops.overall.save']}"
+																		cancelLabel="#{overallBundle['ops.overall.cancel']}">
+													<dl class="name-value width-110">
+														<dt>
+															<p:outputLabel for="role_desc" value="#{overallBundle['ops.overall.desc']}:" />
+														</dt>
+														<dd class="auto-height">
+															<p:inputTextarea id="role_desc" rows="3" maxlength="250" counter="description_display"
+																			 counterTemplate="#{overallBundle['ops.overall.chars_left']}"
+																			 value="#{roleCardViewModel.role.description}" />
+															<h:outputText id="description_display" styleClass="fs12"/>
+														</dd>
+													</dl>
+												</sysinf:editableSection>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="column m-tex-al-right m-pad-0 m-responsive100">
+								<div class="width-180">
+									<p:commandButton value="#{overallBundle['ops.overall.delete']}"
+													 id="remove_role" styleClass="width-100-percents" action="#{roleCardViewModel.removeRole()}"
+													 title="#{overallBundle['ops.overall.delete']} '#{roleCardViewModel.role.objectName}'"
+													 disabled="#{!p:ifGranted('System_RoleEdit') or roleCardViewModel.role.sys}" />
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+
+		<div class="m-container100 m-responsive100">
+			<div class="m-container-indent">
+				<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+					<h:form id="role_permission_form">
+						<div class="ui-dashboard-header">
+							<i class="icon-security" />
+							<h:outputText value="#{securityRoleBundle['ops.role.permission.plural']}" styleClass="card-header"/>
+						</div>
+						<p:outputPanel styleClass="clearfix m-mar-bot-16">
+							<p:inputText styleClass="m-wid50 m-wid-auto-on-mobile m-fleft m-mar-right10"
+								value="#{roleCardViewModel.searchQuery}" placeholder="#{securityRoleBundle['ops.role.permission.search.hint']}">
+							</p:inputText>
+
+							<p:commandButton id="do_search" styleClass="m-fleft m-mar-right10" icon="fa fa-search" value="#{overallBundle['ops.overall.search']}"
+								action="#{roleCardViewModel.searchPermission()}" update="role_permission_form-permission_tree" />
+
+							<p:defaultCommand target="do_search" />
+
+							<p:outputPanel styleClass="m-fright">
+								<p:commandButton id="cancel" styleClass="m-blue-text-button"  value="#{overallBundle['ops.overall.cancel']}"
+									action="#{roleCardViewModel.cancelPermission()}" update="@form"
+									disabled="#{!p:ifGranted('System_ChangeRolePermissions') or not roleCardViewModel.permissionChanged or roleCardViewModel.role.sys}" />
+
+								<p:commandButton id="submit"
+                                                 value="#{overallBundle['ops.overall.save']}" action="#{roleCardViewModel.submitPermission()}" update="@form"
+                                                 disabled="#{!p:ifGranted('System_ChangeRolePermissions') or not roleCardViewModel.permissionChanged or roleCardViewModel.role.sys}" />
+
+							</p:outputPanel>
+						</p:outputPanel>
+
+						<p:treeTable id="permission_tree" var="permission" value="#{roleCardViewModel.permissionTree}"
+							selectionMode="single" selection="#{roleCardViewModel.selectedNode}">
+							<p:ajax event="select" />
+							<p:column headerText="#{securityRoleBundle['ops.role']}" styleClass="width-30-percents">
+								<p:selectBooleanCheckbox value="#{permission.checked}" rendered="#{permission.renderCheckbox}"
+														 disabled="#{!p:ifGranted('System_ChangeRolePermissions') or roleCardViewModel.role.sys}">
+									<p:ajax event="change" update="role_permission_form-submit role_permission_form-cancel"
+										listener="#{roleCardViewModel.permissionChanged}" />
+								</p:selectBooleanCheckbox>
+								<h:outputText styleClass="tree-node" value="#{permission.objectName}" />
+							</p:column>
+							<p:column headerText="#{overallBundle['ops.overall.desc']}">
+								<h:outputText value="#{permission.description}" />
+							</p:column>
+							<p:column headerText="#{overallBundle['ops.overall.id']}" styleClass="width-200">
+								<h:outputText value="#{permission.id}" />
+							</p:column>
+						</p:treeTable>
+
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+</ui:composition>

@@ -4,9 +4,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>ru.argustelecom.box</groupId>
+		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>server-conf-parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.1.0</version>
 		<relativePath>../server-conf-parent/pom.xml</relativePath>
 	</parent>
 
@@ -17,15 +17,15 @@
 	<properties>
 		<main.basedir>${project.parent.parent.basedir}/..</main.basedir>
 
-		<box.groovy>${project.basedir}/src/groovy</box.groovy>
-		<box.overrides.processing>${project.basedir}/src/processing</box.overrides.processing>
-		<box.overrides.static>${project.basedir}/src/static</box.overrides.static>
+		<ops.groovy>${project.basedir}/src/groovy</ops.groovy>
+		<ops.overrides.processing>${project.basedir}/src/processing</ops.overrides.processing>
+		<ops.overrides.static>${project.basedir}/src/static</ops.overrides.static>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>box-core</artifactId>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -48,7 +48,7 @@
 							<outputDirectory>${argus.imitation.core.package}</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${box.overrides.static}</directory>
+									<directory>${ops.overrides.static}</directory>
 								</resource>
 							</resources>
 						</configuration>
@@ -61,7 +61,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copy-box-core-artifacts</id>
+						<id>copy-ops-core-artifacts</id>
 						<phase>process-resources</phase>
 						<goals>
 							<goal>copy</goal>
@@ -69,9 +69,9 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>ru.argustelecom.box</groupId>
-									<artifactId>box-core</artifactId>
-									<outputDirectory>${argus.imitation.core.package}/modules/ru/argustelecom/box-core/main</outputDirectory>
+									<groupId>ru.argustelecom.ops</groupId>
+									<artifactId>ops-core</artifactId>
+									<outputDirectory>${argus.imitation.core.package}/modules/ru/argustelecom/ops-core/main</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -90,7 +90,7 @@
 							<goal>execute</goal>
 						</goals>
 						<configuration>
-							<source>${box.groovy}/override-configuration.groovy</source>
+							<source>${ops.groovy}/override-configuration.groovy</source>
 						</configuration>
 					</execution>
 					<execution>
@@ -100,7 +100,7 @@
 							<goal>execute</goal>
 						</goals>
 						<configuration>
-							<source>${box.groovy}/override-core-version.groovy</source>
+							<source>${ops.groovy}/override-core-version.groovy</source>
 						</configuration>
 					</execution>
 				</executions>

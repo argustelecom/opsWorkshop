@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.ops</groupId>
+		<artifactId>server-conf-parent</artifactId>
+		<version>0.1.0</version>
+		<relativePath>../server-conf-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>ops-dist</artifactId>
+	<packaging>pom</packaging>
+	<name>ops-dist</name>
+	<properties>
+		<main.basedir>${project.parent.parent.basedir}/..</main.basedir>
+		<izpack.staging>${project.build.directory}/staging</izpack.staging>
+		<project.build.dir>${project.build.directory}</project.build.dir>
+		<info.appName>Сервер приложений ARGUS OPSWorkShop</info.appName>
+		<info.appVersion>${version.ru.argustelecom.argus}</info.appVersion>
+		<izpack.dir.app>${project.basedir}/src/main/izpack</izpack.dir.app>
+		<staging.dir.app>${izpack.staging}/appfiles</staging.dir.app>
+
+		<!-- Имя дистрибутива -->
+		<argus.dist.final-name>argusops-dist-${project.version}</argus.dist.final-name>
+		<!-- Имя *.ear -->
+		<argus.ear.final-name>ops-enterprise-${project.version}</argus.ear.final-name>
+	</properties>
+
+	<dependencies>
+		<!-- FIXME -->
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-enterprise</artifactId>
+			<version>${project.version}</version>
+			<type>ear</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>argus-overrides</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.argustelecom.argus</groupId>
+			<artifactId>jboss-conf</artifactId>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-installer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-event</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-panel</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant-launcher</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Подготовим архив argus-package-<version.ru.argustelecom.argus>.zip -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>assembly-on-process-classes</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptor>src/assembly/assembly.xml</descriptor>
+							<finalName>staging/lib/${buildedconfig.dir}</finalName>
+							<runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+				</configuration>
+				<executions>
+					<execution>
+						<id>extras-precompile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<finalName>${argus.dist.final-name}-extras</finalName>
+							<outputDirectory>${project.build.directory}/staging/lib/</outputDirectory>
+							<includes>
+								<include>**/distributive/**</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- переносим необходимые нам ресурсы -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>create-staging-area</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy file="${project.basedir}/src/main/izpack/readme.html" todir="${izpack.staging}">
+									<filterset>
+										<filter token="argus.app.version" value="${project.version}" />
+									</filterset>
+								</copy>
+								<copy todir="${izpack.staging}">
+									<fileset dir="${project.basedir}/src/main/izpack">
+										<exclude name="readme.html" />
+									</fileset>
+								</copy>
+
+								<copy todir="${izpack.staging}/lib">
+									<!-- FIXME [distrib] поднять установку номера билда -->
+									<!-- fileset dir="${main.basedir.absolutepath}/target" -->
+									<fileset dir="${main.basedir.absolutepath}">
+										<include name="work.properties" />
+									</fileset>
+								</copy>
+								<copy todir="${izpack.staging}/lib">
+									<fileset dir="${main.basedir.absolutepath}/server-conf/jboss-conf/src/main/groovy">
+										<include name="configure-server.groovy" />
+									</fileset>
+								</copy>
+								<copy todir="${izpack.staging}/tools/unix">
+									<fileset dir="${project.basedir}/src/tools/unix">
+										<include name="*.sh" />
+									</fileset>
+								</copy>
+								<copy todir="${izpack.staging}/tools/java">
+									<fileset dir="${project.basedir}/src/tools/java">
+										<include name="readme" />
+										<include name="*.jar" />
+										<include name="*.class" />
+									</fileset>
+								</copy>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- 
+				Устанавливает значения свойств по-умолчанию 
+				(скрывает дефолтные настройки Аргус, чтобы не палить их перед заказчиком) 
+			-->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<executions>
+					<execution>
+						<id>replace-properties-defaults</id>
+						<phase>package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>${izpack.staging}/lib/work.properties</include>
+							</includes>
+							<replacements>
+								<replacement>
+									<token>INSTALL_PATH=.*</token>
+									<value>INSTALL_PATH=</value>
+								</replacement>
+								<replacement>
+									<token>argus.app.security-mode.enabled=.*</token>
+									<value>argus.app.security-mode.enabled=true</value>
+								</replacement>
+								<replacement>
+									<token>argus.app.debug-mode.enabled=.*</token>
+									<value>argus.app.debug-mode.enabled=false</value>
+								</replacement>
+								<replacement>
+									<token>argus.app.admin.user=.*</token>
+									<value>argus.app.admin.user=developer</value>
+								</replacement>
+								<replacement>
+									<token>argus.app.admin.pass=.*</token>
+									<value>argus.app.admin.pass=</value>
+								</replacement>
+								<replacement>
+									<token>argus.db.address=.*</token>
+									<value>argus.db.address=</value>
+								</replacement>
+								<replacement>
+									<token>argus.db.port=.*</token>
+									<value>argus.db.port=5432</value>
+								</replacement>
+								<replacement>
+									<token>argus.db.name=.*</token>
+									<value>argus.db.name=argus</value>
+								</replacement>
+								<replacement>
+									<token>argus.db.user=.*</token>
+									<value>argus.db.user=argus_app</value>
+								</replacement>
+								<replacement>
+									<token>argus.db.pass=.*</token>
+									<value>argus.db.pass=</value>
+								</replacement>
+								<replacement>
+									<token>argus.mail.smtp.user=.*</token>
+									<value>argus.mail.smtp.user=</value>
+								</replacement>
+								<replacement>
+									<token>argus.mail.smtp.password=.*</token>
+									<value>argus.mail.smtp.password=</value>
+								</replacement>
+								<replacement>
+									<token>argus.mail.smtp.port=.*</token>
+									<value>argus.mail.smtp.port=</value>
+								</replacement>
+								<replacement>
+									<token>argus.mail.smtp.host=.*</token>
+									<value>argus.mail.smtp.host=</value>
+								</replacement>
+								<replacement>
+									<token>argus.mail.transport.protocol=.*</token>
+									<value>argus.mail.transport.protocol=SMTP</value>
+								</replacement>
+								
+								<!-- 
+									Актуальное значение номера билда хранится в argus.app.build-number в файле
+									настроек my.properties, который загружается при сборке любого проекта.
+									* Если сборка выполняется в CI, то актуальное значение номера билда устанавливается
+									  в скрипте .linuxbuild/linux_build.sh
+									* Если сборка выполняется вручную, то можно указать номер сборки самостоятельно или 
+									  оставить его пустым
+									Здесь же мы должны обеспечить попадание этого номера в основные свойства сервера 
+									приложений в дистрибутиве   
+								-->
+								<replacement>
+									<token>argus.app.build-number=.*</token>
+									<value>argus.app.build-number=${argus.app.build-number}</value>
+								</replacement>
+							</replacements>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/target/staging/lib</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/resources</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>readme</include>
+									</includes>
+								</resource>
+								<resource>
+									<directory>src/resources</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- FIXME [distrib] поднять установку номера билда -->
+			<!--plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>process-configuration-sources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>${main.basedir.absolutepath}/server-conf/jboss-conf/src/main/groovy/set-build-number.groovy</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin-->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.wildfly</groupId>
+									<artifactId>wildfly-dist</artifactId>
+									<version>${version.wildfly.dist}</version>
+									<type>zip</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.google.guava</groupId>
+									<artifactId>guava</artifactId>
+									<version>16.0.1</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>ru.argustelecom.ops</groupId>
+									<artifactId>ops-enterprise</artifactId>
+									<version>${project.version}</version>
+									<type>ear</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+									<!-- пока нет поставки по заказчикам закалачиваю данную настройку -->
+									<!--classifier>${argus.dist.customer-classifier}</classifier -->
+								</artifactItem>
+								<artifactItem>
+									<groupId>ru.argustelecom.argus</groupId>
+									<artifactId>jboss-conf</artifactId>
+									<version>${version.ru.argustelecom.argus}</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+									<!-- Переименовываем файл, так как snapshot приписывает время к имени это вносит сложности указания этого имен в 
+										izpack -->
+									<destFileName>jboss-conf-${version.ru.argustelecom.argus}.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-configuration</groupId>
+									<artifactId>commons-configuration</artifactId>
+									<version>1.10</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-logging</groupId>
+									<artifactId>commons-logging</artifactId>
+									<version>1.2</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-lang</groupId>
+									<artifactId>commons-lang</artifactId>
+									<version>2.6</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.codehaus.groovy</groupId>
+									<artifactId>groovy-all</artifactId>
+									<version>${version.groovy}</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.ant</groupId>
+									<artifactId>ant</artifactId>
+									<version>1.9.6</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.ant</groupId>
+									<artifactId>ant-launcher</artifactId>
+									<version>1.9.6</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<!-- TASK-57129 необходимо для работы с Vault -->
+								<artifactItem>
+									<groupId>org.picketbox</groupId>
+									<artifactId>picketbox</artifactId>
+									<version>${version.org.picketbox}</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<!-- WildFly Security для Vault: https://mvnrepository.com/artifact/org.wildfly/wildfly-security-->
+								<artifactItem>
+									<groupId>org.wildfly</groupId>
+									<artifactId>wildfly-security</artifactId>
+									<version>${version.wildfly}</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+								<!-- TASK-57129 необходимо для ведения лога -->
+								<artifactItem>
+									<groupId>org.jboss.logging</groupId>
+									<artifactId>jboss-logging</artifactId>
+									<version>${version.jboss-logging}</version>
+									<type>jar</type>
+									<outputDirectory>${izpack.staging}/lib</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>truezip-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>copy-wildfly-zip-subdir</id>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<fileset>
+								<directory>
+									${izpack.staging}/lib/wildfly-dist-${version.wildfly.dist}.zip/wildfly-${version.wildfly.dist}
+								</directory>
+								<outputDirectory>${izpack.staging}/lib/wildfly-${version.wildfly}</outputDirectory>
+							</fileset>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.izpack</groupId>
+				<artifactId>izpack-maven-plugin</artifactId>
+				<version>${version.org.codehaus.izpack}</version>
+				<inherited>false</inherited>
+				<extensions>true</extensions>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<finalName>${argus.dist.final-name}</finalName>
+					<enableOverrideArtifact>true</enableOverrideArtifact>
+					<mkdirs>true</mkdirs>
+					<autoIncludeUrl>false</autoIncludeUrl>
+					<autoIncludeDevelopers>false</autoIncludeDevelopers>
+					<detailedLog>false</detailedLog>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>izpack</goal>
+						</goals>
+						<configuration>
+							<baseDir>${izpack.staging}</baseDir>
+							<installFile>${project.basedir}/src/main/izpack/install.xml</installFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+

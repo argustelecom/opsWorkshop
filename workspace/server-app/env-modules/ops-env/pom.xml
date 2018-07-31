@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ru.argustelecom.ops</groupId>
+		<artifactId>ejb-parent</artifactId>
+		<version>0.1.0</version>
+		<relativePath>../../ejb-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>ops-env</artifactId>
+	<packaging>ejb</packaging>
+	<name>ops-env</name>
+
+	<properties>
+		<main.basedir>${project.parent.parent.parent.basedir}/..</main.basedir>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-inf</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.haulmont.yarg</groupId>
+			<artifactId>yarg-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.haulmont.yarg</groupId>
+			<artifactId>yarg</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Обеспечивается в ops-enterprise.ear как runtime зависимость. См. ops-enterprise.pom -->
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.atlassian.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+</project>

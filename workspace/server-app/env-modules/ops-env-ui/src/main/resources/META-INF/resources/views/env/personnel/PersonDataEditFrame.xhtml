@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+
+	<f:loadBundle var="personnelBundle" basename="PersonnelBundle"/>
+
+	<p:inputText id="prefix" placeholder="#{personnelBundle['ops.personnel.prefix']}"
+		value="#{employeeDataFrameModel.person.name.prefix()}" styleClass="m-disp-block" maxlength="16"/>
+
+	<p:inputText id="last_name" placeholder="#{personnelBundle['ops.personnel.name.last']}"
+		value="#{employeeDataFrameModel.person.name.lastName}" styleClass="m-disp-block" maxlength="64"
+		required="true" label="#{personnelBundle['ops.personnel.name.last']}"/>
+
+	<p:inputText id="first_name" placeholder="#{personnelBundle['ops.personnel.name.first']}"
+		value="#{employeeDataFrameModel.person.name.firstName}" styleClass="m-disp-block " required="true"
+		label="#{personnelBundle['ops.personnel.name.first']}" maxlength="64"/>
+
+	<p:inputText id="second_name" placeholder="#{personnelBundle['ops.personnel.name.second']}"
+		value="#{employeeDataFrameModel.person.name.secondName}" styleClass="m-disp-block" maxlength="64"/>
+
+	<p:inputText id="suffix" placeholder="#{personnelBundle['ops.personnel.suffix']}"
+		value="#{employeeDataFrameModel.person.name.suffix}" styleClass="m-disp-block" maxlength="16"/>
+
+	<ui:insert name="extended_attributes"/>
+
+</ui:composition>

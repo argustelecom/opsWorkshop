@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<installation version="5.0">
+	<info>
+		<appname>@{info.appName}</appname>
+		<appsubpath>ARGUS/Argus application server</appsubpath>
+		<appversion>@{info.appVersion}</appversion>
+		<authors>
+			<author name="НТЦ Аргус" email="office@argustelecom.ru" />
+		</authors>
+		<url>http://www.argustelecom.ru</url>
+		<!-- Не создавать .installationinformation, т.к. все проперти будут доступны из этого файла (пароли и т.п.) -->
+		<writeinstallationinformation>no</writeinstallationinformation>
+		<!-- TASK-79981, v.semchenko: отключаем создание uninstaller, мы его не используем. 
+	    Если необходимо, проще просто удалять каталог СП.-->
+		<uninstaller write="no" />
+	</info>
+	<guiprefs width="700" height="600" resizable="yes">
+		<laf name="looks">
+			<param name="variant" value="windows" />
+			<os family="windows" />
+		</laf>
+	</guiprefs>
+	<locale>
+		<langpack iso3="rus" />
+	</locale>
+	<resources>
+		<res id="userInputSpec.xml_rus" src="userInputSpec.xml_rus" />
+		<res id="userInputLang.xml" src="userInputLang.xml" />
+		<res id="userInputLang.xml_rus" src="userInputLang.xml" />
+		<res id="CustomLangPack.xml" src="CustomLangPack.xml" />
+		<res id="CustomLangPack.xml_rus" src="CustomLangPack.xml_rus" />
+		<res id="packsLang.xml_rus" src="PacksLang.xml_rus" />
+		<res id="HTMLInfoPanel.info" src="readme.html" />
+		<res id="ConfigurationActionsSpec.xml" src="config-actions-spec.xml" />
+		<res id="images/logo_small.jpg" src="images/logo_small.jpg" />
+		<res id="images/logo_ops_small.png" src="images/logo_ops_small.png" />
+	</resources>
+	<variables>
+		<variable name="RESOURCEROOT" value="src/main/izpack" />
+		<variable name="argus.java.home.path" value="@{argus.java.home.path}" />
+		<variable name="work.conf.name" value="argus" />
+		<variable name="jboss.bind.address" value="" />
+		<variable name="jboss.socket.binding.port-offset" value="@{jboss.socket.binding.port-offset}" />
+		<variable name="argus.app.debug-mode.enabled" value="@{argus.app.debug-mode.enabled}" />
+		<variable name="argus.app.memory.max-size" value="@{argus.app.memory.max-size}" />
+		<variable name="argus.app.admin.user" value="@{argus.app.admin.user}" />
+		<variable name="argus.app.admin.pass" value="@{argus.app.admin.pass}" />
+		<!-- инсталлятор при сборке запоминает значение свойства argus.app.version из окружения разработчика, собирающего дистрибутив -->
+		<variable name="argus.app.version" value="@{argus.app.version}" />
+		<variable name="ops.app.version" value="@{ops.app.version}" />
+
+		<variable name="argus.db.address" value="@{argus.db.address}" />
+		<variable name="argus.db.port" value="@{argus.db.port}" />
+		<variable name="argus.db.name" value="@{argus.db.name}" />
+		<variable name="argus.db.user" value="@{argus.db.user}" />
+		<variable name="argus.db.pass" value="@{argus.db.pass}" />
+
+		<variable name="argus.mail.smtp.user" value="@{argus.mail.smtp.user}" />
+		<variable name="argus.mail.smtp.password" value="@{argus.mail.smtp.password}" />
+		<variable name="argus.mail.debug" value="@{argus.mail.debug}" />
+		<variable name="argus.mail.smtp.port" value="@{argus.mail.smtp.port}" />
+		<variable name="argus.mail.smtp.host" value="@{argus.mail.smtp.host}" />
+		<variable name="argus.mail.transport.protocol" value="@{argus.mail.transport.protocol}" />
+		<variable name="argus.mail.smtp.starttls.enable" value="@{argus.mail.smtp.starttls.enable}" />
+		<variable name="argus.mail.smtp.auth" value="@{argus.mail.smtp.auth}" />
+	</variables>
+
+	<conditions>
+		<condition type="empty" id="isVarEmptyJavaHome">
+			<variable>JAVA_HOME</variable>
+		</condition>
+		<condition type="empty" id="isVarEmptyArgusJavaHome">
+			<variable>argus.java.home.path</variable>
+		</condition>
+		<condition type="variable" id="cond.argus.enable.mail">
+			<name>argus.enable.mail</name>
+			<value>true</value>
+		</condition>
+	</conditions>
+	<dynamicvariables>
+		<variable name="argus.java.home.path" value="@{argus.java.home.path}" />
+		<variable name="appInstallPath" value="${INSTALL_PATH}" />
+		<variable name="argus.enable.mail" value="false" />
+		<variable name="InstallerFrame.logfilePath" value="${INSTALL_PATH}/install.log" />
+	</dynamicvariables>
+	<packs>
+		<pack name="WildFly application server" preselected="yes" required="yes">
+			<description>Сервер приложений WildFly</description>
+			<fileset dir="lib/wildfly-@{version.wildfly}" targetdir="$appInstallPath" override="true" />
+		</pack>
+		<pack name="Конфигурационный пакет Аргус" preselected="yes" required="yes">
+			<description>Конфигурационный пакет Аргус</description>
+			<file src="lib/argus-core-package-@{info.appVersion}.zip" targetdir="$appInstallPath/.config/argus-core-package"
+				unpack="true" override="true" />
+			<fileset dir="lib" includes="*.jar, *.groovy, *.properties" targetdir="${appInstallPath}/.config" override="true" />
+			<singlefile target="${appInstallPath}/bin/runjboss.sh" src="lib/runjboss.sh" override="true" />
+			<singlefile target="${appInstallPath}/tools/unix/nmon.sh" src="lib/nmon.sh" override="true" />
+			<singlefile target="${appInstallPath}/tools/unix/remove_old_logs.sh" src="tools/unix/remove_old_logs.sh"
+				override="true" />
+			<singlefile target="${appInstallPath}/tools/unix/check-env.sh" src="tools/unix/check-env.sh" override="true" />
+			<fileset dir="tools/java" includes="*.jar, *.class, readme" targetdir="${appInstallPath}/tools/java"
+				override="true" />
+		</pack>
+		<pack name="Приложения Аргус" preselected="yes" required="yes">
+			<description>Приложения Аргус</description>
+			<singlefile target="${appInstallPath}/standalone/deployments/@{argus.ear.final-name}.ear" src="lib/@{argus.ear.final-name}.ear"
+				override="true" />
+		</pack>
+	</packs>
+	<panels>
+		<panel classname="HTMLInfoPanel" id="htmlinfo" />
+		<panel classname="TargetPanel" id="target">
+			<validator classname="ru.argustelecom.system.distributive.InstallPathAutoValidator" />
+			<validator classname="ru.argustelecom.system.distributive.RunningProcessAutoValidator" />
+		</panel>
+		<panel classname="UserInputPanel" id="0">
+			<validator classname="ru.argustelecom.system.distributive.JavaHomePathAutoValidator" />
+		</panel>
+		<panel classname="PacksPanel" id="selectpacks" />
+		<panel classname="UserInputPanel" id="1">
+			<validator classname="ru.argustelecom.system.distributive.AdminLoginAutoValidator" />
+		</panel>
+		<panel classname="UserInputPanel" id="2" />
+		<panel classname="InstallPanel" />
+		<panel classname="ru.argustelecom.system.distributive.panels.SecurityWarningPanel" id="securitywarning" />
+		<panel classname="SimpleFinishPanel" />
+	</panels>
+	<jar src="lib/guava-16.0.1.jar" stage="both" />
+	<jar src="lib/jboss-conf-@{info.appVersion}.jar" stage="both" />
+	<jar src="lib/commons-configuration-1.10.jar" stage="both" />
+	<jar src="lib/commons-logging-1.2.jar" stage="both" />
+	<jar src="lib/commons-lang-2.6.jar" stage="both" />
+	<jar src="lib/groovy-all-@{version.groovy}.jar" stage="both" />
+	<jar src="lib/ant-1.9.6.jar" stage="both" />
+	<jar src="lib/ant-launcher-1.9.6.jar" stage="both" />
+	<jar src="lib/picketbox-@{version.org.picketbox}.jar" stage="both" />
+	<jar src="lib/jboss-logging-@{version.jboss-logging}.jar" stage="both" />
+	<jar src="lib/wildfly-security-@{version.wildfly}.jar" stage="both" />
+	<listeners>
+		<listener jar="@{project.build.dir}/staging/lib/@{argus.dist.final-name}-extras.jar" classname="ru.argustelecom.system.distributive.ArgusInstallerListener"
+			stage="install" />
+	</listeners>
+</installation>

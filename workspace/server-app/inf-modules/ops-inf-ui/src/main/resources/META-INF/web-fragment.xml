@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-fragment xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_3_1.xsd"
+	version="3.1">
+
+	<name>ops_inf_ui</name>
+
+	<context-param>
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<security-constraint>
+		<display-name>OpsInf</display-name>
+		<web-resource-collection>
+			<web-resource-name>OpsInf: unrestricted inf pages</web-resource-name>
+			<url-pattern>/views/inf/exception/*</url-pattern>
+			<url-pattern>/views/inf/page/MenuStatelessActionView.xhtml</url-pattern>
+		</web-resource-collection>
+	</security-constraint>
+
+	<!-- Для JSF login page нужен открытый доступ на POST, иначе POST'ы кроме j_security_check не будут работать. -->
+	<!-- Если добавить только правило, открывающее POST, то правило, блокирующее все views по дефолту, перестанет действовать. 
+		Видимо, есть специфичность по url-pattern и http-method. Поэтому делаем правило от обратного: запрещаем для LoginView все, 
+		кроме POST. Тогда POST станет открытым. -->
+	<security-constraint>
+		<display-name>OpsInf: unrestricted login page POST</display-name>
+		<web-resource-collection>
+			<web-resource-name>WebUI login page POST</web-resource-name>
+			<url-pattern>/views/inf/login/LoginView.xhtml</url-pattern>
+			<http-method-omission>POST</http-method-omission>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>SomeRoleThatNobodyWillEverHaveAtLeastIHopeSoMaybeImNaiveButWhateverIllHopeReallyHard</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+</web-fragment>
