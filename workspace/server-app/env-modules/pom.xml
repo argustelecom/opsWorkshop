@@ -17,6 +17,8 @@
 	<modules>
 		<module>ops-env</module>
 		<module>ops-env-ui</module>
+		<module>ops-workshop</module>
+		<module>ops-workshop-ui</module>
 	</modules>
 
 </project>
