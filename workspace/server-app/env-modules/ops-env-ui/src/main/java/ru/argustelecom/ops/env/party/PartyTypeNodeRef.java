@@ -27,8 +27,6 @@ public enum PartyTypeNodeRef {
 			return "root";
 		case PERSON:
 			return LocaleUtils.getMessages(PartyMessagesBundle.class).categoryPerson();
-		case COMPANY:
-			return LocaleUtils.getMessages(PartyMessagesBundle.class).categoryCompany();
 		case PARTY_TYPE:
 			return "";
 		default:

@@ -17,10 +17,8 @@ import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQuery;
 import ru.argustelecom.system.inf.dataaccess.entityquery.EntityQueryEntityFilter;
 
 /**
- * Класс вводящий понятие роли {@linkplain Party участника в системе}. Один участник может обладать несколькими ролями,
- * например быть {@linkplain Employee работником} и в то же время
- * {@linkplain ru.argustelecom.ops.env.party.model.role.Customer клиентом}. Каждая роль участника будет наделена своим
- * логин/паролем для авторизации в системе.
+ * Класс вводящий понятие роли {@linkplain Party участника в системе}. Один участник может обладать несколькими ролями.
+ * Каждая роль участника будет наделена своим логин/паролем для авторизации в системе.
  */
 @Entity
 @Access(AccessType.FIELD)

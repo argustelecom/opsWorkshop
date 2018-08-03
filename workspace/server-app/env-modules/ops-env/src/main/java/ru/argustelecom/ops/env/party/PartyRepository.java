@@ -4,8 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,15 +17,10 @@ import lombok.Getter;
 import ru.argustelecom.ops.env.contact.ContactInfo;
 import ru.argustelecom.ops.env.idsequence.IdSequenceService;
 import ru.argustelecom.ops.env.login.model.Login;
-import ru.argustelecom.ops.env.party.model.Appointment;
-import ru.argustelecom.ops.env.party.model.Company;
-import ru.argustelecom.ops.env.party.model.Company.CompanyQuery;
 import ru.argustelecom.ops.env.party.model.PartyRole;
-import ru.argustelecom.ops.env.party.model.PersonName;
-import ru.argustelecom.ops.env.party.model.role.ContactPerson;
-import ru.argustelecom.ops.env.party.model.role.ContactPerson.ContactPersonQuery;
-import ru.argustelecom.ops.env.party.model.role.Employee;
 import ru.argustelecom.ops.env.party.model.Person;
+import ru.argustelecom.ops.env.party.model.PersonName;
+import ru.argustelecom.ops.env.party.model.role.Employee;
 import ru.argustelecom.ops.env.util.QueryWrapper;
 import ru.argustelecom.ops.inf.service.Repository;
 import ru.argustelecom.system.inf.dataaccess.namedquery.NamedQuery;
@@ -54,27 +47,6 @@ public class PartyRepository implements Serializable {
 	@Inject
 	private ILoginService loginService;
 
-	public ContactPerson createContactPerson(Company company, String prefix, String lastName, String firstName,
-			String secondName, String suffix, String appointment, ContactInfo contactInfo) {
-		checkArgument(company != null, "Company is required");
-
-		//@formatter:off
-		ContactPerson newContactPerson = ContactPerson.builder()
-			.id(idSequence.nextValue(ContactPerson.class)) 
-			.company(company)
-			.appointment(appointment)
-		.build();	
-		//@formatter:on
-
-		createPerson(prefix, lastName, firstName, secondName, suffix, null, contactInfo, newContactPerson);
-
-		em.persist(newContactPerson);
-
-		company.getContactPersons().add(newContactPerson);
-
-		return newContactPerson;
-	}
-
 	@NamedQuery(
 			name = FIND_EMPLOYEE_BY_PERSONNEL_NUMBER,
 			query = "select e from Employee e where e.personnelNumber = :personnelNumber")
@@ -89,7 +61,7 @@ public class PartyRepository implements Serializable {
 	}
 
 	public Employee createEmployee(String prefix, String lastName, String firstName, String secondName, String suffix,
-			String personnelNumber, Appointment appointment, String note, ContactInfo contactInfo) {
+			String personnelNumber, String note, ContactInfo contactInfo) {
 
 		checkArgument(StringUtils.isNotBlank(lastName));
 		checkArgument(StringUtils.isNotBlank(firstName));
@@ -97,7 +69,6 @@ public class PartyRepository implements Serializable {
 
 		Employee newEmployee = new Employee(idSequence.nextValue(Employee.class));
 		newEmployee.setPersonnelNumber(personnelNumber);
-		newEmployee.setAppointment(appointment);
 		newEmployee.setFired(false);
 
 		createPerson(prefix, lastName, firstName, secondName, suffix, note, contactInfo, newEmployee);
@@ -105,21 +76,6 @@ public class PartyRepository implements Serializable {
 		em.persist(newEmployee);
 		em.flush();
 		return newEmployee;
-	}
-
-	public List<ContactPerson> getCompanyContactPersons(Company company) {
-		if (company == null) {
-			return Collections.emptyList();
-		}
-		ContactPersonQuery query = new ContactPersonQuery();
-		return query.and(query.company().equal(company)).getResultList(em);
-	}
-
-	public void removeContactPerson(ContactPerson contactPerson) {
-		checkArgument(contactPerson != null);
-		contactPerson.getCompany().getContactPersons().remove(contactPerson);
-		em.remove(contactPerson);
-		em.remove(contactPerson.getParty());
 	}
 
 	public void fireEmployee(@NotNull Employee employee) {
@@ -134,30 +90,6 @@ public class PartyRepository implements Serializable {
 		}
 		employee.setFired(true);
 		em.merge(employee);
-	}
-
-	public boolean hasCompanyWith(String legalName) {
-		checkNotNull(legalName);
-
-		CompanyQuery companyQuery = new CompanyQuery();
-		return !companyQuery.and(companyQuery.legalName().equal(legalName)).getResultList(em).isEmpty();
-	}
-
-	Company createCompany(@NotNull String legalName, String brandName, ContactInfo contactInfo, PartyRole partyRole) {
-		Company newCompany = new Company(idSequence.nextValue(Company.class));
-		newCompany.setLegalName(legalName);
-		newCompany.setBrandName(brandName);
-
-		newCompany.addRole(partyRole);
-		partyRole.setParty(newCompany);
-
-		if (contactInfo != null) {
-			newCompany.setContactInfo(contactInfo);
-			contactInfo.getContacts().forEach(em::persist);
-		}
-
-		em.persist(newCompany);
-		return newCompany;
 	}
 
 	// *****************************************************************************************************************

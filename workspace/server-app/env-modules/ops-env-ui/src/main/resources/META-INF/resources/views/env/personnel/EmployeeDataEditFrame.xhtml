@@ -9,11 +9,6 @@
 
         <ui:define name="extended_attributes">
 
-            <p:selectOneMenu id="new_appointment" value="#{employee.appointment}">
-                <f:selectItems value="#{selectItems.byDirectoryName('Appointment', true, false, null)}" var="appointment"
-                               itemValue="#{appointment}" itemLabel="#{appointment.objectName}"/>
-            </p:selectOneMenu>
-
             <p:inputText id="personnel_number" placeholder="#{personnelBundle['ops.personnel.number']}"
                          value="#{employee.personnelNumber}" styleClass="m-disp-block " required="true"
                          label="#{personnelBundle['ops.personnel.number']}"/>
