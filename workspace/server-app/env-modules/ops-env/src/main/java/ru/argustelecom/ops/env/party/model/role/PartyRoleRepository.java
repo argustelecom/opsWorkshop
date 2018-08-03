@@ -28,23 +28,6 @@ public class PartyRoleRepository implements Serializable {
 	@Inject
 	private IdSequenceService idSequence;
 
-	public void addEmployee(@NotNull Organization organization, @NotNull Employee employee) {
-		if (organization.getBinding(employee) == null) {
-			OrganizationEmployee newBinding = new OrganizationEmployee(
-					idSequence.nextValue(OrganizationEmployee.class));
-			newBinding.setOrganization(organization);
-			newBinding.setEmployee(employee);
-			em.persist(newBinding);
-			organization.getEmployeeBindings().add(newBinding);
-			em.merge(organization);
-		}
-	}
-
-	public void removeEmployee(@NotNull Organization organization, @NotNull Employee employee) {
-		organization.getEmployeeBindings().remove(organization.getBinding(employee));
-		em.merge(organization);
-	}
-
 	@NamedQuery(name = ALL_EMPLOYEES, query = "from Employee")
 	public List<Employee> getAllEmployees() {
 		return em.createNamedQuery(ALL_EMPLOYEES, Employee.class).getResultList();

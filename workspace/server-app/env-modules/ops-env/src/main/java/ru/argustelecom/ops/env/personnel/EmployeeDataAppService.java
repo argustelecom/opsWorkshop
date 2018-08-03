@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Objects;
 
 import ru.argustelecom.ops.env.party.PartyRepository;
-import ru.argustelecom.ops.env.party.model.Appointment;
 import ru.argustelecom.ops.env.party.model.role.Employee;
 import ru.argustelecom.ops.env.person.PersonDataAppService;
 import ru.argustelecom.ops.inf.security.SecurityContext;
@@ -47,21 +46,18 @@ public class EmployeeDataAppService implements Serializable {
 	}
 
 	public Employee createEmployee(String prefix, String firstName, String secondName, String lastName, String suffix,
-			Appointment appointment, String personnelNumber, String note) {
+			String personnelNumber, String note) {
 		security.checkGranted("System_EmployeeEdit");
 		return partyRepository.createEmployee(prefix, lastName, firstName, secondName, suffix,
-				personnelNumber, appointment, note, null);
+				personnelNumber, note, null);
 	}
 
-	public void editEmployeeData(Long employeeId, Appointment appointment, String personnelNumber) {
+	public void editEmployeeData(Long employeeId, String personnelNumber) {
 		checkArgument(employeeId != null, "employeeId is required");
 		checkArgument(StringUtils.isNotBlank(personnelNumber), "personnel number is required");
 		security.checkGranted("System_EmployeeEdit");
 
 		Employee employee = em.find(Employee.class, employeeId);
-		if (!Objects.equal(employee.getAppointment(), appointment)) {
-			employee.setAppointment(appointment);
-		}
 
 		if (!Objects.equal(employee.getPersonnelNumber(), personnelNumber)) {
 			employee.setPersonnelNumber(personnelNumber);

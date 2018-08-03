@@ -13,7 +13,6 @@ import lombok.Setter;
 import ru.argustelecom.ops.env.contact.ContactEditFrameModel;
 import ru.argustelecom.ops.env.idsequence.IdSequenceService;
 import ru.argustelecom.ops.env.overall.nls.OverallMessagesBundle;
-import ru.argustelecom.ops.env.party.model.Appointment;
 import ru.argustelecom.ops.env.party.model.Party;
 import ru.argustelecom.ops.env.party.model.role.Employee;
 import ru.argustelecom.ops.env.party.nls.PersonnelMessagesBundle;
@@ -54,7 +53,6 @@ public class EmployeeEditDialogModel implements Serializable {
 	private String note;
 	private String personnelNumber;
 	private String employeeName;
-	private Appointment appointment;
 	private Party party;
 
 	public void open() {
@@ -102,7 +100,6 @@ public class EmployeeEditDialogModel implements Serializable {
 
 		employeeDataAs.editEmployeeData(
 			employee.getId(),
-			employee.getAppointment(),
 			employee.getPersonnelNumber()
 		);
 		//@formatter:on
@@ -115,7 +112,7 @@ public class EmployeeEditDialogModel implements Serializable {
 				.findEmployeeByPersonnelNumber(employee.getPersonnelNumber());
 
 		if (employeeWithSamePersonnelNumber == null) {
-			Employee employee = new Employee(idSequence.nextValue(Employee.class), employeeName, appointment,
+			Employee employee = new Employee(idSequence.nextValue(Employee.class), employeeName,
 					personnelNumber, false, idSequence.nextValue(Person.class), prefix, firstName, secondName, lastName,
 					suffix, note);
 			employee.setParty(party);
@@ -194,14 +191,6 @@ public class EmployeeEditDialogModel implements Serializable {
 
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
-	}
-
-	public Appointment getAppointment() {
-		return appointment;
-	}
-
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
 	}
 
 	public Party getParty() {

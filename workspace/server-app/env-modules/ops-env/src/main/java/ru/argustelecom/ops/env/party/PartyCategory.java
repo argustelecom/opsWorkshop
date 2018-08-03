@@ -12,8 +12,7 @@ import ru.argustelecom.system.inf.exception.SystemException;
 public enum PartyCategory {
 
 	//@formatter:off
-	PERSON	("person", "Person.class", "fa fa-user"),
-	COMPANY ("company", "Company.class", "fa fa-group");
+	PERSON	("person", "Person.class", "fa fa-user");
 	//@formatter:on
 
 	private String keyword;
@@ -28,8 +27,6 @@ public enum PartyCategory {
 		switch (this) {
 			case PERSON:
 				return messages.categoryPerson();
-			case COMPANY:
-				return messages.categoryCompany();
 			default:
 				throw new SystemException("Unsupported PartyCategory");
 		}

@@ -27,7 +27,6 @@ public class EmployeeDataFrameModel extends PersonDataFrameModel {
 		//@formatter:off
 		employeeDataAs.editEmployeeData(
 			employee.getId(),
-			employee.getAppointment(),
 			employee.getPersonnelNumber()
 		);
 		//@formatter:on

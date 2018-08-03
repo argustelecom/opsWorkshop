@@ -9,9 +9,6 @@ public interface PartyMessagesBundle {
 	@Message("Персона")
 	String categoryPerson();
 
-	@Message("Организация")
-	String categoryCompany();
-
 	@Message("Имя компании должно быть уникальным")
 	String companyNameShouldBeUnique();
 }

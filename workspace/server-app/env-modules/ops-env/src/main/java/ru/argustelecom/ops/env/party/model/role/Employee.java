@@ -8,17 +8,14 @@ import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import ru.argustelecom.ops.env.party.model.Appointment;
 import ru.argustelecom.ops.env.party.model.PartyRole;
-import ru.argustelecom.ops.env.party.model.PersonName;
 import ru.argustelecom.ops.env.party.model.Person;
+import ru.argustelecom.ops.env.party.model.PersonName;
 import ru.argustelecom.ops.env.security.model.Role;
 
 /**
@@ -29,9 +26,6 @@ import ru.argustelecom.ops.env.security.model.Role;
 public class Employee extends PartyRole {
 
 	private static final long serialVersionUID = -4206745377739673861L;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Appointment appointment;
 
 	@Column(nullable = false, length = 64)
 	private String personnelNumber;
@@ -74,17 +68,6 @@ public class Employee extends PartyRole {
 	// Simple getters and setters
 	// *****************************************************************************************************************
 
-	/**
-	 * @return Должность, которую занимет работник.
-	 */
-	public Appointment getAppointment() {
-		return appointment;
-	}
-
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
-	}
-
 	public String getPersonnelNumber() {
 		return personnelNumber;
 	}
@@ -105,7 +88,7 @@ public class Employee extends PartyRole {
 		return Collections.unmodifiableList(roles);
 	}
 
-	public Employee(Long employeeId, String employeeName, Appointment appointment, String personnelNumber,
+	public Employee(Long employeeId, String employeeName, String personnelNumber,
 			boolean fired, Long personId, String prefix, String firstName, String secondName, String lastName,
 			String suffix, String note) {
 
@@ -114,7 +97,6 @@ public class Employee extends PartyRole {
 
 		this.id = employeeId;
 		this.objectName = employeeName;
-		this.appointment = appointment;
 		this.personnelNumber = personnelNumber;
 		this.fired = fired;
 	}
