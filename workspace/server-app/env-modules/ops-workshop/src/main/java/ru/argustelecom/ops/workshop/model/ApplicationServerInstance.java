@@ -1,4 +1,4 @@
-package model;
+package ru.argustelecom.ops.workshop.model;
 
 import lombok.Getter;
 import lombok.NonNull;

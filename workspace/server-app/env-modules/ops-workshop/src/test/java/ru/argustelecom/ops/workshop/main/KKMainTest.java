@@ -1,15 +1,15 @@
-package main;
+package ru.argustelecom.ops.workshop.main;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import model.ApplicationServerInstance;
-import model.Customer;
-import model.Product;
-import model.Team;
-import model.Teammate;
-import model.UsageType;
-import model.Version;
+import ru.argustelecom.ops.workshop.model.ApplicationServerInstance;
+import ru.argustelecom.ops.workshop.model.Customer;
+import ru.argustelecom.ops.workshop.model.Product;
+import ru.argustelecom.ops.workshop.model.Team;
+import ru.argustelecom.ops.workshop.model.Teammate;
+import ru.argustelecom.ops.workshop.model.UsageType;
+import ru.argustelecom.ops.workshop.model.Version;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

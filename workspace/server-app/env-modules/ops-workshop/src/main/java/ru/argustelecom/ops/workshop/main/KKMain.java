@@ -1,7 +1,6 @@
-package main;
+package ru.argustelecom.ops.workshop.main;
 
-import model.*;
-import model.ApplicationServerInstance.ApplicationServerStatus;
+import ru.argustelecom.ops.workshop.model.ApplicationServerInstance.ApplicationServerStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
