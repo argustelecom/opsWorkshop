@@ -10,9 +10,9 @@
 		<relativePath></relativePath>
 	</parent>
 
-	<groupId>ru.argustelecom.box</groupId>
+	<groupId>ru.argustelecom.ops</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.15.0</version>
+	<version>0.1.0</version>
 
 	<packaging>pom</packaging>
 	<name>parent</name>
@@ -27,8 +27,7 @@
 		<nls.translation-files.path.search>${project.build.resources[0].directory}</nls.translation-files.path.search>
 		<nls.translation-files.path.output>${project.basedir}/target/generated-translation-files</nls.translation-files.path.output>
 		<!-- TASK-86992, v.semchenko: параметр используется в проекте webui. TODO с появление профилей Заказчиков параметр должен указывать в профилях -->
-		<!-- kostd, 24.10.2017: профили у box уже есть, но специфичных Заказчику пока нет. Поэтому ear во всех профилях пока называется одинаково -->
-		<box.ear.final-name>box-enterprise-${project.version}</box.ear.final-name>
+		<ops.ear.final-name>ops-enterprise-${project.version}</ops.ear.final-name>
 
 
 		
@@ -47,7 +46,6 @@
 		-->
 		<version.ru.argustelecom.argus>3.20.0.4-SHARE-SNAPSHOT</version.ru.argustelecom.argus>
 		
-		<!-- FIXME [BOX-561] -->
 		<version.com.googlecode.libphonenumber>8.3.3</version.com.googlecode.libphonenumber>
 		<version.com.haulmont.yarg>2.0.11</version.com.haulmont.yarg>
 		<version.com.jayway.jsonpath>2.1.0</version.com.jayway.jsonpath>
@@ -79,30 +77,6 @@
 				<groupId>ru.argustelecom.argus</groupId>
 				<artifactId>system-inf</artifactId>
 				<version>${version.ru.argustelecom.argus}</version>
-				
-				<!--
-					FIXME JasperReports тянет за собой большую часть springframework, поэтому нужно его исключить из Box
-					
-					Однако, просто так его исключить не получится, потому что при старте сервера Wildfly 
-					выполняет сканирование классов и кидается многочисленными WARNING вида
-					Failed to define class ru.argustelecom.system.inf.reportengine2.* in Module "system-inf-*.jar:main"
-					Поэтому более правильным решением будет согласовать перенос reportengine из system-inf в system-env
-					
-					В качестве альтернативы можно поробовать поставить аннотацию Vetoed над всеми классами reportengine2 
-				-->
-				
-				<!--	
-				<exclusions>
-					<exclusion>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports-fonts</artifactId>
-					</exclusion>
-				</exclusions>
-				-->
 			</dependency>
 			<dependency>
 				<groupId>ru.argustelecom.argus</groupId>
@@ -289,8 +263,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<header>Документация разработчика ARGUS BOX</header>
-					<windowtitle>ARGUS BOX JavaDoc</windowtitle>
+					<header>Документация разработчика ARGUS OPSWorkShop</header>
+					<windowtitle>ARGUS OPS JavaDoc</windowtitle>
 					<version>false</version>
 					<docfilessubdirs>true</docfilessubdirs>
 					<locale>RU</locale>
@@ -298,11 +272,11 @@
 					<groups>
 						<group>
 							<title>Infrastructure</title>
-							<packages>ru.argustelecom.box.inf*</packages>
+							<packages>ru.argustelecom.ops.inf*</packages>
 						</group>
 						<group>
 							<title>Shared domain</title>
-							<packages>ru.argustelecom.box.env*</packages>
+							<packages>ru.argustelecom.ops.env*</packages>
 						</group>
 					</groups>
 					<dependencySourceIncludes>
@@ -397,7 +371,7 @@
 			<id>ear-composition-full</id>
 			<activation>
 				<property>
-					<name>!box.dist.composition</name>
+					<name>!ops.dist.composition</name>
 				</property>
 			</activation>
 			<properties />

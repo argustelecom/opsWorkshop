@@ -4,9 +4,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>ru.argustelecom.box</groupId>
+		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.1.0</version>
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
@@ -82,10 +82,10 @@
 			<scope>test</scope>
 		</dependency>
 		
-		<!-- в box-core лежат ключевые вещи, интересные всем: PasswordHash, PasswordEncrypt и т.д. -->
+		<!-- в ops-core лежат ключевые вещи, интересные всем: PasswordHash, PasswordEncrypt и т.д. -->
 		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>box-core</artifactId>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-core</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -272,7 +272,7 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- копирование общих тестовых ресурсов из box-inf, чтобы не дублировать в каждом проекте. Нужно для arquillian не-ui тестов -->
+			<!-- копирование общих тестовых ресурсов из ops-inf, чтобы не дублировать в каждом проекте. Нужно для arquillian не-ui тестов -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
@@ -286,7 +286,7 @@
 							<outputDirectory>target/test-classes/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${main.basedir}/server-app/inf-modules/box-inf/src/test/resources/</directory>
+									<directory>${main.basedir}/server-app/inf-modules/ops-inf/src/test/resources/</directory>
 									<includes>
 										<!-- нужен только для arquillian-тестов -->
 										<include>arquillian.xml</include>

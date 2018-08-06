@@ -4,9 +4,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>ru.argustelecom.box</groupId>
+		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>server-app-parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.1.0</version>
 		<relativePath>../server-app-parent/pom.xml</relativePath>
 	</parent>
 
@@ -36,8 +36,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>box-inf</artifactId>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-inf</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -111,30 +111,6 @@
 			</activation>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.codehaus.gmaven</groupId>
-						<artifactId>gmaven-plugin</artifactId>
-						<executions>
-							<execution>
-							<!-- используется для arquillian-тестов. Изменяет стандартные настроки для СП Box на настройки необходимые для запуска СП Box Personal Area -->
-								<id>calc-some-props-personal-area</id>
-								<phase>initialize</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<source>
-										boolean argusTestUiRemoteArm = Boolean.valueOf(project.properties.getProperty("argus.test.ui.remotearm"));
-										if (argusTestUiRemoteArm) {
-											int offset = Integer.valueOf(project.properties["jboss.socket.binding.port-offset"]) ;
-											//TASK-89021, v.semchenko: для тестов личного кабинета порт 8190
-											project.properties.setProperty("application.port", String.valueOf(offset + 8190));
-										}
-									</source>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 					<!-- failsafe plugin все же надо явно описать, чтобы включался на фазе тестов -->
 					<plugin>
 						<artifactId>maven-failsafe-plugin</artifactId>

@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pm="http://primefaces.org/modena"
+	xmlns:of="http://omnifaces.org/functions">
+
+	<!-- f:view locale="#{languageBean.locale}" -->
+	<f:loadBundle var="topBarBundle" basename="TopBarBundle"/>
+
+	<!-- Наличие компонента с id layout_topbar обязательно по требованию структуры modena-layout -->
+	<div id="layout_topbar">
+
+		<!-- Наличие компонента с id mobile_menu_button обязательно по требованию структуры modena-layout -->
+		<a id="mobile_menu_button">
+			<span class="m-button-line" id="button_line1" />
+			<span class="m-button-line"	id="button_line2" />
+			<span class="m-button-line" id="button_line3" />
+		</a>
+
+		<p:link id="logo" href="/views/env/home/HomeView.xhtml" rendered="#{p:ifGranted('User')}">
+			<p:graphicImage name="ops-inf/images/logo-light.png" styleClass="m-fleft" />
+		</p:link>
+
+		<!-- Наличие компонента с id show_top_menu обязательно по требованию структуры modena-layout -->
+		<a id="show_top_menu" class="m-show-on-mobile ripplelink"> 
+			<i class="icon-more_vert" id="active" /> 
+			<i class="icon-close m-disp-none" id="passive" />
+		</a>
+
+		<h:form id="top_menu_form">
+			<!-- Наличие компонента с id top_menu обязательно по требованию структуры modena-layout -->
+			<ul id="top_menu">
+		
+				<!-- За наполнение всего остального контента отвечает среда -->
+				<ui:fragment rendered="#{p:ifGranted('User')}">
+					<ui:insert name="topMenuContent">
+						<ui:include src="/views/env/page/TopBarContentFrame.xhtml" />
+					</ui:insert>
+				</ui:fragment>
+
+				<!-- Выход из системы -->
+				<li>
+					<p:commandLink id="logout" styleClass="ripplelink" title="#{topBarBundle['ops.top_bar.log_out']}"
+						action="#{logoutBean.logout()}" immediate="true" process="@this" async="true">
+						<i class="icon-power" /> <span class="m-show-on-mobile">#{topBarBundle['ops.top_bar.log_out']}</span>
+					</p:commandLink>
+				</li>
+			</ul>
+		
+		</h:form>
+	</div>
+	
+</ui:composition>

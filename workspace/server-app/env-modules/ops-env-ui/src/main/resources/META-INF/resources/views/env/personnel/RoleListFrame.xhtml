@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:o="http://omnifaces.org/ui" xmlns:sysinf="http://argustelecom.ru/system-inf"
+	xmlns:pm="http://primefaces.org/modena" xmlns:f="http://java.sun.com/jsf/core">
+
+	<div class="m-container100 m-responsive100">
+		<div class="m-container-indent">
+			<div class="m-card m-shadow-effect m-hei-auto-on-mobile simple-fb">
+				<h:form id="employee_roles_form">
+
+					<script>
+						$( document ).ready(function() {
+							Argus.System.AutoHeight.compute('employee_roles_form', 40);
+						});
+					</script>
+
+					<div class="ui-dashboard-header">
+						<i class="icon-security fs28" />
+						<h:outputText styleClass="card-header" value="#{personnelBundle['ops.personnel.role.plural']}"/>
+						<h:outputText  id="settingsttp" class="icon-help_outline tooltip-help-15" position="top"
+							title="#{personnelBundle['ops.personnel.role.hint']}"/>
+						<p:tooltip id="sett_ttp" for="settingsttp" />
+					</div>
+
+					<p:pickList id="empoyee_roles_list" value="#{employeeCardVM.rolesDualList}" var="role" styleClass="width-100-percents"
+						itemValue="#{role}" itemLabel="#{role.objectName}" showCheckbox="#{!employeeCardVM.employee.fired}"
+						responsive="#{!employeeCardVM.employee.fired}" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+						converter="persistentIdentifiableConverter" disabled="#{!p:ifGranted('System_ChangeEmployeePermissions') or employeeCardVM.employee.fired}"
+						addLabel="#{overallBundle['ops.overall.add']}"
+						addAllLabel="#{overallBundle['ops.overall.add.all']}"
+						removeLabel="#{overallBundle['ops.overall.delete']}"
+						removeAllLabel="#{overallBundle['ops.overall.delete.all']}">
+
+						<f:facet name="sourceCaption">#{personnelBundle['ops.personnel.role.available']}</f:facet>
+						<f:facet name="targetCaption">#{personnelBundle['ops.personnel.role.assigned']}</f:facet>
+
+						<p:ajax event="transfer" listener="#{employeeCardVM.transferSelectedRoles}"/>
+
+						<p:column styleClass="width-100-percents">
+							<h:outputText value="#{role.objectName}" />
+						</p:column>
+					</p:pickList>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+</ui:composition>

@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <f:loadBundle basename="PersonnelBundle" var="personnelBundle"/>
+    <f:loadBundle basename="ContactBundle" var="contactBundle"/>
+
+    <h:form id="employee_edit_form">
+
+        <p:dialog id="employee_edit_dlg"
+                  header="#{employeeEditDM.isEditMode() ? personnelBundle['ops.personnel.employee.edit_dialog'] : personnelBundle['ops.personnel.employee.create_dialog']}"
+                  width="850" styleClass="personnel-dlg"
+                  widgetVar="employeeEditDlg" resizable="false" modal="true" closable="false" dynamic="true">
+
+            <div class="person personnel-edit clearfix">
+                <div class="personnel-attr fs14">
+                    <ui:include src="EmployeeDataEditFrame.xhtml">
+                        <ui:param name="employeeDataDto" value="#{employeeEditDM.employee}"/>
+                    </ui:include>
+                </div>
+            </div>
+
+            <div class="personnel-contact">
+                <div class="ui-dashboard-header panel-header">
+                    <i class="fa fa-phone-square"/>
+                    <h:outputText styleClass="card-header" value="#{contactBundle['ops.contact.plural']}" />
+                </div>
+
+                <div class="m-mar-left20 m-mar-right20">
+                    <ui:include src="/views/env/contact/ContactEditFrame.xhtml">
+                    	<ui:param name="party" value="#{employeeEditDM.employee.party}" />
+                    </ui:include>
+                </div>
+            </div>
+
+            <div class="dialog-footer-buttons">
+                <p:commandButton id="cancel_person_edit_button" value="#{overallBundle['ops.overall.cancel']}"
+                                 styleClass="m-blue-text-button" update="employee_edit_dlg #{update}" resetValues="true"
+                                 process="@this" action="#{employeeEditDM.cancel()}" onclick="PF('employeeEditDlg').hide()"/>
+                <p:commandButton id="save_person_edit_button" value="#{employeeEditDM.isEditMode() ? overallBundle['ops.overall.save'] : overallBundle['ops.overall.create']}"
+                                 process="employee_edit_dlg" update="#{update} personnel_number last_name first_name" action="#{employeeEditDM.submit()}"/>
+            </div>
+
+        </p:dialog>
+
+    </h:form>
+
+</ui:composition>

@@ -4,9 +4,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>ru.argustelecom.box</groupId>
+		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>ejb-parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.1.0</version>
 		<relativePath>../../ejb-parent/pom.xml</relativePath>
 	</parent>
 
@@ -22,14 +22,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>box-inf</artifactId>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-inf</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>ru.argustelecom.box</groupId>
-			<artifactId>box-env</artifactId>
+			<groupId>ru.argustelecom.ops</groupId>
+			<artifactId>ops-env</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
