@@ -1,5 +1,6 @@
 package ru.argustelecom.ops.workshop.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,12 +23,7 @@ import java.util.Collection;
 @Entity
 @Table(schema = "ops", name = "artifact")
 @NoArgsConstructor
-public class Artifact {
-
-	@Id
-	@GeneratedValue
-	@Getter
-	private int id;
+public class Artifact extends OpsSuperClass {
 
 	@Column(name = "name", length = 128, nullable = false)
 	@Getter
