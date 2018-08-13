@@ -336,7 +336,7 @@ make-installer:
     - rsync -r --progress dmz/properties $TMP_DIRECTORY_NAME/data/
     - rsync --progress dmz/installer_configs/$INSTALLER_CONFIG_NAME $TMP_DIRECTORY_NAME/data/install.conf
     - rsync -r --progress db/target/dbm/* $TMP_DIRECTORY_NAME/data/updatedb-$CI_COMMIT_REF_NAME
-    - rsync --progress workspace/server-conf/box-dist/target/argusbox-dist-*.jar
+    - rsync --progress workspace/server-conf/ops-dist/target/ops-dist-*.jar
                        $TMP_DIRECTORY_NAME/data/argus-$CI_COMMIT_REF_NAME.jar
     - $TMP_DIRECTORY_NAME/make.sh --sudo_pass="$SUDO_PASS"
                                   --product_name="$PRODUCT_NAME"
