@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>grandparent</artifactId>
@@ -9,7 +10,6 @@
 		<version>3.20.0.4-SHARE-SNAPSHOT</version>
 		<relativePath></relativePath>
 	</parent>
-
 	<groupId>ru.argustelecom.ops</groupId>
 	<artifactId>parent</artifactId>
 	<version>0.1.0</version>
@@ -55,7 +55,7 @@
 		<version.org.xhtmlrenderer>9.1.7</version.org.xhtmlrenderer>
 		<version.com.ibm.icu>60.2</version.com.ibm.icu>
 		<version.org.apache.poi>3.15</version.org.apache.poi>
-
+		<version.org.h2database>1.4.197</version.org.h2database>
         <!-- Отключает проверку исходников Sonar'ом. Может подключаться через профили, если потребуется -->
         <sonar.skip>true</sonar.skip>
 
@@ -198,6 +198,12 @@
 				<groupId>com.lowagie</groupId>
 				<artifactId>itext</artifactId>
 				<version>2.1.7</version>
+			</dependency>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${version.org.h2database}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
