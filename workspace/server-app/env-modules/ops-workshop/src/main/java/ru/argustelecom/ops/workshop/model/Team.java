@@ -25,11 +25,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(schema = "ops", name = "team")
 @NoArgsConstructor
-public class Team {
-	@Id
-	@GeneratedValue
-	@Getter
-	private int id;
+public class Team extends OpsSuperClass {
 
 	@Column(name = "name")
 	@Getter
@@ -52,7 +48,8 @@ public class Team {
 
 	@ManyToMany
 	@Getter
-	@JoinTable(schema = "ops",
+	@JoinTable(
+			schema = "ops",
 			name = "team_product",
 			joinColumns = @JoinColumn(name = "team_id"),
 			inverseJoinColumns = @JoinColumn(name = "product_id"))
@@ -79,11 +76,17 @@ public class Team {
 		return products.add(product);
 	}
 
-	/*
-	 * @Override public String toString() { return "Team{" + "id=" + id + ", name='" + name + '\'' + ", jiraComponent='"
-	 * + jiraComponent + '\'' + ", teammates=" + (teammates == null ? "NULL" : "[" +
-	 * teammates.stream().map(Teammate::getJiraName).collect(Collectors.joining(",")) + "]") + ", products=" + (products
-	 * == null ? "NULL" : "[" + products.stream().map(Product::getName).collect(Collectors.joining(",")) + "]") +
-	 * ", applicationServerInstances.size=" + applicationServerInstances.size() + '}'; }
-	 */
+	@Override
+	public String toString() {
+		return "Team{" + "id=" + getId() + ", name='" + name + '\'' + ", jiraComponent='" + jiraComponent + '\''
+				+ ", teammates="
+				+ (teammates == null ? "NULL"
+						: "[" + teammates.stream().map(Teammate::getJiraName).collect(Collectors.joining(",")) + "]")
+				+ ", products="
+				+ (products == null ? "NULL"
+						: "[" + products.stream().map(Product::getName).collect(Collectors.joining(",")) + "]")
+//				+ ", applicationServerInstances.size=" + applicationServerInstances.size()
+				+ '}';
+	}
+
 }

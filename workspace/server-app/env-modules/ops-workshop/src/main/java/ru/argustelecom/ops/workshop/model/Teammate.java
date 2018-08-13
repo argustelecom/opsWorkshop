@@ -26,11 +26,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(schema = "ops", name = "teammate")
 @NoArgsConstructor
-public class Teammate {
-	@Id
-	@GeneratedValue
-	@Getter
-	private int id;
+public class Teammate extends OpsSuperClass {
 
 	@Column
 	@Getter
@@ -79,7 +75,7 @@ public class Teammate {
 
 	@Override
 	public String toString() {
-		return "Teammate{" + "id=" + id + ", FIO='" + FIO + '\'' + ", jiraName='" + jiraName + '\'' + ", email='"
+		return "Teammate{" + "id=" + getId() + ", FIO='" + FIO + '\'' + ", jiraName='" + jiraName + '\'' + ", email='"
 				+ email + '\'' + ", teams="
 				+ (teams == null ? "NULL"
 				: "[" + teams.stream().map(Team::getName).collect(Collectors.joining(",")) + "]")
