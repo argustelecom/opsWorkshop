@@ -123,7 +123,7 @@ feature-integration-tests:
     name: "appserver-$CI_PIPELINE_ID"
     expire_in: 3 days
     paths:
-      - workspace/server-conf/box-dist/target/
+      - workspace/server-conf/ops-dist/target/
 
 .install-update-db: &install-update-db
   variables:
@@ -187,7 +187,7 @@ feature-integration-tests:
       - workspace/target/server-logs.tar.gz
     when: always
 
-# Перед прогоном тестов ЛК считаем, что СП обыного Box уже установлен, так как его тесты уже выполнены.
+# Перед прогоном тестов ЛК считаем, что СП обыного Ops уже установлен, так как его тесты уже выполнены.
 .build-ui-tests: &build-ui-tests-pa
   variables:
     mode: 'ui-tests-pa'
@@ -284,7 +284,7 @@ dev-install-update-db:
 feature-sonarqube-analyze:
   script:
     - cd workspace
-    - mvn -P nri-sonar-analyser verify sonar:sonar -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+    - mvn -P nri-sonar-analyser verify sonar:sonar -Dsonar.projectName=Ops-NRI -Dsonar.projectKey=Ops-NRI
   stage: sonar
   dependencies:
     - feature-validate-xml
@@ -300,12 +300,12 @@ feature_sonarqube_preview:
     - git checkout origin/feature-1416-nri
     - git merge $CI_COMMIT_SHA --no-commit --no-ff
     - cd workspace
-    - mvn -P nri-sonar-analyser --batch-mode verify sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+    - mvn -P nri-sonar-analyser --batch-mode verify sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.projectName=Ops-NRI -Dsonar.projectKey=Ops-NRI
   stage: sonar
   dependencies:
     - feature-validate-xml
   only:
-    - /^BOX-.*-nri$/
+    - /^OPS-.*-nri$/
   tags:
     - shell
 

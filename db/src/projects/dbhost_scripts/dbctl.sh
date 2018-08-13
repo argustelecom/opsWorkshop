@@ -7,7 +7,7 @@ USAGE="Usage: $0 [list;dump;clone;create;restore;drop] params
 command:
   list                                       - получить текущий список баз
   inituser password                          - создать системного пользователя argus_sys с указанным паролем password
-  initdb   databasename                      - создать чистую базу данных databasename без схем данных argus box
+  initdb   databasename                      - создать чистую базу данных databasename без схем данных argus ops
   initext  databasename                      - активировать на базе данных databasename расширения PostgreSQL (должно выполняться перед каждым обновлением БД)
   dump     databasename [filename]           - снять дамп с базы databasename в файл $DUMP_DIR/filename
   clone    from_databasename to_databasename - склонировать базу \"from\" в \"to\" + будет снят дамп $DUMP_DIR/from_databasename_datetime.sql
@@ -33,7 +33,7 @@ init_db(){
     su - postgres -c "psql -U postgres -h 127.0.0.1 -d $DB_NAME -c \"CREATE SCHEMA IF NOT EXISTS dbm AUTHORIZATION argus_sys;\"" 2>&1; [ $? -ne 0 ] && exit 1;
     init_db_extensions $DB_NAME
     echo "done"
-}  
+}
 
 init_db_extensions(){
     echo "Init DB extensions"
@@ -43,10 +43,10 @@ init_db_extensions(){
     su - postgres -c "psql -U postgres -h 127.0.0.1 -d $DB_NAME -c \"ALTER ROLE argus_sys SET search_path = pg_catalog, public, system;\"" 2>&1; [ $? -ne 0 ] && exit 1;
     su - postgres -c "psql -U postgres -h 127.0.0.1 -d $DB_NAME < $CREATE_EXTENTIONS" 2>&1; [ $? -ne 0 ] && exit 1;
     echo "done"
-}  
-  
+}
+
 dump_db(){
-    echo "Dump DB" 
+    echo "Dump DB"
     local DB_NAME=$1
     local DUMP_FILE=$2
     echo "  run pg_dump"
@@ -78,7 +78,7 @@ create_db(){
 list_db(){
     su - postgres -c "psql -U postgres -h 127.0.0.1 -c \"SELECT db.datname AS dbname, count(sa.datname) AS connections, string_agg(DISTINCT sa.client_addr::varchar,', ') clientip FROM pg_database db LEFT JOIN pg_stat_activity sa ON sa.datname = db.datname GROUP BY db.datname ORDER BY 1;\""
 }
-  
+
 case "$1" in
     inituser)
         if [ -z $2 ]
@@ -86,7 +86,7 @@ case "$1" in
           echo "$USAGE"
           exit 1;
         fi
-        
+
         USER_PASS=$2
         init_user $USER_PASS
     ;;
@@ -96,7 +96,7 @@ case "$1" in
           echo "$USAGE"
           exit 1;
         fi
-        
+
         DB_NAME=$2
         init_db $DB_NAME
     ;;
@@ -106,35 +106,35 @@ case "$1" in
           echo "$USAGE"
           exit 1;
         fi
-        
+
         DB_NAME=$2
         init_db_extensions $DB_NAME
-    ;;    
-    dump) 
+    ;;
+    dump)
         if [ -z $2 ]
         then
           echo "$USAGE"
           exit 1;
         fi
         SOURCE_DB_NAME=$2
-        
+
         if [ -z $3 ]
         then
             DUMP_NAME=${DUMP_DIR}/${SOURCE_DB_NAME}_${CURDATE}.sql
         else
             DUMP_NAME=${DUMP_DIR}/${3%.sql}.sql
         fi
-        
+
         dump_db $SOURCE_DB_NAME $DUMP_NAME
     ;;
-    clone)     
+    clone)
         if [ -z $2 ]
         then
           echo "$USAGE"
           exit 1;
         fi
         SOURCE_DB_NAME=$2
-        
+
         if [ -z $3 ]
         then
           echo "$USAGE"
@@ -143,7 +143,7 @@ case "$1" in
         TARGET_DB_NAME=$3
 
         DUMP_NAME=${DUMP_DIR}/${SOURCE_DB_NAME}_${CURDATE}.sql
-        
+
         dump_db $SOURCE_DB_NAME $DUMP_NAME
         drop_db $TARGET_DB_NAME
         create_db $TARGET_DB_NAME $DUMP_NAME
@@ -186,7 +186,7 @@ case "$1" in
         drop_db $TARGET_DB_NAME
         create_db $TARGET_DB_NAME $DUMP_NAME
     ;;
-    restore) 
+    restore)
         if [ -z $2 ]
         then
           echo "$USAGE"
@@ -199,7 +199,7 @@ case "$1" in
           echo "$USAGE"
           exit 1;
         fi
-        
+
         if [ -e $3 ]
         then
             #DUMP_NAME must be absolute path!
@@ -220,11 +220,11 @@ case "$1" in
                 exit 1;
             fi
         fi
-        
+
         drop_db $TARGET_DB_NAME
         create_db $TARGET_DB_NAME $DUMP_NAME
     ;;
-    drop) 
+    drop)
         if [ -z $2 ]
         then
           echo "$USAGE"
@@ -237,7 +237,7 @@ case "$1" in
     list)
         list_db
     ;;
-    *) # other params 
+    *) # other params
         echo "$USAGE"
         exit 1;
     ;;
