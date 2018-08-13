@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>dbm-parent</artifactId>
-		<version>0.15.0</version>
+		<version>0.1.0</version>
 		<relativePath>dbm-parent/pom.xml</relativePath>
 	</parent>
 
