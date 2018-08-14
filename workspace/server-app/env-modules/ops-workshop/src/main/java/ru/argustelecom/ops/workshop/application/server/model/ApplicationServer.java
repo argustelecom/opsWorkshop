@@ -5,20 +5,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.argustelecom.ops.workshop.model.ApplicationServerStatus;
 import ru.argustelecom.ops.workshop.model.Customer;
+import ru.argustelecom.ops.workshop.model.OpsSuperClass;
 import ru.argustelecom.ops.workshop.model.Team;
 import ru.argustelecom.ops.workshop.model.UsageType;
 import ru.argustelecom.ops.workshop.model.Version;
 
-import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -46,15 +46,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "application_server", schema = "ops")
 @NoArgsConstructor
-public class ApplicationServer implements Serializable {
-
-	private static final long serialVersionUID = 3723839088936005054L;
-
-	@Id
-	@Getter
-	@Setter
-	@GeneratedValue
-	private long id;
+public class ApplicationServer extends OpsSuperClass {
 
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -62,7 +54,7 @@ public class ApplicationServer implements Serializable {
 	@Setter
 	private ApplicationServerStatus state;
 
-	@Column(name = "appserver_name", nullable = false, length = 128)
+	@Column(name = "name", nullable = false, length = 128)
 	@Getter
 	@Setter
 	private String appServerName;
@@ -94,11 +86,10 @@ public class ApplicationServer implements Serializable {
 	private String comment;
 
 	@ManyToMany
-	@JoinTable(schema = "ops", name = "appservers_teams",
-			joinColumns = @JoinColumn(name = "appserver_id"),
+	@JoinTable(schema = "ops", name = "application_server_team",
+			joinColumns = @JoinColumn(name = "application_server_id"),
 			inverseJoinColumns = @JoinColumn(name = "team_id"))
 	@Getter
-	@Setter
 	private Set<Team> teams = new LinkedHashSet<>();
 
 	@Column(nullable = false)
@@ -117,8 +108,6 @@ public class ApplicationServer implements Serializable {
 	private String installPath;
 
 	@Column(name = "url_address")
-	@Getter
-	@Setter
 	private String urlAddress;
 
 	public ApplicationServer(ApplicationServerStatus state, String appServerName, String buildNumber,
@@ -134,18 +123,38 @@ public class ApplicationServer implements Serializable {
 		this.host = host;
 		this.portOffSet = portOffSet;
 		this.installPath = installPath;
-		this.urlAddress = "";
+		//вычисляем url адрес
+		if ( (this.host != null) && (!this.host.isEmpty()) ) {
+			this.urlAddress = "http://" + this.host + ":" + this.portOffSet + "/argus";
+		} else {
+			this.urlAddress = "";
+		}
 	}
 
-	public boolean addTeam(Team team) {
-		return this.teams.add(team);
+	/**
+	 * Добавляет в команду newTeam текущей сущность СП(this) и добавляет в колекцию teams newTeam
+	 * @param newTeam
+	 * @return
+	 */
+	public boolean addTeam(Team newTeam) {
+		newTeam.addApplicationServer(this);
+		return this.teams.add(newTeam);
+	}
+
+	/**
+	 * Удаляет из сущности команду team из текущей сущность СП(this) и удаляет из колекции teams team
+	 * @param team
+	 * @return
+	 */
+	public boolean removeTeam(Team team) {
+		team.removeApplicationServer(this);
+		return this.teams.remove(team);
 	}
 
 	@Override
 	public String toString() {
 		return "ApplicationServer{" +
-				"\nid=" + id +
-				", \nstate='" + state.toString() + '\'' +
+				"\nid='"+ getId() +"\nstate='" + state.toString() + '\'' +
 				", \nappServerName='" + appServerName + '\'' +
 				", \nbuildNumber='" + buildNumber + '\'' +
 				", \n\ncustomer=" + customer.getName() +
@@ -160,4 +169,11 @@ public class ApplicationServer implements Serializable {
 				'}';
 	}
 
+	public String getUrlAddress() {
+		if ( (host != null) && (!host.isEmpty()) ) {
+			return urlAddress = "http://" + this.host + ":" + this.portOffSet + "/argus";
+		} else {
+			return urlAddress = "";
+		}
+	}
 }

@@ -1,6 +1,6 @@
 create table ops.application_server (
 		id BIGINT NOT NULL,
-        appserver_name varchar(128) NOT NULL,
+        name varchar(128) NOT NULL,
         build_number varchar(255),
         comment varchar(512),
         host varchar(255) NOT NULL,
