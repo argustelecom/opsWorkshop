@@ -14,11 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(schema = "ops", name = "version")
 @NoArgsConstructor
-public class Version {
-
-	@Id
-	@GeneratedValue
-	private int id;
+public class Version extends OpsSuperClass {
 
 	@Column(name = "version_name")
 	private String name;
@@ -30,7 +26,7 @@ public class Version {
 	@Override
 	public String toString() {
 		return "Version{" +
-				"id=" + id +
+				"id=" + getId() +
 				", name='" + name + '\'' +
 				'}';
 	}

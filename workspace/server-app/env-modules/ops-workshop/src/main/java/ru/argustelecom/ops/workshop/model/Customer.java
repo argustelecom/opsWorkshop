@@ -25,12 +25,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(schema = "ops", name = "customer")
 @NoArgsConstructor
-public class Customer {
-
-	@Id
-	@GeneratedValue
-	@Getter
-	private int id;
+public class Customer extends OpsSuperClass {
 
 	@Column(name = "name", length = 128, nullable = false)
 	@Getter
@@ -67,7 +62,7 @@ public class Customer {
 
 	@Override
 	public String toString() {
-		return "Customer{" + "id=" + id + ", name='" + name + '\'' + ", jiraName='" + jiraName + '\''
+		return "Customer{" + "id=" + getId() + ", name='" + name + '\'' + ", jiraName='" + jiraName + '\''
 				+ ", jiraProject='" + jiraProject + '\'' + ", products="
 				+ (products == null ? "NULL"
 				: "[" + products.stream().map(Product::getName).collect(Collectors.joining(",")) + "]")
