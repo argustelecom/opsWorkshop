@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>ru.argustelecom.box</groupId>
+		<groupId>ru.argustelecom.ops</groupId>
 		<artifactId>dbm-parent</artifactId>
 		<version>0.15.0</version>
 		<relativePath>dbm-parent/pom.xml</relativePath>
@@ -26,9 +26,9 @@
 		<dbm.jar.fullname>${dbm.output.dir}/${dbm.jar.name}</dbm.jar.fullname>
 		<dbm.driver.name>postgresql-9.4.1208.jar</dbm.driver.name>
 		<dbm.driver.location>${this.basedir}/../workspace/server-conf/argus-overrides/src/static/modules/org/postgresql/pgjdbc/main</dbm.driver.location>
-		<dbm.props.template>${this.basedir}/src/specific/local.properties</dbm.props.template>		
+		<dbm.props.template>${this.basedir}/src/specific/local.properties</dbm.props.template>
 	</properties>
-	
+
 	<profiles>
         <!-- Включает анализатор исходников для модуля nri -->
         <profile>
@@ -82,15 +82,15 @@
 				</executions>
 			</plugin>
 
-			<!-- Проверяет соответствие реальной кодировки скриптов и указанной в свойствах dbMaintainer 
-			
-			Временно отключено, потому что не правильно определяет кодировку для скриптов, 
-			в которых не используется кириллица. Кодировка определяется детектором, который 
-			"догадывается" по потоку символов. Соответственно, нужно либо в каждый скрипт 
-			добавить комментарий с сылкой на таск и автора скрипта (как это было в старом механизме 
-			обновлений) либо перекодировать скрипты в кодировку с BOM (но тут есть вероятность, что 
+			<!-- Проверяет соответствие реальной кодировки скриптов и указанной в свойствах dbMaintainer
+
+			Временно отключено, потому что не правильно определяет кодировку для скриптов,
+			в которых не используется кириллица. Кодировка определяется детектором, который
+			"догадывается" по потоку символов. Соответственно, нужно либо в каждый скрипт
+			добавить комментарий с сылкой на таск и автора скрипта (как это было в старом механизме
+			обновлений) либо перекодировать скрипты в кодировку с BOM (но тут есть вероятность, что
 			не взлетит dbmaintainer). Ну и на крайний случай, просто отказаться от проверки кодировки
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -191,7 +191,7 @@
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
-				<executions> 
+				<executions>
 					<!-- Убирает номер версии артефакта dbmaintain.jar из командной строки -->
 					<execution>
 						<id>replace-jar-name</id>
@@ -246,7 +246,7 @@
 							</regexFlags>
 						</configuration>
 					</execution>
-					
+
 					<!-- Удаляет из dbmaintain.sh и из setJdbcDriver.sh символ возврата каретки -->
 					<execution>
 						<id>replace-win-chars-in-sh</id>
@@ -275,11 +275,11 @@
 				<artifactId>gmaven-plugin</artifactId>
 				<executions>
 
-					<!-- 
+					<!--
 						Генерирует конфигурационный файл свойств dbmaintain-default.properties
-						на основе файла свойств из состава dbmaintain.jar, dbm-work.properties 
+						на основе файла свойств из состава dbmaintain.jar, dbm-work.properties
 						и dbm-my.properties
-						
+
 						подробнее см. комментарии в overwrite-props.groovy
 					-->
 					<execution>
@@ -293,9 +293,9 @@
 						</configuration>
 					</execution>
 
-					<!-- 
+					<!--
 						Архивирует скрипты в jar и готовит dbmaintain.properties
-						
+
 						подробнее см. комментарии в process-scripts.groovy
 					-->
 					<execution>
@@ -309,13 +309,13 @@
 						</configuration>
 					</execution>
 
-					<!-- 
+					<!--
 						TASK-87917, v.semchenko: Подсчет смещения портов у пропертей (calc-some-props), который мы наследуем от grandparent, в dbm не нужен.pom.xml
 						Иначе получаем _java.lang.NumberFormatException: null_ , так как у нас нет пропертей СП.
 					-->
 					<execution>
 						<id>calc-some-props</id>
-						<phase>none</phase>		
+						<phase>none</phase>
 					</execution>
 				</executions>
 			</plugin>

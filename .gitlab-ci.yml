@@ -8,7 +8,7 @@ stages:
   - int-tests
   - ui-tests
   - make-installer
-  - deploy
+  - run-installer
 
 # Глобальные переменые.
 variables:
@@ -123,7 +123,7 @@ feature-integration-tests:
     name: "appserver-$CI_PIPELINE_ID"
     expire_in: 3 days
     paths:
-      - workspace/server-conf/box-dist/target/
+      - workspace/server-conf/ops-dist/target/
 
 .install-update-db: &install-update-db
   variables:
@@ -187,7 +187,7 @@ feature-integration-tests:
       - workspace/target/server-logs.tar.gz
     when: always
 
-# Перед прогоном тестов ЛК считаем, что СП обыного Box уже установлен, так как его тесты уже выполнены.
+# Перед прогоном тестов ЛК считаем, что СП обыного Ops уже установлен, так как его тесты уже выполнены.
 .build-ui-tests: &build-ui-tests-pa
   variables:
     mode: 'ui-tests-pa'
@@ -227,16 +227,20 @@ feature-integration-tests:
       - workspace/target/server-logs.tar.gz
     when: always
 
-.deploy-installer-target: &deploy-installer-target
+.installer-config: &installer-config
   variables:
-    PRODUCT_NAME: Box
-    INSTALLER_CONFIG_NAME: demo-install.conf
-    TMP_DIRECTORY_NAME: build-installer/$CI_PIPELINE_ID
+    SUDO_PASS: ''
+    PRODUCT_NAME: Ops
+    DB_PRODUCT_NAME: postgresql
+    DB_PRODUCT_VERSION: 10
+    INSTALLER_CONFIG_NAME: dev-install.conf
+    TMP_DIRECTORY_NAME: dist-installer/$CI_PIPELINE_ID
 
 # >> PIPELINE ДЛЯ ВЕТОК DEV и RELEASE-*
 .only-for-dev: &only-for-dev
   only:
     - dev
+    - master
     - /^release-.*/
     # TASK-87917, v.semchenko: на время проведения спринта ui-tests для ветки feature-ui-test выполняем все job`ы dev-* по on-commit
     - /^feature-ui-test.*/
@@ -280,7 +284,7 @@ dev-install-update-db:
 feature-sonarqube-analyze:
   script:
     - cd workspace
-    - mvn -P nri-sonar-analyser verify sonar:sonar -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+    - mvn -P nri-sonar-analyser verify sonar:sonar -Dsonar.projectName=Ops-NRI -Dsonar.projectKey=Ops-NRI
   stage: sonar
   dependencies:
     - feature-validate-xml
@@ -296,12 +300,12 @@ feature_sonarqube_preview:
     - git checkout origin/feature-1416-nri
     - git merge $CI_COMMIT_SHA --no-commit --no-ff
     - cd workspace
-    - mvn -P nri-sonar-analyser --batch-mode verify sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.projectName=Box-NRI -Dsonar.projectKey=Box-NRI
+    - mvn -P nri-sonar-analyser --batch-mode verify sonar:sonar -Dsonar.analysis.mode=preview -Dsonar.gitlab.project_id=$CI_PROJECT_PATH -Dsonar.gitlab.commit_sha=$CI_COMMIT_SHA -Dsonar.gitlab.ref_name=$CI_COMMIT_REF_NAME -Dsonar.projectName=Ops-NRI -Dsonar.projectKey=Ops-NRI
   stage: sonar
   dependencies:
     - feature-validate-xml
   only:
-    - /^BOX-.*-nri$/
+    - /^OPS-.*-nri$/
   tags:
     - shell
 
@@ -325,20 +329,21 @@ dev-build-ui-tests-pa:
   tags:
     - shell
 
-# <<< TASK-91296, TASK-90327
-dev-build-installer:
+# <<< TASK-91296, TASK-90327, TASK-93379
+make-installer:
   script:
-    - git clone --depth=1 git@gitlab:DevOps/Ansible.git $TMP_DIRECTORY_NAME/Ansible
-    - rsync -r --progress --remove-source-files $TMP_DIRECTORY_NAME/Ansible/tasks/argus_install/* $TMP_DIRECTORY_NAME
-    - rm -rf $TMP_DIRECTORY_NAME/Ansible
-    - bash $TMP_DIRECTORY_NAME/make.sh "$PRODUCT_NAME"
-    - rsync -r --progress db/src/projects/dbhost_scripts/ $TMP_DIRECTORY_NAME/dist/data/dbctl
-    - rsync -r --progress db/target/dbm/* $TMP_DIRECTORY_NAME/dist/data/updatedb-$CI_COMMIT_REF_NAME
-    - rsync --progress workspace/server-conf/box-dist/target/argusbox-dist-*.jar $TMP_DIRECTORY_NAME/dist/data/argus-$CI_COMMIT_REF_NAME.jar
-    - rm $TMP_DIRECTORY_NAME/dist/install.conf.raw
-    - rsync --progress dmz/$INSTALLER_CONFIG_NAME $TMP_DIRECTORY_NAME/dist/install.conf
-    - sed -i -e "/^version\ *=/ s/= .*/= $CI_COMMIT_REF_NAME/" $TMP_DIRECTORY_NAME/dist/install.conf
-  <<: *deploy-installer-target
+    - git clone --depth=1 git@gitlab:TechService/ArgusInstaller.git $TMP_DIRECTORY_NAME
+    - rsync -r --progress dmz/properties $TMP_DIRECTORY_NAME/data/
+    - rsync --progress dmz/installer_configs/$INSTALLER_CONFIG_NAME $TMP_DIRECTORY_NAME/data/install.conf
+    - rsync -r --progress db/target/dbm/* $TMP_DIRECTORY_NAME/data/updatedb-$CI_COMMIT_REF_NAME
+    - rsync --progress workspace/server-conf/ops-dist/target/ops-dist-*.jar
+                       $TMP_DIRECTORY_NAME/data/argus-$CI_COMMIT_REF_NAME.jar
+    - $TMP_DIRECTORY_NAME/make.sh --sudo_pass="$SUDO_PASS"
+                                  --product_name="$PRODUCT_NAME"
+                                  --product_version="$CI_COMMIT_REF_NAME"
+                                  --db_product_name="$DB_PRODUCT_NAME"
+                                  --db_version="$DB_PRODUCT_VERSION"
+  <<: *installer-config
   stage: make-installer
   when: manual
   dependencies:
@@ -347,6 +352,7 @@ dev-build-installer:
   only:
     - /^release-.*/
     - /^dev$/
+    - master
   tags:
     - shell
   artifacts:
@@ -354,19 +360,21 @@ dev-build-installer:
     expire_in: 3 days
     paths:
       - $TMP_DIRECTORY_NAME/dist
-    when: on_success
+      - $TMP_DIRECTORY_NAME/logs
+    when: always
 
-dev-deploy-installer:
+install:
   script:
-    - bash $TMP_DIRECTORY_NAME/dist/install.sh
-  <<: *deploy-installer-target
-  stage: deploy
+    - $TMP_DIRECTORY_NAME/dist/install.sh
+  <<: *installer-config
+  stage: run-installer
   when: manual
   dependencies:
-    - dev-build-installer
+    - make-installer
   only:
     - /^release-.*/
     - /^dev$/
+    - master
   tags:
     - shell
   artifacts:
@@ -375,7 +383,7 @@ dev-deploy-installer:
     paths:
       - $TMP_DIRECTORY_NAME/dist/logs
     when: always
-# >>> TASK-91296, TASK-90327
+# >>> TASK-91296, TASK-90327, TASK-93379
 
 # << PIPELINE ДЛЯ ВЕТОК DEV и RELEASE-*
 
