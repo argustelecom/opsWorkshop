@@ -123,13 +123,13 @@ feature-integration-tests:
     name: "appserver-$CI_PIPELINE_ID"
     expire_in: 3 days
     paths:
-      - workspace/server-conf/ops-dist/target/
+      - workspace/server-conf/ops-dist/target/*.jar
 
 .install-update-db: &install-update-db
   variables:
     mode: 'install-update-db'
     # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
-    DB_NAME: 'installdb_$CI_JOB_ID'
+    DB_NAME: 'installdb_ops_$CI_JOB_ID'
   before_script:
     - cd db/target/dbm
     # Set DB name in two strings
@@ -152,47 +152,7 @@ feature-integration-tests:
   variables:
     mode: 'ui-tests'
     # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
-    DB_NAME: 'itdb_$CI_JOB_ID'
-  before_script:
-    - cd db/target/dbm
-    # Set DB name in two strings
-    - sed -i "s/:5432\/.*/:5432\/$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
-    - sed -i "s/databases.names=.*/databases.names=$DB_NAME/" $PWD/$DBM_PROPERTIES_FILE
-    # Fix windows line endings
-    - dos2unix $PWD/$DBM_FILE
-    # Set driver path
-    - export DBMAINTAIN_JDBC_DRIVER=$PWD/$JDBC_DRIVER_PATH
-    - cd ../../../it-env
-    - chmod +x *.sh
-    - bash ./init-db-for-testing.sh $DB_NAME
-    - cd ../db/target/dbm
-    - ./$DBM_FILE updateDatabase
-    - cd ../../..
-  <<: *call-linux-build
-  after_script:
-    - cd it-env
-    - bash ./clean-env.sh $DB_NAME
-  artifacts:
-    name: "ui-tests-$CI_PIPELINE_ID"
-    expire_in: 3 days
-    paths:
-      - workspace/target/site/failsafe-report.html
-      - workspace/server-app/*/*-ui/target/testlogs/tests.log
-      # из-за сложной иерархии проектов приходиться поступать аналогично: https://stackoverflow.com/questions/38009869/how-to-specify-wildcard-artifacts-subdirectories-in-gitlab-ci-yml
-      - workspace/server-app/*/*/*-ui/target/testlogs/tests.log
-      - workspace/server-app/*/*-ui/target/failsafe-reports
-      - workspace/server-app/*/*/*-ui/target/failsafe-reports
-      - workspace/server-app/*/*-ui/target/uitest-fails-photo
-      - workspace/server-app/*/*/*-ui/target/uitest-fails-photo
-      - workspace/target/server-logs.tar.gz
-    when: always
-
-# Перед прогоном тестов ЛК считаем, что СП обыного Ops уже установлен, так как его тесты уже выполнены.
-.build-ui-tests: &build-ui-tests-pa
-  variables:
-    mode: 'ui-tests-pa'
-    # Имя БД задаю через переменную, так как БД создается на время рабыты job`а
-    DB_NAME: 'itdb_$CI_JOB_ID'
+    DB_NAME: 'itdb_ops_$CI_JOB_ID'
   before_script:
     - cd db/target/dbm
     # Set DB name in two strings
@@ -319,16 +279,6 @@ dev-build-ui-tests:
   tags:
     - shell
 
-dev-build-ui-tests-pa:
-  <<: *build-ui-tests-pa
-  <<: *only-for-dev
-  stage: ui-tests
-  dependencies:
-    - dev-make-distrib
-    - dev-make-update-db
-  tags:
-    - shell
-
 # <<< TASK-91296, TASK-90327, TASK-93379
 make-installer:
   script:
@@ -444,15 +394,6 @@ feature-build-ui-tests:
   tags:
     - shell
 
-feature-build-ui-tests-pa:
-  <<: *build-ui-tests-pa
-  <<: *only-for-feature
-  stage: ui-tests
-  dependencies:
-    - feature-make-distrib
-    - feature-make-update-db
-  tags:
-    - shell
 # << PIPELINE ДЛЯ ВЕТОК SPRINT-*, FEATURE-*, AUTOTEST-*
 
 # >> PIPELINE ДЛЯ ВЕТОК FIX-*, HOTFIX-*
