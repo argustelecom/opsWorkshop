@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<persistence version="1.0"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+    <persistence-unit name="PersistenceUnitKK">
+
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+            <property name="hibernate.connection.url" value="jdbc:h2:mem:kktest" />
+            <property name="hibernate.connection.user" value="kk" />
+            <property name="hibernate.password" value="" />
+
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="false" />
+            <property name="hibernate.hbm2ddl.auto" value="create" />
+        </properties>
+
+    </persistence-unit>
+
+    <persistence-unit name="Test_AK_H2">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="hibernate.archive.autodetection" value="class" />
+            <!-- Диалект языка SQL -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+            <!-- JDBC драйвер -->
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver" />
+            <!-- URL для подключения к базе данных -->
+            <property name="hibernate.connection.url" value="jdbc:h2:mem:test" />
+            <!-- Имя пользователя БД -->
+            <property name="hibernate.connection.user" value="sa" />
+            <!-- Пароль пользователя БД -->
+            <property name="hibernate.password" value="" />
+            <!-- Показывать SQL запросы перед выполнением -->
+            <property name="hibernate.show_sql" value="true" />
+            <!-- Форматировать SQL-запросы -->
+            <property name="hibernate.format_sql" value="true" />
+            <!-- Закрывать ли подключение к БД после сеанса работы -->
+            <property name="hibernate.connection.shutdown" value="true" />
+
+            <!-- Стратегия, по которой Hibernate меняет схему (структуру БД) -->
+            <!-- update – база будет просто обновлять свою структуру; -->
+            <!-- validate – проверяет структуру базы но не вносит изменения; -->
+            <!-- create – создает таблицы, но уничтожает предыдущие данные; -->
+            <!-- create-drop – создает таблицы в начале сеанса и удаляет их по окончанию сеанса. -->
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+
+        </properties>
+    </persistence-unit>
+</persistence>
