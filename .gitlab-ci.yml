@@ -485,13 +485,4 @@ schedules-build-ui-tests:
   tags:
     - shell
 
-schedules-build-ui-tests-pa:
-  <<: *build-ui-tests-pa
-  <<: *only-for-schedules
-  stage: ui-tests
-  dependencies:
-    - schedules-make-distrib
-    - schedules-make-update-db
-  tags:
-    - shell
 # << PIPELINE ДЛЯ SCHEDULES В ЛЮБОЙ ВЕТКЕ
