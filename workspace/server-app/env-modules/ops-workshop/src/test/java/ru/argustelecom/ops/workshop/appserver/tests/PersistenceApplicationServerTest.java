@@ -4,18 +4,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.junit.Ignore;
+
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import ru.argustelecom.ops.env.idsequence.IdSequenceService;
 import ru.argustelecom.ops.workshop.application.server.model.ApplicationServer;
-import ru.argustelecom.ops.workshop.application.server.model.ApplicationServerState;
-import ru.argustelecom.ops.workshop.customer.model.Customer;
-import ru.argustelecom.ops.workshop.team.model.Team;
-import ru.argustelecom.ops.workshop.product.model.Product;
-import ru.argustelecom.ops.workshop.usagetype.model.UsageType;
-import ru.argustelecom.ops.workshop.version.model.Version;
+import ru.argustelecom.ops.workshop.model.ApplicationServerStatus;
+import ru.argustelecom.ops.workshop.model.Customer;
+import ru.argustelecom.ops.workshop.model.Product;
+import ru.argustelecom.ops.workshop.model.Team;
+import ru.argustelecom.ops.workshop.model.UsageType;
+import ru.argustelecom.ops.workshop.model.Version;
 
 /**
  *
@@ -38,7 +37,7 @@ public class PersistenceApplicationServerTest extends TestCase {
 
 			em.getTransaction().begin();
 			try {
-				Product module = new Product("system-if");
+				Product module = new Product("system-if", "АРГУС", "Инфраструктура(java)");
 				em.persist(module);
 
 				Version argusVersion = new Version("3.20.31");
@@ -47,24 +46,24 @@ public class PersistenceApplicationServerTest extends TestCase {
 				UsageType usageFor = new UsageType("Тестирование", "TEST");
 				em.persist(usageFor);
 
-				Team developerTeam = new Team("Команда Инфраструктуры", "АРГУС(TASK)");
+				Team developerTeam = new Team("Команда Инфраструктуры", "Инфраструктура(java)");
 				developerTeam.addProduct(module);
 				em.persist(developerTeam);
 
-				Customer customer = new Customer(TEST_CUSTOMER_NAME);
+				Customer customer = new Customer(TEST_CUSTOMER_NAME, TEST_CUSTOMER_NAME, "З_1");
 				em.persist(customer);
 
-				ApplicationServer appServer = new ApplicationServer(ApplicationServerState.TURNED_OFF, "app-ktp",
+				ApplicationServer appServer = new ApplicationServer(ApplicationServerStatus.SHUTDOWN, "app-ktp",
+						"3.22.22", customer, argusVersion, usageFor, "новый сервер",
 						"jboss3", 0, "/jboss_prod");
 				appServer.addTeam(developerTeam);
-				appServer.setCustomer(customer);
-				appServer.setVersion(argusVersion);
-				appServer.setUsageType(usageFor);
 				//запоминнаем объект и передаем его в управление EM
 				em.persist(appServer);
 				//flush() актуализируем данные в БД из нашего persistence context.
 //				em.flush();
 // 				em.refresh(module);
+
+
 
 				System.out.println("[INFO] Сервер: " + appServer.toString() + "\n\n");
 				System.out.println("[INFO] Команда разработчиков: " + developerTeam.toString() + "\n\n");

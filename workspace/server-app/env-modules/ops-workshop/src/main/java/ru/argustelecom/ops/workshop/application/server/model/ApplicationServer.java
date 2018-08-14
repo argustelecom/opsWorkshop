@@ -1,11 +1,13 @@
 package ru.argustelecom.ops.workshop.application.server.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.argustelecom.ops.workshop.customer.model.Customer;
-import ru.argustelecom.ops.workshop.team.model.Team;
-import ru.argustelecom.ops.workshop.usagetype.model.UsageType;
-import ru.argustelecom.ops.workshop.version.model.Version;
+import ru.argustelecom.ops.workshop.model.ApplicationServerStatus;
+import ru.argustelecom.ops.workshop.model.Customer;
+import ru.argustelecom.ops.workshop.model.Team;
+import ru.argustelecom.ops.workshop.model.UsageType;
+import ru.argustelecom.ops.workshop.model.Version;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -43,6 +45,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "application_server", schema = "ops")
+@NoArgsConstructor
 public class ApplicationServer implements Serializable {
 
 	private static final long serialVersionUID = 3723839088936005054L;
@@ -57,7 +60,7 @@ public class ApplicationServer implements Serializable {
 	@Enumerated(EnumType.STRING)
 	@Getter
 	@Setter
-	private ApplicationServerState state;
+	private ApplicationServerStatus state;
 
 	@Column(name = "appserver_name", nullable = false, length = 128)
 	@Getter
@@ -91,11 +94,12 @@ public class ApplicationServer implements Serializable {
 	private String comment;
 
 	@ManyToMany
-	@JoinTable(name = "appservers_teams", joinColumns = @JoinColumn(name = "appserver_id"),
+	@JoinTable(schema = "ops", name = "appservers_teams",
+			joinColumns = @JoinColumn(name = "appserver_id"),
 			inverseJoinColumns = @JoinColumn(name = "team_id"))
 	@Getter
 	@Setter
-	private Set<Team> teams;
+	private Set<Team> teams = new LinkedHashSet<>();
 
 	@Column(nullable = false)
 	@Getter
@@ -117,24 +121,20 @@ public class ApplicationServer implements Serializable {
 	@Setter
 	private String urlAddress;
 
-	public ApplicationServer() {
-		this.state = ApplicationServerState.TURNED_OFF;
-		this.appServerName = "";
-		this.teams = new LinkedHashSet<>();
-		this.host = "";
-		this.portOffSet = 0;
-		this.installPath = "";
-		this.urlAddress = "";
-	}
-
-	public ApplicationServer(ApplicationServerState state, String appServerName, String host, int portOffSet, String installDirPath) {
-		this();
+	public ApplicationServer(ApplicationServerStatus state, String appServerName, String buildNumber,
+			Customer customer, Version version, UsageType usageType, String comment,
+			String host, int portOffSet, String installPath) {
 		this.state = state;
 		this.appServerName = appServerName;
+		this.buildNumber = buildNumber;
+		this.customer = customer;
+		this.version = version;
+		this.usageType = usageType;
+		this.comment = comment;
 		this.host = host;
 		this.portOffSet = portOffSet;
-		this.installPath = installDirPath;
-		this.urlAddress = "http://" + host + ":" + (8080 + portOffSet) + "/argus";
+		this.installPath = installPath;
+		this.urlAddress = "";
 	}
 
 	public boolean addTeam(Team team) {
@@ -149,7 +149,7 @@ public class ApplicationServer implements Serializable {
 				", \nappServerName='" + appServerName + '\'' +
 				", \nbuildNumber='" + buildNumber + '\'' +
 				", \n\ncustomer=" + customer.getName() +
-				", \n\nversion='" + version.getVersionName() + '\'' +
+				", \n\nversion='" + version.toString() + '\'' +
 				", \nusageType='" + usageType.getName() + '\'' +
 				", \ncomment='" + comment + '\'' +
 				", \n\nteams=" + teams.stream().map(t -> t.getName()).toArray() +
