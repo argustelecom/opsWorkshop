@@ -60,7 +60,6 @@
 			<property name="hibernate.cache.region_prefix" value="argus-cache-region"/> 
 			<property name="jboss.entity.manager.jndi.name" value="java:jboss/ArgusEntityManager"/>
 			<property name="jboss.entity.manager.factory.jndi.name" value="java:jboss/ArgusEntityManagerFactory" />
-			<property name="jboss.entity.manager.jndi.name" value="java:jboss/ArgusEntityManager"/>
 			<property name="hibernate.session_factory_name" value="java:jboss/SessionFactory" />
 
 			<!-- https://docs.jboss.org/author/display/WFLY8/JPA+Reference+Guide#JPAReferenceGuide-BindingEntityManagerFactory%2FEntityManagertoJNDI -->
