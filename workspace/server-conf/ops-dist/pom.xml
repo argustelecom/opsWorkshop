@@ -23,7 +23,7 @@
 		<staging.dir.app>${izpack.staging}/appfiles</staging.dir.app>
 
 		<!-- Имя дистрибутива -->
-		<argus.dist.final-name>argusops-dist-${project.version}</argus.dist.final-name>
+		<argus.dist.final-name>ops-dist-${project.version}</argus.dist.final-name>
 		<!-- Имя *.ear -->
 		<argus.ear.final-name>ops-enterprise-${project.version}</argus.ear.final-name>
 	</properties>
