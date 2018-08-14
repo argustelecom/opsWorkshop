@@ -125,7 +125,7 @@ public class ApplicationServer extends OpsSuperClass {
 		this.installPath = installPath;
 		//вычисляем url адрес
 		if ( (this.host != null) && (!this.host.isEmpty()) ) {
-			this.urlAddress = "http://" + this.host + ":" + this.portOffSet + "/argus";
+			this.urlAddress = "http://" + this.host + ":" + (8080 + this.portOffSet) + "/argus";
 		} else {
 			this.urlAddress = "";
 		}
@@ -171,7 +171,7 @@ public class ApplicationServer extends OpsSuperClass {
 
 	public String getUrlAddress() {
 		if ( (host != null) && (!host.isEmpty()) ) {
-			return urlAddress = "http://" + this.host + ":" + this.portOffSet + "/argus";
+			return urlAddress = "http://" + this.host + ":" + (8080 + this.portOffSet) + "/argus";
 		} else {
 			return urlAddress = "";
 		}
