@@ -75,7 +75,7 @@ public class ApplicationServer extends OpsSuperClass {
 	private Version version;
 
 	@ManyToOne
-	@JoinColumn(name = "usage_type_id")
+	@JoinColumn(name = "usage_type_key")
 	@Getter
 	@Setter
 	private UsageType usageType;

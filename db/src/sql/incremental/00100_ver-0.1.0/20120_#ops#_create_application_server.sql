@@ -10,9 +10,9 @@ create table ops.application_server (
         url_address varchar(255),
         version_id BIGINT,
         customer_id BIGINT,
-        usage_type_id BIGINT,
+        usage_type_key varchar(128),
 	CONSTRAINT pk_application_server PRIMARY KEY (id),
 	CONSTRAINT fk_application_server_to_customer FOREIGN KEY (customer_id) REFERENCES ops.customer (id),
-	CONSTRAINT fk_application_server_to_usage_type FOREIGN KEY (usage_type_id) REFERENCES ops.usage_type (id),
+	CONSTRAINT fk_application_server_to_usage_type FOREIGN KEY (usage_type_key) REFERENCES ops.usage_type (key),
 	CONSTRAINT fk_application_server_to_version FOREIGN KEY (version_id) REFERENCES ops.version (id)
 	);
